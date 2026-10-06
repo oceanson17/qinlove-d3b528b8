@@ -5,6 +5,7 @@ var Med={cur:null};
  Med.open=function(o){var d,who=o.who||'';if(who){var c=CURE[who];d={p:CHARS[who].n+'（'+CHARS[who].ail+'）',sym:c.sym,dx:c.dx,wrong:c.wrong,rx:c.rx,rxw:c.rxw};}else d=CASES[o.ci];
   Med.cur={d:d,who:who,ci:o.ci,rev:[],struck:'',step:'look',dxOk:null,rxOk:null,dxOpts:shuffle([d.dx].concat(d.wrong)),rxOpts:shuffle([d.rx].concat(d.rxw))};
   if(S.p.med>=25)Med.cur.rev.push(0);
+  if(S.p.wit>=15&&!who)Med.cur.hintWit=1;
   $('med').className='sheet med on';$('mdT').textContent=who?'為'+CHARS[who].n+'診治':'坐診問診';Med.draw();};
  Med.draw=function(){var m=Med.cur,d=m.d;if(!m)return;var who=m.who;
   var h='<div class="pat"><div class="pav">'+(who?ART.html('char',who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
@@ -13,7 +14,7 @@ var Med={cur:null};
   else{h+='<h4>四診</h4><div class="four">'+['望','聞','問','切'].map(function(x,i){return '<button data-four="'+i+'" class="'+(m.rev.indexOf(i)>=0?'done':'')+'">'+x+'</button>';}).join('')+'</div>';
    h+='<div class="sym">'+m.rev.map(function(i){return i<3?'<span>'+esc(d.sym[i])+'</span>':'<span>脈象：可排除「'+esc(m.struck)+'」</span>';}).join('')+(m.rev.length?'':'<span class="note" style="border:0;background:none">輕觸四診收集症狀（至少兩項）</span>')+'</div>';
    if(m.rev.length>=2&&m.step==='look')h+='<h4>辨證</h4><div class="opts">'+m.dxOpts.map(function(x){return '<button class="cbtn'+(x===m.struck?' lock':'')+'" data-dx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';
-   if(m.step==='rx')h+='<h4>處方</h4><div class="opts">'+m.rxOpts.map(function(x){return '<button class="cbtn" data-rx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';}
+   if(m.step==='rx')h+='<h4>處方'+(m.hintWit?'<small class="note">（才智：淡色者藥不對症）</small>':'')+'</h4><div class="opts">'+m.rxOpts.map(function(x){return '<button class="cbtn'+(m.hintWit&&x===m.d.rxw[0]?' lock':'')+'" data-rx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';}
   $('mdB').innerHTML=h;};
  Med.four=function(i){var m=Med.cur;if(!m||m.rev.indexOf(i)>=0)return;if(i===3){m.struck=m.d.wrong[rnd(m.d.wrong.length)];}m.rev.push(i);Med.draw();};
  Med.dx=function(x){var m=Med.cur;m.dxOk=x===m.d.dx;m.step='rx';Med.draw();};

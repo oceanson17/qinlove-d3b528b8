@@ -52,7 +52,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   UI.li=i;var l=sc.lines[i];var np=$('nameplate');
   if(l.sp&&l.sp!==''){np.className='on'+(l.sp==='p'?' pc':'');$('npName').textContent=l.sp==='p'?S.p.name:cn(l.sp);}else np.className='';
   if(CHARS[l.sp])UI.setChar(l.sp,l.ex||Eng.exprOf(l.sp));
-  $('char').classList.toggle('dim',l.sp==='p');
+  $('char').classList.toggle('dim',l.sp==='p');var fc=$('face');if(l.sp==='p'){if(!fc.innerHTML)fc.innerHTML=ART.html('char','heroine','smile');fc.className='on';}else fc.className='';
   Eng.back(l);
   var txt=l.sp&&l.sp!==''?l.t:l.t;UI.type(txt,!l.sp);
   $('box').className='';};
@@ -217,7 +217,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  UI.loadGame=function(slot){if(!loadSlot(slot)){toast('讀檔失敗');return;}if(S.pend)S.pend.shown=0;Sh.close();UI.bgk='';UI.stop();toast('📂 已讀取（'+slotName(slot)+'）');UI.go('hub');};
  /* ---------- 輸入 ---------- */
  var MODES=[['say','💬說'],['cmd','⚙指令'],['decl','📜設定']];
- UI.modeSync=function(){var m=SET.inmode||'say';var lab=MODES.filter(function(x){return x[0]===m;})[0]||MODES[0];var b=$('mode');b.textContent=lab[1];b.className='mchip '+m;$('kbmode').textContent=lab[1];
+ UI.modeSync=function(){var m=SET.inmode||'say';var lab=MODES.filter(function(x){return x[0]===m;})[0]||MODES[0];var b=$('mode');b.textContent=lab[1];b.className='mchip '+m;$('kbmode').textContent=lab[1];$('kbta').placeholder={say:'對眼前的人說…',cmd:'做什麼？例：替他包紮／嬴政命人傳蒙恬',decl:'宣告劇情：例：那人便是嬴政／李斯一直暗戀我'}[m];
   $('free').placeholder={say:'對眼前的人說…',cmd:'做什麼？例：替他包紮／嬴政命人傳蒙恬',decl:'宣告劇情：例：那人便是嬴政'}[m];};
  UI.submitFree=function(){var f=$('free');var v=f.value;f.value='';if(!v.trim()||!S||UI.busyOn)return;$('choices').innerHTML='';var r=Input.submit(v);if(!r)return;if(r.go&&!r.lines){UI.go(r.go,r.a);return;}UI.present(r);};
  /* ---------- 事件綁定 ---------- */
@@ -234,7 +234,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
    if(q==='log')MenuUI.open('log');else if(q==='save')MenuUI.open('save');
    else if(q==='auto'){UI.auto=!UI.auto;b.classList.toggle('on',UI.auto);if(UI.auto&&!UI.typing)UI.lineDone();}
    else if(q==='skip'){UI.skip=true;b.classList.add('on');if(UI.typing){clearInterval(UI.timer);$('txt').textContent=UI.full;UI.typing=false;}UI.lineDone();}});
-  $('mode').onclick=function(e){e.stopPropagation();var i=MODES.map(function(x){return x[0];}).indexOf(SET.inmode||'say');SET.inmode=MODES[(i+1)%3][0];saveSettings();UI.modeSync();toast({say:'💬 說：對眼前的人說話',cmd:'⚙ 指令：描述動作，或「某人命人…」導演命令',decl:'📜 設定：宣告劇情事實，必定成真'}[SET.inmode],2600);};
+  $('mode').onclick=function(e){if(e&&e.stopPropagation)e.stopPropagation();var i=MODES.map(function(x){return x[0];}).indexOf(SET.inmode||'say');SET.inmode=MODES[(i+1)%3][0];saveSettings();UI.modeSync();toast({say:'💬 說：對眼前的人說話',cmd:'⚙ 指令：描述動作，或「某人命人…」導演命令',decl:'📜 設定：宣告劇情事實，必定成真'}[SET.inmode],2600);};
   $('send').onclick=function(e){e.stopPropagation();if(Kb.on()&&!$('free').value){Kb.show();return;}UI.submitFree();};
   $('free').addEventListener('keydown',function(e){if(e.isComposing||e.keyCode===229)return;if(e.key==='Enter'){e.preventDefault();UI.submitFree();}});
   tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!S||UI.busyOn)return;var t=b.getAttribute('data-t');
@@ -287,6 +287,7 @@ var Kb={open:false};
   f.addEventListener('click',function(e){e.stopPropagation();if(Kb.on()){e.preventDefault();Kb.show();}});
   f.addEventListener('focus',function(){if(Kb.on()&&!Kb.open){try{f.blur();}catch(e){}Kb.show();}});
   el('kbsend').addEventListener('click',function(e){e.preventDefault();Kb.send();});
+  el('kbmode').addEventListener('click',function(e){e.preventDefault();if(Kb.cb)return;try{$('mode').click();}catch(x){}try{el('kbta').focus();}catch(x2){}});
   el('kbcancel').addEventListener('click',function(e){e.preventDefault();Kb.close(true);});
   p.addEventListener('click',function(e){if(e.target===p)Kb.close(true);});
   ta.addEventListener('input',count);

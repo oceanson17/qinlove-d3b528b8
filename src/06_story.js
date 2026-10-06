@@ -47,6 +47,9 @@
   if(S.ch===2&&!S.flags.poison_solved&&pl==='palace'&&['market','study','courtyard'].every(function(x){return S.flags['clue_'+x];}))cs.unshift(ch('⚖️ 向秦王指認真兇','accuse'));
   if(pl==='camp'&&!here.length)cs.push(ch('🩹 為傷兵義診','campAid'));
   if(pl==='tavern')cs.push(ch('🍶 聽筑飲酒','tavernSit'));
+  if(pl==='study')cs.push(ch('📚 研讀醫典兵書（才智）','read'));
+  if(pl==='plum')cs.push(ch('🎐 梅下撫琴（魅力）','qin'));
+  if(pl==='clinic'&&S.p.mind<30)ls.push('（你的心境低落，問診容易出錯——先歇息一下吧。）');
   cs.push(ch('🗺 返回地圖','hub'));
   return Eng.L(ls,here[0]||'',Pl.bg==='night'?'courtyard':pl,cs,{placeView:1});};
  /* ---------- 初遇 ---------- */
@@ -103,7 +106,8 @@
  NODES.gift=function(a){var id=a.id,k=a.k,c=CHARS[id],r=S.c[id],it=ITEMS[k];Eng.item(k,-1);Eng.pass(1);r.gifts++;
   var like=c.likes.indexOf(it.n)>=0,line,ex;
   var med=(k==='sachet'&&id==='yingzheng')||(k==='salve'&&(id==='mengtian'||id==='xuanye'))||(k==='pill'&&id==='hanfei')||(k==='warmer'&&id==='fusu');
-  if(like||med){Eng.c(id,{aff:8,heart:4,trust:2},'收到'+P()+'送的'+it.n+'，很喜歡');line=GIFT_LIKE[id];ex='blush';}
+  var cb=S.p.cha>=15?2:0;
+  if(like||med){Eng.c(id,{aff:8+cb,heart:4,trust:2},'收到'+P()+'送的'+it.n+'，很喜歡');line=GIFT_LIKE[id];ex='blush';}
   else if(r.gifts>3&&rand()<0.3){Eng.c(id,{aff:1},'又收到'+it.n);line='「你總是送我東西……」他無奈地笑了笑，「下次，人來就好。」';ex='smile';}
   else{Eng.c(id,{aff:3},'收到'+P()+'送的'+it.n);line='「多謝。」'+c.n+'收下了'+it.n+'，看不出喜不喜歡。';ex='normal';}
   /* 吃醋：在場有心動者 */
@@ -123,7 +127,7 @@
    q[1].map(function(t,i){return ch('💗 '+t,'dateEnd',{id:id,pl:pl,i:i,fav:fav?1:0});}));
   if(AI.ready()){return aiScene({type:'date',id:id,place:pl,extra:'（約會中他會問：'+q[0]+'；請以此為核心，choices 給三種回應）'},function(){return sc;});}
   return sc;};
- NODES.dateEnd=function(a){var id=a.id,best=DATE_BEST[id]===a.i;var gain={aff:best?8:4,heart:best?7:3,trust:2};if(a.fav){gain.aff+=3;gain.heart+=2;}
+ NODES.dateEnd=function(a){var id=a.id,best=DATE_BEST[id]===a.i;var gain={aff:best?8:4,heart:best?7:3,trust:2};if(S.p.cha>=15)gain.heart+=2;if(a.fav){gain.aff+=3;gain.heart+=2;}
   Eng.c(id,gain,'和'+P()+'在'+PLACES[a.pl].n+'約會'+(best?'，很開心':''));
   CHAR_ORDER.forEach(function(o){if(o!==id&&S.c[o].heart>=30){S.c[o].jeal=clamp(S.c[o].jeal+6,0,100);}});
   var line=best?DATE_HAPPY[id]:'「……嗯。」'+CHARS[id].n+'想了想，輕輕笑了一下。';
@@ -159,6 +163,8 @@
  NODES.shop=function(){var cs=SHOP.map(function(k){var it=ITEMS[k];return ch(it.n+'　'+it.p+'兩',S.p.gold>=it.p?'buy':'shop',{k:k});});cs.push(ch('↩ 返回','place'));
   return Eng.L(['攤販們熱情吆喝。你有 '+S.p.gold+' 兩銀子。'],'','market',cs,{shop:1});};
  NODES.buy=function(a){var it=ITEMS[a.k];Eng.p({gold:-it.p});Eng.item(a.k,1);toast('購得 '+it.n);return NODES.shop();};
+ NODES.read=function(){Eng.pass(1);Eng.p({wit:1,med:rand()<0.4?1:0});var here=Eng.present('study');if(here.indexOf('hanfei')>=0&&S.c.hanfei.met)Eng.c('hanfei',{aff:2},'看見'+P()+'在蘭台苦讀');return Eng.L(['竹簡沙沙作響，你讀到夜深，心中漸漸開闊。'+(here.indexOf('hanfei')>=0&&S.c.hanfei.met?'韓非悄悄在你案頭放了一盞燈。':'')],'', 'study',[ch('↩ 返回','place')]);};
+ NODES.qin=function(){Eng.pass(1);Eng.p({cha:1,mind:4});var here=Eng.present('plum');here.forEach(function(id){if(S.c[id].met)Eng.c(id,{aff:2},'在梅林聽'+P()+'撫琴');});return Eng.L(['你在梅樹下撫琴一曲，花瓣隨音落下。'+(here.length?here.map(cn).join('、')+'不知何時已站在不遠處聆聽。':'')],here[0]||'','plum',[ch('↩ 返回','place')]);};
  NODES.campAid=function(){Eng.pass(1);Eng.p({fame:2,med:1});if(S.c.mengtian.met)Eng.c('mengtian',{trust:3},P()+'到軍營為傷兵義診');return Eng.L(['你為幾名傷兵換藥正骨。','老兵們紛紛道謝：「女大夫的手，比咱們的刀還穩！」'],'','camp',[ch('↩ 返回','place')]);};
  NODES.tavernSit=function(){Eng.pass(1);Eng.p({mind:6});var jk=Eng.present('tavern').indexOf('jingke')>=0;if(jk&&S.c.jingke.met)Eng.c('jingke',{aff:2},'和'+P()+'聽筑');
   return Eng.L(['筑聲錚錚，有人在角落低聲唱著燕地的歌。'+(jk?'荊軻舉碗向你示意，碗裡是清水。':'')],jk?'jingke':'','tavern',[ch('↩ 返回','place')]);};
@@ -219,10 +225,10 @@
   if(S.c.jingke.met){S.flags.jingke_left=1;S.c.jingke.away=S.day+999;L0.push(['','同一夜，荊軻在醫館門口留下一壺酒，不告而別——酒壺下壓著一片竹簡：「易水見。」']);cs.push(ch('🐎 追去易水','stopJk'));}
   L0.push(['','【第四章】在韓非之獄與荊軻之約間，你只來得及先做一件事。']);
   cs.push(ch('🗺 暫且回到醫館','hub'));return Eng.L(L0,'','night',cs);};
- NODES.saveHf=function(){var yz=S.c.yingzheng;var ok=yz.trust>=30||S.p.fame>=25||SET.diff==='easy';S.evseen.choseStorm=1;
+ NODES.saveHf=function(){var yz=S.c.yingzheng;var ok=yz.trust>=30||S.p.fame>=25||S.p.wit>=20||SET.diff==='easy';S.evseen.choseStorm=1;
   if(ok){S.flags.hanfei_saved=1;S.c.hanfei.jailed=0;Eng.c('hanfei',{aff:10,heart:8,trust:10},P()+'救我出雲陽獄');Eng.c('yingzheng',{trust:-3,jeal:8});if(S.flags.jingke_left)S.flags.jingke_gone=1;
    return Eng.L([['yingzheng','「你為了他，來求寡人？」他盯著你，良久，「……放人。」','angry'],['hanfei','雲陽獄門開時，他看見你，竹簡從手中滑落。','blush'],['hanfei','「你、你來了。」','blush']],'hanfei','palace',[ch('繼續','hub')]);}
-  return Eng.L([['yingzheng','「此事，寡人自有決斷。」他沒有看你。','normal'],['','你的求情沒有被採納。（提示：秦王信任或名聲不足）'],['','也許還有別的辦法……']],'yingzheng','palace',[ch('繼續','hub')]);};
+  return Eng.L([['yingzheng','「此事，寡人自有決斷。」他沒有看你。','normal'],['','你的求情沒有被採納。（提示：秦王信任 30、名聲 25 或才智 20 任一達標即可）'],['','也許還有別的辦法……']],'yingzheng','palace',[ch('繼續','hub')]);};
  NODES.stopJk=function(){S.evseen.choseStorm=1;var r=S.c.jingke;var ok=r.heart>=30||r.cured||SET.diff==='easy';
   if(ok){S.flags.jingke_stopped=1;r.away=0;Eng.c('jingke',{aff:10,heart:10,trust:8},P()+'追到易水攔下我');if(S.flags.hanfei_jail&&!S.flags.hanfei_saved)S.flags.hanfei_late=1;
    return Eng.L([['','易水寒風如刀。你策馬趕到時，他正要登船。'],['jingke','「……你怎麼來了。」他的聲音發啞。','sad'],['p','「你答應過我，要為自己活下去。」'],['jingke','他看了你很久，終於把劍扔進了易水：「……好。這條命，歸你了。」','blush']],'jingke','night',[ch('繼續','hub')]);}

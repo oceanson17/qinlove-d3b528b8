@@ -1347,10 +1347,10 @@ Act.RULES=[
  {re:/牽手|牽他|握住他的手|握手|拉住他/,f:function(id){var r=S.c[id];if(r.heart>=18){Eng.c(id,{heart:3},P0()+'牽了我的手');return '你牽起他的手。他沒有掙開，指尖微微收緊。';}return '你伸出手，他看了看，只是把一卷竹簡放進你手裡。';}},
  {re:/親|吻/,f:function(id){var r=S.c[id];if(r.heart>=55){Eng.c(id,{heart:6,aff:3},P0()+'吻了我');return '你踮起腳。他閉上眼睛——月光很靜，心跳很吵。';}Eng.c(id,{aff:-2});return cn(id)+'紅著臉別開頭：「這、這樣不合禮數……」';}},
  {re:/摸頭|揉頭髮|捏臉/,f:function(id){Eng.c(id,{aff:1,heart:1});return cn(id)+'怔了怔，無奈地任你胡鬧。';}},
- {re:/撫琴|彈琴|唱歌|跳舞|吹簫/,f:function(id){Eng.p({cha:1});if(id)Eng.c(id,{aff:2},P0()+'為我奏樂');return '你一曲終了，'+(id?cn(id)+'久久沒有說話。':'四下靜了片刻。');}},
- {re:/敬酒|喝酒|飲酒|乾杯/,f:function(id){if(id==='jingke'){Eng.c(id,{aff:3});return '「好！」荊軻與你碰碗——你的碗裡是酒，他的碗裡是水。';}Eng.p({mind:3});return '你淺酌一口，酒意微醺。';}},
- {re:/煎藥|熬藥|製藥|配藥/,f:function(){return {go:'craft'};}},
- {re:/離開|告辭|回去|返回地圖/,f:function(){return {go:'hub'};}}
+ {solo:1,re:/撫琴|彈琴|唱歌|跳舞|吹簫/,f:function(id){Eng.p({cha:1});if(id)Eng.c(id,{aff:2},P0()+'為我奏樂');return '你一曲終了，'+(id?cn(id)+'久久沒有說話。':'四下靜了片刻。');}},
+ {solo:1,re:/敬酒|喝酒|飲酒|乾杯/,f:function(id){if(id==='jingke'){Eng.c(id,{aff:3});return '「好！」荊軻與你碰碗——你的碗裡是酒，他的碗裡是水。';}Eng.p({mind:3});return '你淺酌一口，酒意微醺。';}},
+ {solo:1,re:/煎藥|熬藥|製藥|配藥/,f:function(){return {go:'craft'};}},
+ {solo:1,re:/離開|告辭|回去|返回地圖/,f:function(){return {go:'hub'};}}
 ];
 function P0(){return S.p.name;}
 Act.parse=function(t){for(var i=0;i<Act.RULES.length;i++)if(Act.RULES[i].re.test(t))return Act.RULES[i];return null;};
@@ -1402,7 +1402,7 @@ Input.submit=function(raw){var t=String(raw||'').trim();if(!t||!S)return null;va
   off=function(){return Eng.L(d.lines.map(function(l){return ['',l];}).concat(id?[[id,Speak.reply(id,t),Eng.exprOf(id)]]:[]),id,S.place,[ch('💬 與'+(id?cn(id):'眾人')+'交談',id?'talk':'place',id?{id:id}:{}),ch('🗺 返回地圖','hub')]);};}
  else if(mode==='cmd'){var nc=Ncmd.parse(t);
   if(nc){var res=Ncmd.exec(nc);if(nc.tgt&&S.c[nc.tgt]&&!S.c[nc.tgt].jailed)id=nc.tgt;tag='指令・命令';extra='（命令已執行：'+res+'）';off=function(){return Eng.L([['',res]],id,S.place,[ch('🗺 返回地圖','hub')].concat(id?[ch('💬 與'+cn(id)+'交談','talk',{id:id})]:[]));};}
-  else{var ar=Act.parse(t);var resA=ar?ar.f(id):null;if(resA&&resA.go)return resA;tag='指令・行動';
+  else{var ar=Act.parse(t);var resA=null;if(ar&&!id&&ar.solo!==1)resA='你環顧四周——此刻身邊沒有人。';else if(ar)resA=ar.f(id);if(resA&&resA.go)return resA;tag='指令・行動';
    if(!resA)resA='你'+t.replace(/^我/,'')+'。'+(id?cn(id)+'看著你，若有所思。':'');extra='（行動結果：'+resA+'）';
    off=function(){return Eng.L([['',resA]],id,S.place,[ch('💬 繼續','talk',id?{id:id}:{}),ch('🗺 返回地圖','hub')].filter(function(c){return id||c.go!=='talk';}));};}}
  else{tag='對白';if(id){Eng.c(id,{aff:S.c[id].talked?0:2},S.p.name+'對我說：「'+t.slice(0,24)+'」');S.c[id].talked=1;}

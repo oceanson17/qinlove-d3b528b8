@@ -39,7 +39,7 @@ let ok=0,bad=0;function chk(c,m){if(c){ok++;}else{bad++;console.log('  ✘',m);}
  await p.click('#cgv');await L.flush(p);
  chk(await st(()=>S.c.mengtian.stage===1&&!!S.cg.mt1),'mt stage 1');
  /* 李斯線：午 梅林 */
- await L.setPer(p,1);await L.goPl(p,'plum');l=await L.btns(p);chk(l.some(t=>/梅下青衣|李斯/.test(t)),'lisi at plum noon '+l.join('|'));
+ await L.toMap(p);await L.setPer(p,1);await L.goPl(p,'plum');l=await L.btns(p);chk(l.some(t=>/梅下青衣|李斯/.test(t)),'lisi at plum noon '+l.join('|'));
  await L.talk(p,'lisi');await L.flush(p);await L.tryClick(p,/繼續交談/);await L.flush(p);
  await L.click(p,/送禮/);await L.pick(p,/名家字帖/);await L.pick(p,/繼續/);
  await st(()=>{S.c.lisi.aff=Math.max(S.c.lisi.aff,20);});await L.click(p,/閒聊/);await L.pick(p,/繼續/);await L.click(p,/邀他同遊/);await L.pick(p,/^📍 梅林/);await L.pick(p,/我不下棋/);
@@ -47,7 +47,7 @@ let ok=0,bad=0;function chk(c,m){if(c){ok++;}else{bad++;console.log('  ✘',m);}
  await L.pick(p,/返回地圖/);await L.flush(p);
  l=await L.btns(p);if(!l.some(t=>/收進回憶/.test(t))){await st(()=>{Eng.c('lisi',{aff:2});});await p.evaluate(()=>UI.go('hub'));await L.flush(p);l=await L.btns(p);}chk(l.some(t=>/收進回憶/.test(t)),'milestone lisi1 '+l.join('|'));await L.click(p,/收進回憶/);await p.click('#cgv');await L.flush(p);
  /* 荊軻線：夜 酒肆 */
- await st(()=>{S.per=3;});await L.goPl(p,'tavern');l=await L.btns(p);
+ await L.toMap(p);await st(()=>{S.per=3;});await L.goPl(p,'tavern');l=await L.btns(p);
  chk(l.some(t=>/落拓劍客|荊軻/.test(t)),'jingke at tavern '+l.join('|'));
  await L.talk(p,'jingke');await L.flush(p);await L.tryClick(p,/繼續交談/);await L.flush(p);await L.click(p,/送禮/);await L.pick(p,/烈酒/);await L.pick(p,/繼續/);
  await L.click(p,/為他診脈/);const r2=await L.flush(p);chk(r2==='med','cure med');await L.medSolve(p,true);await L.flush(p);

@@ -25,7 +25,7 @@ var Eng={};var NODES={};
  Eng.L=function(arr,focus,bg,ch,o){/* arr: [[sp,text,expr]] 或字串 */var lines=arr.map(function(x){if(typeof x==='string')return {sp:'',t:x};return {sp:x[0],t:x[1],ex:x[2]};});
   var sc={lines:lines,focus:focus||'',bg:bg||S.place,ch:ch||[{t:'繼續',go:'hub'}]};if(o)for(var k in o)sc[k]=o[k];return sc;};
  /* 時間 */
- Eng.pass=function(n){n=n||1;for(var i=0;i<n;i++){S.per++;if(S.per>3){S.per=0;S.day++;Eng.newDay();}}};
+ Eng.pass=function(n){if(n===undefined)n=1;for(var i=0;i<n;i++){S.per++;if(S.per>3){S.per=0;S.day++;Eng.newDay();}}};
  Eng.newDay=function(){CHAR_ORDER.forEach(function(id){var r=S.c[id];r.talked=0;if(r.jeal>0)r.jeal=Math.max(0,r.jeal-2);if(!r.cured&&r.hp>40&&rand()<0.06)r.hp-=3;});
   S.p.mind=clamp(S.p.mind+2,0,100);WS.tick();Letters.tick();if(SET.autosave!==false)saveSlot('auto',true);};
  /* 里程碑 */

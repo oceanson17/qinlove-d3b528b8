@@ -53,7 +53,7 @@ let ok=0,bad=0;function chk(c,m){if(c){ok++;}else{bad++;console.log('  ✘',m);}
  await L.click(p,/AI 恢復後重試/);await L.flush(p);chk(await st(()=>S.pend===null),'pend cleared after retry');
  /* 存讀檔後提示接續 */
  await st(()=>{window.__fail={kind:'timeout'};});await p.fill('#free','再說一次');await p.click('#send');await L.flush(p);
- console.log('pend',await st(()=>JSON.stringify(S.pend)));await st(()=>{saveSlot(2,true);});await st(()=>{UI.loadGame(2);});console.log('after',await st(()=>JSON.stringify([UI.cur,UI.sc&&UI.sc.lines[0].t,S.pend,document.querySelectorAll('#choices .cbtn').length])));await L.flush(p);l=await L.btns(p);for(let k=0;k<4&&l.some(x=>/收進回憶/.test(x));k++){await L.click(p,/收進回憶/);await p.click('#cgv');await L.flush(p);l=await L.btns(p);}chk(l.some(x=>/AI 重試接續/.test(x)),'resume after load '+l.join('|'));
+ await st(()=>{saveSlot(2,true);});await st(()=>{UI.loadGame(2);});await L.flush(p);l=await L.btns(p);for(let k=0;k<4&&l.some(x=>/收進回憶/.test(x));k++){await L.click(p,/收進回憶/);await p.click('#cgv');await L.flush(p);l=await L.btns(p);}chk(l.some(x=>/AI 重試接續/.test(x)),'resume after load '+l.join('|'));
  await L.click(p,/放下這件事/);
  /* 402 → 封鎖 */
  await st(()=>{AI.fail({kind:'http',status:402,msg:'Insufficient Balance'});});chk(await st(()=>AI.isBlocked()),'402 blocks');await st(()=>AI.unblock());
@@ -62,12 +62,11 @@ let ok=0,bad=0;function chk(c,m){if(c){ok++;}else{bad++;console.log('  ✘',m);}
  await L.toMap(p);await st(()=>{S.per=2;});await L.goPl(p,'market');await L.talk(p,'mengtian');await L.click(p,/閒聊/);await L.flush(p);
  chk(await st(()=>window.__n)>=2&&/又是你/.test(await st(()=>UI.sc.lines.map(l=>l.t).join('|'))),'bad json retried');
  /* 手動貼上模式 */
- await st(()=>{AI.manual=()=>true;});await L.click(p,/繼續/);await L.flush(p);await L.click(p,/閒聊/);await p.waitForTimeout(150);
+ await st(()=>{AI.manual=()=>true;UI.go('chat',{id:'mengtian',topic:'近況'});});await p.waitForTimeout(150);
  chk(await p.$eval('#dlg',e=>e.className.indexOf('on')>=0),'manual dialog');if(tag==='chromium')await L.shot(p,'32_manual');
  await p.fill('#mpA',JSON.stringify({scene:'蒙恬：「手動模式的回應！」',speaker:'mengtian',choices:['x','y']}));await p.locator('#dlA .btn.pri').click();await L.flush(p);
  chk(/手動模式/.test(await st(()=>UI.sc.lines.map(l=>l.t).join('|'))),'manual applied');
  /* 離線模式 */
- await st(()=>{SET.ai=false;AI.ready=()=>false;AI.manual=()=>false;});await L.click(p,/繼續|返回地圖/);await L.flush(p);
- l=await L.btns(p);if(l.some(x=>/閒聊/.test(x))){await L.click(p,/閒聊/);await L.flush(p);chk(!/手動/.test(await L.txt(p)),'offline chat ok');}
+ await st(()=>{SET.ai=false;AI.ready=()=>false;AI.manual=()=>false;UI.go('chat',{id:'mengtian',topic:'近況'});});await L.flush(p);chk(!/手動/.test(await L.txt(p))&&(await L.btns(p)).some(x=>/繼續/.test(x)),'offline chat ok');
  console.log(tag,'ai1 ok',ok,'bad',bad,'errs',p.errs.length?p.errs:'none');await p.browser_.close();process.exit(bad?1:0);
 })().catch(e=>{console.error('FAIL',e.message);process.exit(1);});

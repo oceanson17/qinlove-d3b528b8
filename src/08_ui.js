@@ -52,7 +52,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   UI.li=i;var l=sc.lines[i];var np=$('nameplate');
   if(l.sp&&l.sp!==''){np.className='on'+(l.sp==='p'?' pc':'');$('npName').textContent=l.sp==='p'?S.p.name:cn(l.sp);}else np.className='';
   if(CHARS[l.sp])UI.setChar(l.sp,l.ex||Eng.exprOf(l.sp));
-  $('char').classList.toggle('dim',l.sp==='p');var fc=$('face');if(l.sp==='p'){if(!fc.innerHTML)fc.innerHTML=ART.html('char','heroine','smile');fc.className='on';}else fc.className='';
+  $('char').classList.toggle('dim',l.sp==='p');var fc=$('face');if(l.sp==='p'){if(!fc.innerHTML)fc.innerHTML=ART.face('heroine','smile');fc.className='on';}else fc.className='';
   Eng.back(l);
   var txt=l.sp&&l.sp!==''?l.t:l.t;UI.type(txt,!l.sp);
   $('box').className='';};
@@ -105,7 +105,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  UI.showMap=function(){if(!S)return;UI.stop();UI.screen('map');$('choices').innerHTML='';$('mDate').textContent=dateStr().replace(/ · [晨午夕夜]$/,'');$('mPer').textContent=perName();
   if(!$('mapsvg').innerHTML)$('mapsvg').innerHTML=UI.mapSvg();
   var h='';PLACE_ORDER.forEach(function(pl){var P=PLACES[pl];var lk=!Eng.unlocked(pl);var who=Eng.present(pl);if(P.night&&S.per<3)who=CHAR_ORDER.filter(function(id){return S.c[id].met&&CHARS[id].at['夜']===pl&&Eng.where(id)!==null;}).slice(0,0);
-   var faces=who.slice(0,3).map(function(id){return '<span class="face">'+(S.c[id].met?ART.html('char',id,'normal'):'<b style="display:flex;height:100%;align-items:center;justify-content:center;font-size:13px">?</b>')+'</span>';}).join('');
+   var faces=who.slice(0,3).map(function(id){return '<span class="face">'+(S.c[id].met?ART.face(id,'normal'):'<b style="display:flex;height:100%;align-items:center;justify-content:center;font-size:13px">?</b>')+'</span>';}).join('');
    h+='<button class="pin'+(lk?' lock':'')+(pl===S.place?' cur':'')+(pl===mapSel?' sel':'')+'" data-pl="'+pl+'" style="left:'+P.x+'%;top:'+P.y+'%"><span class="ps">'+(lk?'鎖':P.s)+'</span><span class="pn">'+P.n+'</span>'+(faces?'<span class="faces">'+faces+'</span>':'')+'</button>';});
   $('pins').innerHTML=h;UI.mapInfo(mapSel||S.place);UI.badge();};
  UI.mapInfo=function(pl){mapSel=pl;var P=PLACES[pl];if(!P)return;var lk=!Eng.unlocked(pl);var who=Eng.present(pl);

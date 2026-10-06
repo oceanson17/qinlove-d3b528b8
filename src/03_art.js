@@ -131,7 +131,7 @@ var ART={cache:{}};
  };
  /* ---------- 背景 ---------- */
  function sky(id,a,b,c){return g(id,[[0,a],[0.55,b],[1,c]]);}
- function mist(y,op){return '<path d="M0 '+y+' C 150 '+(y-30)+', 300 '+(y+20)+', 450 '+(y-10)+' S 750 '+(y-30)+', 900 '+y+' L 900 '+(y+120)+' L 0 '+(y+120)+' Z" fill="#fff" opacity="'+op+'"/>';}
+ function mist(y,op){return '<path d="M0 '+y+' C 150 '+(y-30)+', 300 '+(y+20)+', 450 '+(y-10)+' S 750 '+(y-30)+', 900 '+y+' L 900 '+(y+160)+' L 0 '+(y+160)+' Z" fill="url(#mstg)" opacity="'+op+'"/>';}
  function plum(x,y,sc,col){var s='<g transform="translate('+x+' '+y+') scale('+sc+')"><path d="M0 0 C 60 -40, 120 -60, 200 -140 M 80 -50 C 110 -90, 150 -100, 170 -160 M 140 -95 C 190 -100, 230 -90, 280 -110" stroke="#3a2820" stroke-width="9" fill="none" stroke-linecap="round"/>';
   var pts=[[60,-40],[110,-70],[170,-150],[200,-140],[150,-100],[230,-95],[280,-110],[95,-60],[185,-120],[255,-100],[130,-80]];
   pts.forEach(function(p,i){s+='<g transform="translate('+p[0]+' '+p[1]+')">';for(var k=0;k<5;k++){var a=k*72*Math.PI/180;s+='<circle cx="'+(Math.cos(a)*7).toFixed(1)+'" cy="'+(Math.sin(a)*7).toFixed(1)+'" r="6" fill="'+col+'" opacity=".92"/>';}s+='<circle r="3" fill="#f6d27a"/></g>';});
@@ -139,7 +139,7 @@ var ART={cache:{}};
  function lantern(x,y,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -40 v 14" stroke="#3a2a20" stroke-width="2"/><ellipse cx="0" cy="0" rx="18" ry="24" fill="#d8443a"/><ellipse cx="0" cy="0" rx="10" ry="22" fill="#f08a5a" opacity=".6"/><rect x="-10" y="-27" width="20" height="5" fill="#3a2a20"/><rect x="-10" y="22" width="20" height="5" fill="#3a2a20"/><path d="M0 27 v 16" stroke="#d4a84a" stroke-width="2"/><circle cx="0" cy="0" r="40" fill="#ffb060" opacity=".14"/></g>';}
  ART.bg=function(k){
   var key='bg_'+k;if(ART.cache[key])return ART.cache[key];
-  var d='<defs>',s='';
+  var d='<defs><linearGradient id="mstg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>',s='';
   if(k==='clinic'){d+=sky('bgc','#f6e8d6','#e8d2b6','#b89070');
    s+='<rect width="900" height="1600" fill="url(#bgc)"/>';
    for(var r=0;r<6;r++)for(var c=0;c<5;c++){s+='<rect x="'+(60+c*160)+'" y="'+(160+r*110)+'" width="140" height="92" rx="6" fill="#8a5a3a" stroke="#5a3820" stroke-width="4"/><circle cx="'+(130+c*160)+'" cy="'+(206+r*110)+'" r="7" fill="#d4a84a"/><rect x="'+(92+c*160)+'" y="'+(176+r*110)+'" width="76" height="18" fill="#f4ead8" opacity=".85"/>';}
@@ -204,10 +204,12 @@ var ART={cache:{}};
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));
   var f=ART.file(key)||(kind==='char'?ART.file('char_'+id):'');
   if(f)return '<img src="'+f+'" alt="" draggable="false">';
-  if(kind==='bg')return ART.bg(id);
-  if(kind==='cg')return ART.cg(id);
-  return ART.portrait(id,expr);
+  var svg=kind==='bg'?ART.bg(id):(kind==='cg'?ART.cg(id):ART.portrait(id,expr));
+  return ART.uniq(svg);
  };
+ /* 每次插入都把 SVG 內部 id 改成唯一，避免多個 inline SVG 同 id、而第一個位於隱藏畫面時漸層失效 */
+ ART.face=function(id,expr){var f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
+ ART.seq=0;ART.uniq=function(svg){var n=++ART.seq;return String(svg).replace(/id="([^"]+)"/g,'id="$1_'+n+'"').replace(/url\(#([^)]+)\)/g,'url(#$1_'+n+')');};
  /* CG：背景＋角色近景＋光暈花瓣＋金框 */
  ART.cg=function(cgid){
   var who='',bgk='plum',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}

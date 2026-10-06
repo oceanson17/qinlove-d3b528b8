@@ -101,7 +101,7 @@ input,textarea,select{font-family:inherit;}
 #quick button.on{background:var(--ver);color:#fff;border-color:var(--ver);}
 #face{display:none;position:absolute;left:8px;top:-30px;width:46px;height:46px;z-index:2;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#fbeef0;box-shadow:0 3px 10px rgba(80,30,40,.25);}
 #face.on{display:block;}
-#face svg,#face img{width:300%;height:300%;margin:-28% 0 0 -100%;}
+#face svg,#face img{width:100%;height:100%;display:block;}
 #face.on~#txt{}
 #box #nameplate.pc{left:60px;}
 #txt{font-size:var(--fs);line-height:1.8;min-height:calc(var(--fs) * 1.8 * 3);max-height:calc(var(--fs) * 1.8 * 5.2);overflow-y:auto;letter-spacing:.03em;white-space:pre-wrap;word-break:break-word;color:var(--ink);padding:2px 2px 0;-webkit-overflow-scrolling:touch;}
@@ -157,7 +157,7 @@ input,textarea,select{font-family:inherit;}
 @keyframes pulse{0%{box-shadow:inset 0 0 0 2px rgba(255,230,215,.6),0 0 0 0 rgba(184,50,58,.5)}100%{box-shadow:inset 0 0 0 2px rgba(255,230,215,.6),0 0 0 14px rgba(184,50,58,0)}}
 .pin .faces{position:absolute;left:38px;top:-6px;display:flex;}
 .face{width:30px;height:30px;border-radius:50%;overflow:hidden;border:1.5px solid var(--gold);background:#fff;margin-left:-8px;box-shadow:0 2px 4px rgba(0,0,0,.2);}
-.face svg{width:300%;height:300%;margin:-30% 0 0 -100%;}
+.face svg{width:100%;height:100%;display:block;}
 .face img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;}
 #mapinfo{position:absolute;left:10px;right:10px;bottom:calc(var(--tabh) + 60px);height:126px;padding:12px 14px;background:rgba(252,246,241,.95);background-image:var(--tex);border:1px solid var(--gold);border-radius:12px;box-shadow:0 4px 14px rgba(80,40,30,.15);overflow:hidden;}
 #mapinfo h3{margin:0 0 4px;font-size:18px;letter-spacing:.2em;}
@@ -261,7 +261,7 @@ input,textarea,select{font-family:inherit;}
 .med .sbody{padding-top:0;}
 .pat{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--gold);border-radius:12px;background:rgba(255,255,255,.55);}
 .pat .pav{width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#f3e2d8;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:26px;}
-.pat .pav svg{width:300%;height:300%;margin:-30% 0 0 -100%;}
+.pat .pav svg{width:100%;height:100%;display:block;}
 .four{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
 .four button{aspect-ratio:1;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#5f8784,#3c5a58);color:#fff;font-size:22px;font-weight:700;box-shadow:inset 0 0 0 2px rgba(230,255,250,.4),0 3px 8px rgba(30,60,60,.3);}
 .four button.done{background:radial-gradient(circle at 35% 30%,#d8c8b8,#b8a898);}
@@ -731,7 +731,7 @@ var ART={cache:{}};
  };
  /* ---------- 背景 ---------- */
  function sky(id,a,b,c){return g(id,[[0,a],[0.55,b],[1,c]]);}
- function mist(y,op){return '<path d="M0 '+y+' C 150 '+(y-30)+', 300 '+(y+20)+', 450 '+(y-10)+' S 750 '+(y-30)+', 900 '+y+' L 900 '+(y+120)+' L 0 '+(y+120)+' Z" fill="#fff" opacity="'+op+'"/>';}
+ function mist(y,op){return '<path d="M0 '+y+' C 150 '+(y-30)+', 300 '+(y+20)+', 450 '+(y-10)+' S 750 '+(y-30)+', 900 '+y+' L 900 '+(y+160)+' L 0 '+(y+160)+' Z" fill="url(#mstg)" opacity="'+op+'"/>';}
  function plum(x,y,sc,col){var s='<g transform="translate('+x+' '+y+') scale('+sc+')"><path d="M0 0 C 60 -40, 120 -60, 200 -140 M 80 -50 C 110 -90, 150 -100, 170 -160 M 140 -95 C 190 -100, 230 -90, 280 -110" stroke="#3a2820" stroke-width="9" fill="none" stroke-linecap="round"/>';
   var pts=[[60,-40],[110,-70],[170,-150],[200,-140],[150,-100],[230,-95],[280,-110],[95,-60],[185,-120],[255,-100],[130,-80]];
   pts.forEach(function(p,i){s+='<g transform="translate('+p[0]+' '+p[1]+')">';for(var k=0;k<5;k++){var a=k*72*Math.PI/180;s+='<circle cx="'+(Math.cos(a)*7).toFixed(1)+'" cy="'+(Math.sin(a)*7).toFixed(1)+'" r="6" fill="'+col+'" opacity=".92"/>';}s+='<circle r="3" fill="#f6d27a"/></g>';});
@@ -739,7 +739,7 @@ var ART={cache:{}};
  function lantern(x,y,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -40 v 14" stroke="#3a2a20" stroke-width="2"/><ellipse cx="0" cy="0" rx="18" ry="24" fill="#d8443a"/><ellipse cx="0" cy="0" rx="10" ry="22" fill="#f08a5a" opacity=".6"/><rect x="-10" y="-27" width="20" height="5" fill="#3a2a20"/><rect x="-10" y="22" width="20" height="5" fill="#3a2a20"/><path d="M0 27 v 16" stroke="#d4a84a" stroke-width="2"/><circle cx="0" cy="0" r="40" fill="#ffb060" opacity=".14"/></g>';}
  ART.bg=function(k){
   var key='bg_'+k;if(ART.cache[key])return ART.cache[key];
-  var d='<defs>',s='';
+  var d='<defs><linearGradient id="mstg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>',s='';
   if(k==='clinic'){d+=sky('bgc','#f6e8d6','#e8d2b6','#b89070');
    s+='<rect width="900" height="1600" fill="url(#bgc)"/>';
    for(var r=0;r<6;r++)for(var c=0;c<5;c++){s+='<rect x="'+(60+c*160)+'" y="'+(160+r*110)+'" width="140" height="92" rx="6" fill="#8a5a3a" stroke="#5a3820" stroke-width="4"/><circle cx="'+(130+c*160)+'" cy="'+(206+r*110)+'" r="7" fill="#d4a84a"/><rect x="'+(92+c*160)+'" y="'+(176+r*110)+'" width="76" height="18" fill="#f4ead8" opacity=".85"/>';}
@@ -804,10 +804,12 @@ var ART={cache:{}};
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));
   var f=ART.file(key)||(kind==='char'?ART.file('char_'+id):'');
   if(f)return '<img src="'+f+'" alt="" draggable="false">';
-  if(kind==='bg')return ART.bg(id);
-  if(kind==='cg')return ART.cg(id);
-  return ART.portrait(id,expr);
+  var svg=kind==='bg'?ART.bg(id):(kind==='cg'?ART.cg(id):ART.portrait(id,expr));
+  return ART.uniq(svg);
  };
+ /* 每次插入都把 SVG 內部 id 改成唯一，避免多個 inline SVG 同 id、而第一個位於隱藏畫面時漸層失效 */
+ ART.face=function(id,expr){var f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
+ ART.seq=0;ART.uniq=function(svg){var n=++ART.seq;return String(svg).replace(/id="([^"]+)"/g,'id="$1_'+n+'"').replace(/url\(#([^)]+)\)/g,'url(#$1_'+n+')');};
  /* CG：背景＋角色近景＋光暈花瓣＋金框 */
  ART.cg=function(cgid){
   var who='',bgk='plum',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
@@ -1464,7 +1466,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   UI.li=i;var l=sc.lines[i];var np=$('nameplate');
   if(l.sp&&l.sp!==''){np.className='on'+(l.sp==='p'?' pc':'');$('npName').textContent=l.sp==='p'?S.p.name:cn(l.sp);}else np.className='';
   if(CHARS[l.sp])UI.setChar(l.sp,l.ex||Eng.exprOf(l.sp));
-  $('char').classList.toggle('dim',l.sp==='p');var fc=$('face');if(l.sp==='p'){if(!fc.innerHTML)fc.innerHTML=ART.html('char','heroine','smile');fc.className='on';}else fc.className='';
+  $('char').classList.toggle('dim',l.sp==='p');var fc=$('face');if(l.sp==='p'){if(!fc.innerHTML)fc.innerHTML=ART.face('heroine','smile');fc.className='on';}else fc.className='';
   Eng.back(l);
   var txt=l.sp&&l.sp!==''?l.t:l.t;UI.type(txt,!l.sp);
   $('box').className='';};
@@ -1517,7 +1519,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  UI.showMap=function(){if(!S)return;UI.stop();UI.screen('map');$('choices').innerHTML='';$('mDate').textContent=dateStr().replace(/ · [晨午夕夜]$/,'');$('mPer').textContent=perName();
   if(!$('mapsvg').innerHTML)$('mapsvg').innerHTML=UI.mapSvg();
   var h='';PLACE_ORDER.forEach(function(pl){var P=PLACES[pl];var lk=!Eng.unlocked(pl);var who=Eng.present(pl);if(P.night&&S.per<3)who=CHAR_ORDER.filter(function(id){return S.c[id].met&&CHARS[id].at['夜']===pl&&Eng.where(id)!==null;}).slice(0,0);
-   var faces=who.slice(0,3).map(function(id){return '<span class="face">'+(S.c[id].met?ART.html('char',id,'normal'):'<b style="display:flex;height:100%;align-items:center;justify-content:center;font-size:13px">?</b>')+'</span>';}).join('');
+   var faces=who.slice(0,3).map(function(id){return '<span class="face">'+(S.c[id].met?ART.face(id,'normal'):'<b style="display:flex;height:100%;align-items:center;justify-content:center;font-size:13px">?</b>')+'</span>';}).join('');
    h+='<button class="pin'+(lk?' lock':'')+(pl===S.place?' cur':'')+(pl===mapSel?' sel':'')+'" data-pl="'+pl+'" style="left:'+P.x+'%;top:'+P.y+'%"><span class="ps">'+(lk?'鎖':P.s)+'</span><span class="pn">'+P.n+'</span>'+(faces?'<span class="faces">'+faces+'</span>':'')+'</button>';});
   $('pins').innerHTML=h;UI.mapInfo(mapSel||S.place);UI.badge();};
  UI.mapInfo=function(pl){mapSel=pl;var P=PLACES[pl];if(!P)return;var lk=!Eng.unlocked(pl);var who=Eng.present(pl);
@@ -1719,7 +1721,7 @@ var Med={cur:null};
   if(S.p.wit>=15&&!who)Med.cur.hintWit=1;
   $('med').className='sheet med on';$('mdT').textContent=who?'為'+CHARS[who].n+'診治':'坐診問診';Med.draw();};
  Med.draw=function(){var m=Med.cur,d=m.d;if(!m)return;var who=m.who;
-  var h='<div class="pat"><div class="pav">'+(who?ART.html('char',who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
+  var h='<div class="pat"><div class="pav">'+(who?ART.face(who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
   if(m.step==='done'){var sc=(m.dxOk?1:0)+(m.rxOk?1:0)+(m.rev.length>=4?1:0);m.score=sc;var ok=who?(m.dxOk&&m.rxOk):sc>=2;m.ok=ok;
    h+='<div class="mres"><div class="stamp">'+(sc>=3?'妙手回春':(ok?'藥到病除':'尚欠火候'))+'</div><div class="note">辨證 '+(m.dxOk?'✔':'✘ 應為「'+esc(d.dx)+'」')+'　處方 '+(m.rxOk?'✔':'✘ 應為「'+esc(d.rx)+'」')+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起藥箱</button></div>';}
   else{h+='<h4>四診</h4><div class="four">'+['望','聞','問','切'].map(function(x,i){return '<button data-four="'+i+'" class="'+(m.rev.indexOf(i)>=0?'done':'')+'">'+x+'</button>';}).join('')+'</div>';

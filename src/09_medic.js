@@ -8,7 +8,7 @@ var Med={cur:null};
   if(S.p.wit>=15&&!who)Med.cur.hintWit=1;
   $('med').className='sheet med on';$('mdT').textContent=who?'為'+CHARS[who].n+'診治':'坐診問診';Med.draw();};
  Med.draw=function(){var m=Med.cur,d=m.d;if(!m)return;var who=m.who;
-  var h='<div class="pat"><div class="pav">'+(who?ART.html('char',who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
+  var h='<div class="pat"><div class="pav">'+(who?ART.face(who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
   if(m.step==='done'){var sc=(m.dxOk?1:0)+(m.rxOk?1:0)+(m.rev.length>=4?1:0);m.score=sc;var ok=who?(m.dxOk&&m.rxOk):sc>=2;m.ok=ok;
    h+='<div class="mres"><div class="stamp">'+(sc>=3?'妙手回春':(ok?'藥到病除':'尚欠火候'))+'</div><div class="note">辨證 '+(m.dxOk?'✔':'✘ 應為「'+esc(d.dx)+'」')+'　處方 '+(m.rxOk?'✔':'✘ 應為「'+esc(d.rx)+'」')+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起藥箱</button></div>';}
   else{h+='<h4>四診</h4><div class="four">'+['望','聞','問','切'].map(function(x,i){return '<button data-four="'+i+'" class="'+(m.rev.indexOf(i)>=0?'done':'')+'">'+x+'</button>';}).join('')+'</div>';

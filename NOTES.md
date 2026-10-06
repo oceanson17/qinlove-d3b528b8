@@ -1,6 +1,7 @@
 # 青囊·秦心（qinlove）— 開發筆記
 
 - 線上：https://oceanson17.github.io/qinlove-d3b528b8/
+- 最新線上 md5：bff62dfce96f01dc34b043541b198668
 - Repo：https://github.com/oceanson17/qinlove-d3b528b8 （main 分支根目錄＝GitHub Pages）
 - 以《秦風》（/workspace/qinfeng）為基礎的**古風乙女 AI 文字戀愛遊戲**；《秦風》本身及其線上版未有改動。
 - 單檔 ES5：`src/NN_*.js` + `ui/style.css` 由 `node build.js` 嵌入 `shell.html` → `index.html`；build 時掃描 `assets/` 產生 `ASSET_FILES`（有圖用圖，冇圖用 SVG）。

@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="青囊·秦心">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#f6ebe4">
+<title>青囊·秦心</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='10' fill='%23b8323a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23f6ebe4'/%3E%3Crect x='30' y='30' width='120' height='120' rx='18' fill='%23b8323a'/%3E%3Ctext x='90' y='120' font-size='80' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
+<style>
+/* ===== 青囊·秦心：古風乙女介面（宣紙・金線・雲紋・朱砂印） ===== */
+:root{--paper:#fbf4ee;--paper2:#f4e7dd;--paper3:#ead8c8;--ver:#b8323a;--ver2:#d2545c;--ink:#2b2321;--ink2:#5a4a44;--gold:#c9a35a;--gold2:#e6cf98;--dai:#4a6b6a;--pink:#f6d6d8;--rose:#e2838f;
+ --fs:17px;--vh:1vh;--tabh:calc(58px + var(--sab));--sab:max(env(safe-area-inset-bottom),8px);--sat:env(safe-area-inset-top);--boxh:200px;
+ --serif:"Noto Serif TC","Songti TC","Songti SC","STSong","Hiragino Mincho ProN","PMingLiU","MingLiU",serif;
+ --tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .35 0 0 0 0 .28 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+ --fiber:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cg stroke='%23b89a80' stroke-width='.6' fill='none' opacity='.22'%3E%3Cpath d='M10 40c40 6 70-4 110 2'/%3E%3Cpath d='M160 120c30-8 60 4 120-2'/%3E%3Cpath d='M30 210c50 10 80-6 140 4'/%3E%3Cpath d='M200 260c20 4 50-2 80 2'/%3E%3Cpath d='M90 290c20-6 40 2 60-2'/%3E%3C/g%3E%3C/svg%3E");
+ --cloud:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Cg fill='none' stroke='%23c9a35a' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M8 30c0-10 14-12 18-4c2-12 20-12 22 0c6-6 16-2 14 6'/%3E%3Cpath d='M20 30c0-4 6-6 8-2'/%3E%3Cpath d='M70 30c0-10 14-12 18-4c2-12 20-12 22 0'/%3E%3Cpath d='M82 30c0-4 6-6 8-2'/%3E%3C/g%3E%3C/svg%3E");
+ --corner:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23c9a35a' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 30V8q0-5 5-5h22'/%3E%3Cpath d='M9 22c0-8 5-13 13-13'/%3E%3Cpath d='M14 18c3 0 4 2 4 4s-2 3-4 3-3-2-2-4'/%3E%3C/g%3E%3C/svg%3E");}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#efe2d8;color:var(--ink);font-family:var(--serif);-webkit-text-size-adjust:100%;overscroll-behavior:none;}
+button{font-family:inherit;color:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+input,textarea,select{font-family:inherit;}
+@media (pointer:coarse){input,select,textarea,#free,#kbta{font-size:16px!important}}
+#app{position:fixed;left:0;right:0;top:0;height:100%;overflow:hidden;max-width:560px;margin:0 auto;background:var(--paper);box-shadow:0 0 40px rgba(80,40,30,.18);}
+.scr{position:absolute;inset:0;display:none;}
+.scr.on{display:block;}
+.paper{background-color:var(--paper);background-image:var(--tex),var(--fiber);}
+/* ---------- 標題 ---------- */
+#title{background:var(--paper);overflow:hidden;}
+.tbg{position:absolute;inset:0;}
+.tbg svg{width:100%;height:100%;display:block;}
+.tpetals{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.tpetals i{position:absolute;top:-20px;width:10px;height:7px;border-radius:60% 0 60% 0;background:#f1a4b0;opacity:.85;animation:fall linear infinite;}
+@keyframes fall{to{transform:translate(-60px,105vh) rotate(540deg);}}
+.tlogo{position:absolute;left:0;right:0;top:calc(var(--sat) + 9%);text-align:center;}
+.tlogo h1{margin:0;font-family:"Ma Shan Zheng",var(--serif);font-weight:400;font-size:64px;letter-spacing:.06em;color:var(--ink);line-height:1.1;text-shadow:0 2px 0 rgba(255,255,255,.7),0 6px 24px rgba(184,50,58,.18);}
+.tlogo h1 span{display:inline-block;}
+.tlogo h1 span:last-child{color:var(--ver);}
+.tlogo h1 i{font-style:normal;color:var(--gold);font-size:.6em;vertical-align:middle;margin:0 2px;}
+.tseal{display:inline-block;margin-bottom:10px;padding:6px 7px;border:2px solid var(--ver);color:var(--ver);font-size:13px;letter-spacing:.2em;writing-mode:vertical-rl;border-radius:4px;transform:rotate(-6deg);background:rgba(255,245,240,.6);}
+.tsub{margin-top:12px;font-size:15px;letter-spacing:.5em;color:var(--ink2);}
+.tsub:before,.tsub:after{content:"";display:inline-block;width:34px;height:1px;background:var(--gold);vertical-align:middle;margin:0 10px;}
+.tmenu{position:absolute;left:0;right:0;bottom:calc(var(--sab) + 54px);display:flex;flex-direction:column;align-items:center;gap:12px;}
+.tbtn{width:min(74%,300px);height:58px;border:0;background:linear-gradient(90deg,rgba(251,244,238,0),rgba(251,244,238,.94) 18%,rgba(251,244,238,.94) 82%,rgba(251,244,238,0));position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+.tbtn:before,.tbtn:after{content:"";position:absolute;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.tbtn:before{top:4px}.tbtn:after{bottom:4px}
+.tbtn b{font-size:21px;font-weight:600;letter-spacing:.35em;padding-left:.35em;}
+.tbtn small{font-size:11px;color:var(--ink2);letter-spacing:.3em;}
+.tbtn:active{transform:scale(.97);}
+.tbtn:active b{color:var(--ver);}
+.tbtn.dis{opacity:.45;}
+.tfoot{position:absolute;left:0;right:0;bottom:calc(var(--sab) + 14px);text-align:center;font-size:11px;color:var(--ink2);letter-spacing:.12em;opacity:.8;}
+/* ---------- VN ---------- */
+#bg,#fx{position:absolute;inset:0;}
+#bg svg,#bg img{width:100%;height:100%;object-fit:cover;display:block;}
+#bg{transition:opacity .45s;}
+#bg.fade{opacity:.2;}
+#fx{pointer-events:none;background:linear-gradient(180deg,rgba(251,244,238,.25),rgba(251,244,238,0) 24%,rgba(251,244,238,0) 60%,rgba(60,30,30,.25));}
+#char{position:absolute;left:-6%;right:-6%;top:calc(var(--sat) + 54px);bottom:calc(var(--tabh) + var(--boxh) * .45);pointer-events:none;}
+#char .cw{position:absolute;inset:0;transition:opacity .35s,transform .35s;}
+#char .cw svg,#char .cw img{width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block;filter:drop-shadow(0 6px 18px rgba(60,20,30,.25));}
+#char.hide .cw{opacity:0;transform:translateY(16px);}
+#char.dim .cw{filter:saturate(.75) brightness(.9);}
+#char .cw.in{animation:charIn .45s ease-out;}
+@keyframes charIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+#char .cw.bob{animation:bob .4s ease-in-out;}
+@keyframes bob{50%{transform:translateY(-6px)}}
+/* HUD */
+#hud{position:absolute;left:0;right:0;top:0;padding:calc(var(--sat) + 8px) 12px 6px;display:flex;align-items:center;gap:10px;z-index:5;}
+.hseal{width:50px;height:50px;border:0;border-radius:9px;background:var(--ver);color:#fff6ef;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px rgba(255,240,230,.55),inset 0 0 0 4px var(--ver),inset 0 0 0 5px rgba(255,240,230,.4),0 3px 10px rgba(120,20,30,.3);transform:rotate(-4deg);flex:0 0 auto;}
+.hseal span{font-size:20px;line-height:1;font-weight:700;}
+.hseal small{font-size:11px;letter-spacing:.1em;margin-top:2px;}
+#hInfo{flex:1;min-width:0;background:rgba(251,244,238,.86);background-image:var(--tex);border:1px solid rgba(201,163,90,.7);border-radius:3px 14px 14px 3px;padding:4px 12px 5px;box-shadow:0 2px 8px rgba(80,40,30,.12);}
+#hCh{font-size:11px;color:var(--ver);letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#hPlace{font-size:15px;font-weight:600;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#hStat{display:flex;flex-direction:column;gap:3px;font-size:12px;}
+#hStat span{background:rgba(251,244,238,.86);border:1px solid rgba(201,163,90,.6);border-radius:10px;padding:1px 8px;color:var(--ink2);white-space:nowrap;}
+#hStat b{color:var(--ink);margin-left:3px;}
+/* 好感提示 */
+#pops{position:absolute;right:10px;top:calc(var(--sat) + 66px);z-index:9;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none;}
+.pop{display:flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:16px;background:rgba(251,244,238,.95);border:1px solid var(--gold);font-size:13px;box-shadow:0 3px 10px rgba(120,40,50,.2);animation:popIn 2.6s ease forwards;}
+.pop .ic{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-size:12px;}
+.pop .ic.h{background:radial-gradient(circle at 30% 30%,#f39aaa,#d4485a);} .pop .ic.t{background:var(--dai);border-radius:4px;} .pop .ic.a{background:var(--ver);border-radius:4px;} .pop .ic.j{background:#7a5a8a;} .pop .ic.p{background:var(--gold);}
+.pop b{color:var(--ver);} .pop.neg b{color:#6a6a7a;}
+@keyframes popIn{0%{opacity:0;transform:translateX(30px) scale(.9)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+/* 對話框 */
+#box{position:absolute;left:10px;right:10px;bottom:calc(var(--tabh) + 8px);z-index:6;background:rgba(252,246,241,.9);background-image:var(--tex),var(--fiber);border:1px solid var(--gold);border-radius:12px;padding:20px 16px 10px;box-shadow:inset 0 0 0 3px rgba(252,246,241,.9),inset 0 0 0 4px rgba(201,163,90,.55),0 8px 26px rgba(80,30,30,.22);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#box:before,#box:after{content:"";position:absolute;width:44px;height:44px;background:var(--corner) no-repeat;pointer-events:none;}
+#box:before{left:5px;top:5px;} #box:after{right:5px;bottom:5px;transform:rotate(180deg);}
+#nameplate{position:absolute;left:18px;top:-17px;min-width:96px;height:34px;padding:0 22px 0 18px;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,#c43e46,#a52a33);color:#fff7f0;font-size:17px;letter-spacing:.25em;border-radius:3px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 50%,100% 100%,0 100%);box-shadow:inset 0 0 0 1px rgba(255,220,200,.5);}
+#nameplate.on{display:flex;}
+#nameplate.pc{background:linear-gradient(180deg,#5d807e,#41615f);}
+#nameplate:before{content:"";position:absolute;left:5px;top:5px;bottom:5px;width:1px;background:rgba(255,230,200,.6);}
+#quick{position:absolute;right:10px;top:-14px;display:flex;gap:4px;}
+#quick button{height:28px;padding:0 9px;border-radius:14px;border:1px solid rgba(201,163,90,.8);background:rgba(252,246,241,.95);font-size:12px;color:var(--ink2);letter-spacing:.05em;}
+#quick button.on{background:var(--ver);color:#fff;border-color:var(--ver);}
+#face{display:none;}
+#txt{font-size:var(--fs);line-height:1.8;min-height:calc(var(--fs) * 1.8 * 3);max-height:calc(var(--fs) * 1.8 * 5.2);overflow-y:auto;letter-spacing:.03em;white-space:pre-wrap;word-break:break-word;color:var(--ink);padding:2px 2px 0;-webkit-overflow-scrolling:touch;}
+#txt .nar{color:var(--ink2);}
+#txt q{quotes:none;}
+#next{position:absolute;right:18px;bottom:58px;color:var(--ver);font-size:12px;animation:blink 1s infinite;display:none;}
+#box.wait #next{display:block;}
+@keyframes blink{50%{opacity:.25;transform:translateY(3px)}}
+#inrow{display:flex;gap:7px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(201,163,90,.6);}
+.mchip{flex:0 0 auto;height:38px;padding:0 10px;border-radius:19px;border:1px solid var(--dai);background:rgba(74,107,106,.08);color:var(--dai);font-size:13px;white-space:nowrap;}
+.mchip.cmd{border-color:#8a6a2a;color:#8a6a2a;background:rgba(201,163,90,.12);}
+.mchip.decl{border-color:var(--ver);color:var(--ver);background:rgba(184,50,58,.07);}
+#free{flex:1;min-width:0;height:38px;border:0;border-bottom:1.5px solid rgba(43,35,33,.35);background:transparent;padding:0 4px;font-size:16px;color:var(--ink);outline:0;border-radius:0;-webkit-appearance:none;appearance:none;}
+#free:focus{border-bottom-color:var(--ver);}
+#free::placeholder{color:#a8968c;}
+#send{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:0;background:var(--ver);color:#fff;font-size:15px;box-shadow:inset 0 0 0 2px rgba(255,230,220,.5);}
+/* 選項：花箋紙條 */
+#choices{position:absolute;left:16px;right:16px;bottom:calc(var(--tabh) + var(--boxh) + 18px);z-index:7;display:flex;flex-direction:column;gap:9px;max-height:calc(var(--vh) * 100 - var(--tabh) - var(--boxh) - var(--sat) - 96px);overflow-y:auto;padding:4px 2px;-webkit-overflow-scrolling:touch;}
+#choices.many{gap:7px;}
+.cbtn{position:relative;min-height:48px;padding:11px 16px 11px 20px;text-align:left;font-size:16px;line-height:1.4;letter-spacing:.04em;border:1px solid rgba(201,163,90,.75);border-left:0;border-radius:3px 14px 14px 3px;background:linear-gradient(100deg,#fffaf6,#f7ebe3);color:var(--ink);box-shadow:0 3px 10px rgba(90,40,40,.16);animation:slip .3s ease-out backwards;}
+.cbtn:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,var(--ver2),var(--ver));border-radius:3px 0 0 3px;}
+.cbtn:active{transform:translateX(4px);background:#f6dfe0;}
+.cbtn.ai{background:linear-gradient(100deg,#fffaf6,#eef1ec);} .cbtn.ai:before{background:linear-gradient(180deg,#6f9593,var(--dai));}
+.cbtn.lock{opacity:.55;}
+.cbtn.sys{font-size:14px;min-height:42px;padding:8px 14px 8px 18px;background:rgba(252,246,241,.92);color:var(--ink2);}
+.cbtn.sys:before{background:var(--gold);}
+@keyframes slip{from{opacity:0;transform:translateY(10px)}}
+/* 底部分頁列 */
+#tabs{position:absolute;left:0;right:0;bottom:0;height:var(--tabh);padding:0 6px var(--sab);z-index:8;display:flex;background:rgba(251,244,238,.97);background-image:var(--tex);border-top:1px solid var(--gold);box-shadow:0 -1px 0 rgba(255,255,255,.8) inset,0 -4px 14px rgba(80,40,30,.1);}
+#tabs:before{content:"";position:absolute;left:0;right:0;top:3px;height:1px;background:rgba(201,163,90,.45);}
+#tabs button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;color:var(--ink2);padding-top:4px;}
+#tabs button i{font-style:normal;font-size:20px;line-height:1;color:var(--ink);}
+#tabs button span{font-size:11px;letter-spacing:.2em;padding-left:.2em;}
+#tabs button:active i,#tabs button.on i{color:var(--ver);}
+#tabs em{position:absolute;top:6px;left:56%;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--ver);color:#fff;font-size:10px;font-style:normal;line-height:16px;display:none;}
+#tabs em.on{display:block;}
+/* ---------- 地圖 ---------- */
+#map{background:#efe1ca;background-image:var(--tex),var(--fiber);}
+.mhead{position:absolute;left:0;right:0;top:0;padding:calc(var(--sat) + 10px) 14px 8px;display:flex;align-items:center;gap:10px;z-index:3;}
+.mseal{padding:5px 9px;border:1.5px solid var(--ver);color:var(--ver);border-radius:4px;font-size:12px;letter-spacing:.1em;background:rgba(255,248,240,.6);}
+.mtitle{flex:1;text-align:center;font-size:22px;letter-spacing:.5em;padding-left:.5em;font-weight:600;}
+.mper{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--gold2);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:inset 0 0 0 2px var(--gold);}
+#mapbox{position:absolute;left:10px;right:10px;top:calc(var(--sat) + 62px);bottom:calc(var(--tabh) + 190px);border:1px solid var(--gold);border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 4px rgba(239,225,202,.9),inset 0 0 0 5px rgba(201,163,90,.5),0 4px 14px rgba(80,40,30,.15);}
+#mapsvg,#mapsvg svg{position:absolute;inset:0;width:100%;height:100%;}
+#pins{position:absolute;inset:0;}
+.pin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;border:0;background:none;padding:0;}
+.pin .ps{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d4545c,#9e2830);color:#fff6ef;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;box-shadow:inset 0 0 0 2px rgba(255,230,215,.6),0 3px 8px rgba(100,20,30,.35);}
+.pin .pn{margin-top:3px;padding:1px 7px;background:rgba(255,250,244,.92);border:1px solid rgba(201,163,90,.8);border-radius:8px;font-size:12px;letter-spacing:.08em;white-space:nowrap;}
+.pin.lock .ps{background:radial-gradient(circle at 35% 30%,#a8a098,#7a726a);}
+.pin.lock .pn{color:#998;}
+.pin.cur .ps{animation:pulse 1.6s infinite;}
+.pin.sel .ps{box-shadow:inset 0 0 0 2px #fff,0 0 0 4px var(--gold),0 3px 8px rgba(100,20,30,.35);}
+@keyframes pulse{0%{box-shadow:inset 0 0 0 2px rgba(255,230,215,.6),0 0 0 0 rgba(184,50,58,.5)}100%{box-shadow:inset 0 0 0 2px rgba(255,230,215,.6),0 0 0 14px rgba(184,50,58,0)}}
+.pin .faces{position:absolute;left:38px;top:-6px;display:flex;}
+.face{width:26px;height:26px;border-radius:50%;overflow:hidden;border:1.5px solid var(--gold);background:#fff;margin-left:-8px;box-shadow:0 2px 4px rgba(0,0,0,.2);}
+.face svg{width:300%;height:300%;margin:-30% 0 0 -100%;}
+.face img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;}
+#mapinfo{position:absolute;left:10px;right:10px;bottom:calc(var(--tabh) + 60px);height:126px;padding:12px 14px;background:rgba(252,246,241,.95);background-image:var(--tex);border:1px solid var(--gold);border-radius:12px;box-shadow:0 4px 14px rgba(80,40,30,.15);overflow:hidden;}
+#mapinfo h3{margin:0 0 4px;font-size:18px;letter-spacing:.2em;}
+#mapinfo p{margin:0;font-size:13px;color:var(--ink2);line-height:1.5;}
+#mapinfo .who{margin-top:6px;font-size:13px;}
+#mapinfo .go{position:absolute;right:12px;bottom:12px;height:42px;padding:0 20px;border:0;border-radius:21px;background:var(--ver);color:#fff;font-size:16px;letter-spacing:.2em;}
+.mfoot{position:absolute;left:10px;right:10px;bottom:calc(var(--tabh) + 8px);display:flex;gap:10px;}
+.mfoot button{flex:1;height:44px;border-radius:22px;border:1px solid var(--gold);background:rgba(252,246,241,.95);font-size:15px;letter-spacing:.1em;}
+/* ---------- 面板 ---------- */
+.sheet{position:absolute;inset:0;z-index:30;background:var(--paper);background-image:var(--tex),var(--fiber);display:none;flex-direction:column;}
+.sheet.on{display:flex;animation:sheetIn .28s ease-out;}
+@keyframes sheetIn{from{transform:translateY(24px);opacity:0}}
+.shead{flex:0 0 auto;padding:calc(var(--sat) + 10px) 14px 8px;text-align:center;position:relative;background:var(--cloud) repeat-x bottom/120px 20px;padding-bottom:22px;}
+.shead h2{margin:0;font-size:21px;font-weight:600;letter-spacing:.45em;padding-left:.45em;}
+.shead h2:before,.shead h2:after{content:"◆";color:var(--gold);font-size:9px;vertical-align:middle;margin:0 10px;}
+.sx{position:absolute;right:12px;top:calc(var(--sat) + 6px);width:38px;height:38px;border-radius:50%;border:1px solid var(--gold);background:rgba(255,250,244,.9);font-size:15px;}
+#shTabs{display:flex;justify-content:center;gap:6px;margin-top:8px;}
+#shTabs:empty{display:none;}
+#shTabs button{height:32px;padding:0 14px;border-radius:16px;border:1px solid rgba(201,163,90,.8);background:transparent;font-size:13px;letter-spacing:.1em;}
+#shTabs button.on{background:var(--ink);color:var(--gold2);border-color:var(--ink);}
+.sbody{flex:1;overflow-y:auto;padding:6px 14px calc(var(--sab) + 18px);-webkit-overflow-scrolling:touch;}
+/* 圖鑑卡 */
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.gcard{position:relative;border:1px solid rgba(201,163,90,.8);border-radius:90px 90px 10px 10px;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(246,232,224,.9));padding:8px 8px 10px;text-align:center;overflow:hidden;box-shadow:0 3px 10px rgba(80,40,30,.12);}
+.gcard .gp{height:150px;border-radius:80px 80px 6px 6px;overflow:hidden;position:relative;}
+.gcard .gp svg,.gcard .gp img{position:absolute;left:-30%;width:160%;top:-8%;height:auto;}
+.gcard .gp img{left:0;width:100%;height:100%;top:0;object-fit:cover;object-position:50% 10%;}
+.gcard .gn{margin-top:6px;font-size:18px;letter-spacing:.2em;font-weight:600;}
+.gcard .gt{font-size:11px;color:var(--ink2);letter-spacing:.1em;}
+.gcard .gf{display:inline-block;margin-top:4px;padding:0 8px;border-radius:9px;font-size:11px;color:#fff;background:var(--rose);}
+.hearts{margin-top:4px;font-size:13px;letter-spacing:1px;color:#e7b9bf;}
+.hearts b{color:var(--ver);font-weight:400;}
+.seals{display:flex;justify-content:center;gap:4px;margin-top:4px;}
+.seals i{width:14px;height:14px;border-radius:3px;border:1px solid var(--ver);display:inline-block;}
+.seals i.on{background:var(--ver);}
+.gcard.unk .gp svg,.gcard.unk .gp img{filter:brightness(0) opacity(.16);}
+.gcard.unk .gp:after{content:"緣";position:absolute;left:50%;top:50%;transform:translate(-50%,-40%) rotate(-8deg);width:40px;height:40px;border:2px solid rgba(184,50,58,.55);color:rgba(184,50,58,.7);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.gcard.unk .gn{color:#998;}
+.gdet .dtop{position:relative;height:calc(var(--vh) * 40);border-radius:14px;overflow:hidden;border:1px solid var(--gold);}
+.gdet .dtop svg,.gdet .dtop img{position:absolute;left:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;}
+.gdet .dname{position:absolute;right:12px;top:12px;writing-mode:vertical-rl;font-size:28px;letter-spacing:.3em;font-weight:700;color:var(--ink);text-shadow:0 0 6px #fff,0 0 12px #fff;}
+.gdet .dname small{font-size:13px;letter-spacing:.2em;color:var(--ver);margin-top:8px;}
+.bars{margin:12px 0;display:grid;grid-template-columns:48px 1fr 34px;gap:6px 8px;align-items:center;font-size:13px;}
+.bar{height:8px;border-radius:4px;background:rgba(201,163,90,.22);overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#f0a8b4,var(--ver));}
+.bar.t i{background:linear-gradient(90deg,#9fbcb9,var(--dai));} .bar.j i{background:linear-gradient(90deg,#c8b0d8,#7a5a8a);} .bar.h i{background:linear-gradient(90deg,#c8e0b0,#5a8a4a);}
+.kv{margin:10px 0;padding:10px 12px;border-left:3px solid var(--gold);background:rgba(255,255,255,.5);font-size:14px;line-height:1.7;}
+.kv b{color:var(--ver);font-weight:600;margin-right:6px;}
+.tag{display:inline-block;margin:2px 4px 2px 0;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid var(--rose);color:#a8424e;}
+.tag.no{border-color:#8a8a9a;color:#6a6a7a;}
+.mem{font-size:13px;color:var(--ink2);line-height:1.7;}
+/* 關係網 */
+.rel svg{width:100%;height:auto;display:block;}
+/* 書信 */
+.env{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:10px;border:1px solid rgba(201,163,90,.7);border-radius:6px;background:linear-gradient(135deg,#f8ecdc,#f1dfc8);box-shadow:0 2px 8px rgba(80,40,30,.12);width:100%;text-align:left;}
+.env:after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(160deg,transparent 49%,rgba(201,163,90,.25) 50%,transparent 51%),linear-gradient(200deg,transparent 49%,rgba(201,163,90,.25) 50%,transparent 51%);pointer-events:none;}
+.wax{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d4545c,#8e1e28);color:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 4px rgba(100,20,30,.4),inset 0 0 0 3px rgba(255,220,200,.25);}
+.env .ef{flex:1;min-width:0;}
+.env .ef b{font-size:16px;letter-spacing:.1em;}
+.env .ef p{margin:2px 0 0;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.env .dot{width:9px;height:9px;border-radius:50%;background:var(--ver);}
+.env.read{opacity:.75;}
+.jian{margin:4px auto 12px;max-width:380px;height:calc(var(--vh) * 46);min-height:280px;padding:22px 18px;background:#fbf4ea repeating-linear-gradient(90deg,transparent 0,transparent 37px,rgba(184,50,58,.38) 37px,rgba(184,50,58,.38) 38px);border:1px solid rgba(184,50,58,.45);box-shadow:0 4px 16px rgba(80,40,30,.18);writing-mode:vertical-rl;font-size:18px;line-height:38px;letter-spacing:.18em;overflow-x:auto;color:var(--ink);}
+.jian .from{color:var(--ver);margin-top:auto;}
+.reply{display:flex;flex-direction:column;gap:8px;}
+/* CG 相冊 */
+.alb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.cgt{position:relative;aspect-ratio:9/16;border:1px solid var(--gold);border-radius:6px;overflow:hidden;background:#e8dccf;padding:0;}
+.cgt svg,.cgt img{width:100%;height:100%;object-fit:cover;display:block;}
+.cgt span{position:absolute;left:0;right:0;bottom:0;padding:3px 4px;font-size:11px;background:linear-gradient(transparent,rgba(43,35,33,.75));color:#fff;letter-spacing:.08em;}
+.cgt.lock{background:repeating-linear-gradient(45deg,#efe3d6,#efe3d6 8px,#e8dacb 8px,#e8dacb 16px);}
+.cgt.lock em{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-8deg);width:38px;height:38px;border:2px solid rgba(184,50,58,.5);color:rgba(184,50,58,.6);font-style:normal;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:16px;}
+.alb h4,.sbody h4{grid-column:1/-1;margin:12px 0 2px;font-size:14px;letter-spacing:.3em;color:var(--ver);font-weight:600;}
+.endl{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px dashed rgba(201,163,90,.6);font-size:14px;}
+.endl i{font-style:normal;width:40px;text-align:center;padding:2px 0;border:1px solid var(--ver);color:var(--ver);border-radius:3px;font-size:11px;}
+.endl.lock{color:#aaa;} .endl.lock i{border-color:#bbb;color:#bbb;}
+/* 選單 */
+.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:6px 0 14px;}
+.mbtn{height:76px;border:1px solid rgba(201,163,90,.8);border-radius:12px;background:rgba(255,255,255,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;letter-spacing:.15em;}
+.mbtn i{font-style:normal;font-size:22px;color:var(--ver);}
+.slot{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;border:1px solid rgba(201,163,90,.7);border-radius:10px;background:rgba(255,255,255,.55);}
+.slot .si{flex:1;font-size:13px;color:var(--ink2);line-height:1.5;}
+.slot .si b{color:var(--ink);font-size:15px;}
+.slot button,.btn{height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--gold);background:#fffaf4;font-size:14px;}
+.btn.pri,.slot button.pri{background:var(--ver);color:#fff;border-color:var(--ver);}
+.field{display:block;margin:8px 0;font-size:13px;color:var(--ink2);}
+.field input,.field select,.field textarea{display:block;width:100%;margin-top:4px;height:40px;padding:0 10px;border:1px solid rgba(201,163,90,.8);border-radius:8px;background:#fffaf6;font-size:15px;color:var(--ink);}
+.field textarea{height:auto;padding:8px 10px;}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.seg{display:flex;border:1px solid rgba(201,163,90,.8);border-radius:19px;overflow:hidden;margin-top:4px;}
+.seg button{flex:1;height:36px;border:0;background:transparent;font-size:13px;}
+.seg button.on{background:var(--ink);color:var(--gold2);}
+.note{font-size:12px;color:var(--ink2);line-height:1.6;margin:6px 0;}
+.pstat{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pstat div{padding:8px 10px;border:1px solid rgba(201,163,90,.6);border-radius:8px;background:rgba(255,255,255,.5);font-size:13px;}
+.pstat b{font-size:20px;color:var(--ver);margin-left:6px;}
+.logl{padding:8px 2px;border-bottom:1px dashed rgba(201,163,90,.5);font-size:14px;line-height:1.7;}
+.logl b{color:var(--ver);margin-right:6px;font-weight:600;}
+.logl.me b{color:var(--dai);}
+/* 問診小遊戲 */
+.med .sbody{padding-top:0;}
+.pat{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--gold);border-radius:12px;background:rgba(255,255,255,.55);}
+.pat .pav{width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#f3e2d8;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.pat .pav svg{width:300%;height:300%;margin:-30% 0 0 -100%;}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
+.four button{aspect-ratio:1;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#5f8784,#3c5a58);color:#fff;font-size:22px;font-weight:700;box-shadow:inset 0 0 0 2px rgba(230,255,250,.4),0 3px 8px rgba(30,60,60,.3);}
+.four button.done{background:radial-gradient(circle at 35% 30%,#d8c8b8,#b8a898);}
+.sym{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;}
+.sym span{padding:5px 10px;border-radius:4px;background:#fff6ea;border:1px solid rgba(201,163,90,.8);font-size:14px;animation:slip .3s;}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.opts .cbtn{animation:none;}
+.mres{text-align:center;padding:16px;font-size:18px;letter-spacing:.2em;}
+.mres .stamp{display:inline-block;margin:10px;padding:8px 14px;border:3px solid var(--ver);color:var(--ver);font-size:26px;border-radius:6px;transform:rotate(-8deg);letter-spacing:.3em;}
+/* CG 檢視 */
+#cgv{position:absolute;inset:0;z-index:60;background:#1a1012;display:none;}
+#cgv.on{display:block;animation:sheetIn .4s;}
+#cgimg,#cgimg svg,#cgimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+#cgcap{position:absolute;left:14px;right:14px;bottom:calc(var(--sab) + 18px);padding:12px 16px;background:rgba(251,244,238,.9);border:1px solid var(--gold);border-radius:10px;font-size:15px;line-height:1.7;text-align:center;}
+#cgcap b{display:block;color:var(--ver);letter-spacing:.3em;font-size:17px;}
+/* 章節橫幅 */
+#banner{position:absolute;inset:0;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at center,rgba(251,244,238,.96) 30%,rgba(251,244,238,.75));pointer-events:none;}
+#banner.on{display:flex;animation:bnr 2.8s ease forwards;}
+@keyframes bnr{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.bn1{font-size:30px;letter-spacing:.4em;padding:10px 20px 10px calc(20px + .4em);background:linear-gradient(90deg,transparent,rgba(184,50,58,.12) 20%,rgba(184,50,58,.12) 80%,transparent);font-weight:700;}
+.bn2{margin-top:10px;font-size:14px;color:var(--ink2);letter-spacing:.15em;padding:0 30px;text-align:center;}
+/* 提示／對話窗／忙碌 */
+#toast{position:absolute;left:50%;bottom:calc(var(--tabh) + 14px);transform:translateX(-50%);z-index:80;max-width:86%;padding:8px 16px;border-radius:18px;background:rgba(43,35,33,.88);color:#fbf4ee;font-size:14px;line-height:1.5;text-align:center;display:none;}
+#toast.on{display:block;animation:sheetIn .25s;}
+.dlg{position:absolute;inset:0;z-index:90;background:rgba(43,35,33,.35);display:none;align-items:flex-start;justify-content:center;padding-top:calc(var(--sat) + 60px);}
+.dlg.on{display:flex;}
+.dbox{width:min(92%,420px);max-height:calc(var(--vh) * 80);overflow:auto;background:var(--paper);background-image:var(--tex);border:1px solid var(--gold);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+#dlT{font-size:17px;letter-spacing:.2em;text-align:center;margin-bottom:10px;font-weight:600;}
+#dlB{font-size:14px;line-height:1.7;}
+#dlA{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;}
+#busy{position:absolute;left:50%;top:calc(var(--sat) + 70px);transform:translateX(-50%);z-index:85;display:none;align-items:center;gap:8px;padding:8px 16px;border-radius:18px;background:rgba(251,244,238,.95);border:1px solid var(--gold);font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+#busy.on{display:flex;}
+#busy .ink{width:14px;height:14px;border-radius:50%;background:var(--ink);animation:ink 1.2s infinite;}
+@keyframes ink{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
+/* 全屏輸入面板（M19） */
+#kbp{display:none;position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100%);z-index:200;background:rgba(60,40,36,.42);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);overflow:hidden;overscroll-behavior:none;}
+#kbp.on{display:flex;align-items:flex-start;justify-content:center;}
+#kbbox{width:min(94%,520px);margin-top:calc(env(safe-area-inset-top) + 12px);background:var(--paper);background-image:var(--tex);border:1px solid var(--gold);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+#kbhd{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink2);margin-bottom:6px;}
+#kbmode{flex:0 0 auto;padding:2px 8px;border-radius:10px;border:1px solid var(--dai);color:var(--dai);}
+#kbctx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#kbta{width:100%;min-height:96px;max-height:calc(var(--vvh,600px) * .4);border:1px solid rgba(201,163,90,.8);border-radius:10px;background:#fffaf6;padding:10px;font-size:16px;line-height:1.6;color:var(--ink);resize:none;outline:0;}
+#kbft{display:flex;align-items:center;gap:8px;margin-top:8px;}
+#kbcnt{flex:1;font-size:12px;color:var(--ink2);}
+#kbft button{height:42px;padding:0 18px;border-radius:21px;border:1px solid var(--gold);background:#fffaf4;font-size:15px;}
+#kbsend{background:var(--ver)!important;color:#fff;border-color:var(--ver)!important;}
+body.kbopen #app{pointer-events:none;}
+/* 矮畫面 */
+@media (max-height:700px){#txt{min-height:calc(var(--fs) * 1.8 * 2);max-height:calc(var(--fs) * 1.8 * 3.2);}.tlogo h1{font-size:50px}.tbtn{height:50px}}
+@media (min-width:561px){#app{border-left:1px solid var(--gold);border-right:1px solid var(--gold);}}
+
+</style>
+</head>
+<body>
+<div id="app">
+ <!-- 標題 -->
+ <section id="title" class="scr on">
+  <div class="tbg" id="tbg"></div>
+  <div class="tpetals" aria-hidden="true"></div>
+  <div class="tlogo">
+   <div class="tseal">乙女</div>
+   <h1><span>青囊</span><i>·</i><span>秦心</span></h1>
+   <div class="tsub">一卷醫書　一顆秦心</div>
+  </div>
+  <div class="tmenu">
+   <button class="tbtn" id="tNew"><b>初入咸陽</b><small>新的故事</small></button>
+   <button class="tbtn" id="tCont"><b>續寫前緣</b><small>讀取存檔</small></button>
+   <button class="tbtn" id="tAlbum"><b>回憶畫卷</b><small>CG・結局</small></button>
+   <button class="tbtn" id="tSet"><b>設定</b><small>AI・文字</small></button>
+  </div>
+  <div class="tfoot">全部角色為原創動漫化人物・離線亦可遊玩</div>
+ </section>
+ <!-- 遊戲 VN -->
+ <section id="game" class="scr">
+  <div id="bg"></div>
+  <div id="fx"></div>
+  <div id="char"><div class="cw" id="cw"></div></div>
+  <header id="hud">
+   <button id="hSeal" class="hseal" aria-label="狀態"><span id="hDay">春</span><small id="hPer">晨</small></button>
+   <div id="hInfo"><div id="hCh">第一章</div><div id="hPlace">青囊醫館</div></div>
+   <div id="hStat"><span title="名聲">✿<b id="hFame">0</b></span><span title="銀兩">◎<b id="hGold">0</b></span></div>
+  </header>
+  <div id="pops"></div>
+  <div id="choices"></div>
+  <div id="box">
+   <div id="nameplate"><span id="npName"></span></div>
+   <div id="quick">
+    <button data-q="log" aria-label="回顧">回顧</button><button data-q="auto" id="qAuto" aria-label="自動">自動</button><button data-q="skip" id="qSkip" aria-label="快進">快進</button><button data-q="save" aria-label="存檔">存檔</button>
+   </div>
+   <div id="face"></div>
+   <div id="txt" aria-live="polite"></div>
+   <div id="next">▼</div>
+   <div id="inrow">
+    <button id="mode" class="mchip">💬說</button>
+    <input id="free" type="text" maxlength="120" placeholder="想說什麼、做什麼…" autocomplete="off" enterkeyhint="send">
+    <button id="send" aria-label="送出">送</button>
+   </div>
+  </div>
+  <nav id="tabs">
+   <button data-t="map"><i>◈</i><span>地圖</span></button>
+   <button data-t="clinic"><i>☤</i><span>醫館</span></button>
+   <button data-t="gal"><i>❀</i><span>圖鑑</span></button>
+   <button data-t="let"><i>✉</i><span>書信</span><em id="letBadge"></em></button>
+   <button data-t="menu"><i>☰</i><span>選單</span></button>
+  </nav>
+ </section>
+ <!-- 地圖 -->
+ <section id="map" class="scr">
+  <div class="mhead"><div class="mseal" id="mDate">春 · 第1日</div><div class="mtitle">咸陽輿圖</div><div class="mper" id="mPer">晨</div></div>
+  <div id="mapbox"><div id="mapsvg"></div><div id="pins"></div></div>
+  <div id="mapinfo"></div>
+  <div class="mfoot"><button id="mWait">⏳ 靜待一個時辰</button><button id="mBack">↩ 回到場景</button></div>
+ </section>
+ <!-- 共用面板 -->
+ <div id="sheet" class="sheet"><div class="shead"><button class="sx" id="shX">✕</button><h2 id="shT"></h2><div id="shTabs"></div></div><div class="sbody" id="shB"></div></div>
+ <div id="med" class="sheet med"><div class="shead"><h2 id="mdT">問診</h2></div><div class="sbody" id="mdB"></div></div>
+ <div id="cgv"><div id="cgimg"></div><div id="cgcap"></div></div>
+ <div id="banner"><div class="bn1" id="bn1"></div><div class="bn2" id="bn2"></div></div>
+ <div id="toast"></div>
+ <div id="dlg" class="dlg"><div class="dbox"><div id="dlT"></div><div id="dlB"></div><div id="dlA"></div></div></div>
+ <div id="busy"><div class="ink"></div><div id="busyT">墨跡暈開中…</div></div>
+</div>
+<!-- 全屏輸入面板（沿用《秦風》M19 修正：觸控裝置點輸入框 → 覆蓋層 textarea 16px） -->
+<div id="kbp" aria-hidden="true"><div id="kbbox"><div id="kbhd"><span id="kbmode">💬說</span><span id="kbctx"></span></div><textarea id="kbta" maxlength="120" rows="4" placeholder="想說什麼、做什麼…（/設定 宣告劇情）" enterkeyhint="send"></textarea><div id="kbft"><span id="kbcnt">0/120</span><button id="kbcancel">收起</button><button id="kbsend">送出</button></div></div></div>
+<script>
+var ASSET_FILES=[];
+/* ---- 01_data.js ---- */
+/* ===== 青囊·秦心 · 資料：角色、地點、禮物、病例、章節、結局、CG ===== */
+var GAME_TITLE='青囊·秦心';
+/* 可攻略角色（全部為原創動漫化角色，均為成年人） */
+var CHARS={
+ yingzheng:{n:'嬴政',c:'秦王',age:24,col:'#7a1f2b',sub:'玄袍金冠的少年君王',
+  bio:'秦國之主，冷峻寡言，喜怒不形於色。案上竹簡堆積如山，卻總在深夜獨自醒來。',
+  pers:'霸道冷峻、極度自律、多疑；對認定之人極護短，卻不善表達。',
+  goal:'一統天下，終結亂世',secret:'幼年質於邯鄲，夜夜夢魘，從未對人言說',
+  ail:'頭風',ailD:'積年頭風，夜不能寐',likes:['兵書竹簡','安神香囊','墨玉棋子'],hates:['憐憫','欺瞞','諂媚'],
+  look:{hair:'#141018',hair2:'#3a2a3a',robe:'#1c1418',robe2:'#7a1f2b',trim:'#d4a84a',eye:'#7a2a2a',skin:'#f6e2d6',style:'crown',len:'long'},
+  at:{晨:'palace',午:'palace',夕:'study',夜:'courtyard'},lock:1},
+ mengtian:{n:'蒙恬',c:'少年將軍',age:23,col:'#3d5a7a',sub:'銀甲白袍的少年將軍',
+  bio:'蒙氏將門之後，戰場上銳不可當，私下卻愛笑、愛熱鬧，常偷溜去市集買糖人。',
+  pers:'爽朗熱血、坦率忠義、有點笨拙的溫柔；吃醋時會悶悶不樂地練槍。',
+  goal:'鎮守北疆，讓百姓不再受胡騎侵擾',secret:'曾違抗軍令回救一村百姓，至今被父親責罰',
+  ail:'舊箭傷',ailD:'左肩舊箭傷，陰雨天隱隱作痛',likes:['糖人','磨劍石','烈酒'],hates:['臨陣退縮','欺凌弱小'],
+  look:{hair:'#d8dce6',hair2:'#9aa4b8',robe:'#e8ecf2',robe2:'#3d5a7a',trim:'#c0c8d8',eye:'#3a6aa0',skin:'#f6e2d6',style:'ponytail',len:'long',armor:1},
+  at:{晨:'camp',午:'camp',夕:'market',夜:'camp'},lock:0},
+ lisi:{n:'李斯',c:'客卿',age:27,col:'#2f6b5f',sub:'梅下青衣、笑意不達眼底的謀士',
+  bio:'上蔡布衣出身，入秦為客卿。笑容溫和，言辭如春風，算計卻深不見底。',
+  pers:'腹黑溫雅、野心勃勃、極會說話；只有在你面前偶爾露出疲憊。',
+  goal:'位極人臣，再不受貧賤之辱',secret:'少時為上蔡小吏，曾目睹廁鼠與倉鼠之別，發誓永不為廁中鼠',
+  ail:'胃疾',ailD:'勞心過度，胃疾時發',likes:['名家字帖','梅花','新茶般的清露'],hates:['被看輕','空談仁義'],
+  look:{hair:'#2a2420',hair2:'#4a3a30',robe:'#2f5f58',robe2:'#a8323a',trim:'#d0b070',eye:'#5a4630',skin:'#f4e0d2',style:'half',len:'long'},
+  at:{晨:'palace',午:'plum',夕:'study',夜:'study'},lock:0},
+ fusu:{n:'扶蘇',c:'長公子',age:22,col:'#8a7a5a',sub:'白裘溫潤的長公子',
+  bio:'秦王長子，溫文爾雅，愛書愛民。體弱畏寒，冬日總裹著一襲白狐裘。',
+  pers:'溫柔仁厚、謙和有禮、外柔內剛；認真起來誰也勸不動。',
+  goal:'以仁政安天下，讓父王看見另一條路',secret:'與父王治國理念不合，常在書房獨自寫下不敢呈上的諫書',
+  ail:'寒症',ailD:'先天寒症，手足冰涼，易咳',likes:['古琴譜','暖手爐','民間話本'],hates:['苛政','傷及無辜'],
+  look:{hair:'#3a2c24',hair2:'#5a4636',robe:'#eef0e6',robe2:'#5a8a6a',trim:'#c8b080',eye:'#5a4a3a',skin:'#f8e8de',style:'guan',len:'long',fur:1},
+  at:{晨:'study',午:'study',夕:'plum',夜:'study'},lock:1},
+ hanfei:{n:'韓非',c:'韓國公子',age:28,col:'#4a4a6a',sub:'墨香裡寡言的天才公子',
+  bio:'韓國公子，著書十餘萬言，秦王讀之嘆曰「得見此人，死不恨矣」。說話時有口吃，筆下卻鋒利如刀。',
+  pers:'孤高清冷、內斂深情、口拙筆利；害羞時會更結巴。',
+  goal:'保全故國韓，讓法術勢之學行於天下',secret:'身負韓王密令入秦，心知此行九死一生',
+  ail:'心悸',ailD:'憂思成疾，心悸氣短，言語滯澀',likes:['竹簡','墨錠','安靜的雨夜'],hates:['被嘲笑口吃','背信'],
+  look:{hair:'#1c1c26',hair2:'#3a3a52',robe:'#3a3a52',robe2:'#b8b8c8',trim:'#a0a0b8',eye:'#3a3a5a',skin:'#f2e0d6',style:'loose',len:'long'},
+  at:{晨:'study',午:'plum',夕:'courtyard',夜:'study'},lock:1},
+ jingke:{n:'荊軻',c:'遊俠',age:26,col:'#9a3a2a',sub:'醉臥酒肆的落拓劍客',
+  bio:'衛人，好讀書擊劍，嗜酒，常與狗屠、樂師高歌於市。笑起來沒心沒肺，眼底卻藏著一場易水的風。',
+  pers:'灑脫不羈、豪爽重諾、嘴上輕佻心裡認真；一諾千金。',
+  goal:'士為知己者死——完成一樁足以留名的承諾',secret:'受燕太子丹之託，終有一日要入秦行刺',
+  ail:'舊毒',ailD:'體內殘留舊毒，酒後胸悶',likes:['好酒','筑曲','好劍'],hates:['背叛朋友','畏首畏尾'],
+  look:{hair:'#241a16',hair2:'#4a3226',robe:'#3a2220',robe2:'#9a3a2a',trim:'#b08850',eye:'#6a3a20',skin:'#ecd2c0',style:'messy',len:'mid'},
+  at:{晨:'market',午:'market',夕:'tavern',夜:'tavern'},lock:0},
+ xuanye:{n:'玄夜',c:'影衛',age:25,col:'#3a3a48',sub:'銀髮覆面的無名影衛',hidden:1,
+  bio:'相邦府的影子，無名無姓，「玄夜」是你替他取的名字。總在你遇險時出現，又在你回頭時消失。',
+  pers:'沉默寡言、冷靜克制、對你有近乎固執的守護；不懂如何被溫柔對待。',
+  goal:'為自己活一次',secret:'奉相邦之命監視你——卻一次次違令護你',
+  ail:'刀傷',ailD:'身上舊傷累累，從不讓人醫治',likes:['桂花糖','安靜','被叫名字'],hates:['被同情','火光'],
+  look:{hair:'#e6e6ee',hair2:'#a8a8c0',robe:'#22222c',robe2:'#5a5a78',trim:'#8a8aa8',eye:'#8a3a4a',skin:'#f0dcd0',style:'short',len:'mid',mask:1},
+  at:{晨:'',午:'',夕:'',夜:'courtyard'},lock:2}
+};
+var CHAR_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
+/* 角色之間關係網 */
+var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['xuanye','lisi','暗中監視'],['jingke','mengtian','惺惺相惜']];
+/* 地點（背景 key） */
+var PLACES={
+ clinic:{s:'醫',n:'青囊醫館',d:'你在咸陽城南賃下的小醫館，藥香盈室。',bg:'clinic',x:22,y:70},
+ market:{s:'市',n:'咸陽市集',d:'人聲鼎沸，糖人、藥材、竹簡應有盡有。',bg:'market',x:52,y:62},
+ palace:{s:'宮',n:'咸陽宮',d:'高台層闕，玄色旌旗獵獵。',bg:'palace',x:54,y:22,need:1},
+ plum:{s:'梅',n:'梅林',d:'城西梅林，花開如雪。',bg:'plum',x:20,y:36},
+ camp:{s:'營',n:'城北軍營',d:'鼓角聲聲，甲士操練。',bg:'camp',x:82,y:30},
+ study:{s:'蘭',n:'蘭台書房',d:'宮中藏書之所，墨香沉靜。',bg:'study',x:38,y:44,need:1},
+ tavern:{s:'酒',n:'市井酒肆',d:'酒旗招展，筑聲悠揚。',bg:'tavern',x:76,y:72},
+ courtyard:{s:'庭',n:'夜色庭院',d:'月下庭院，竹影搖曳。只在夜裡前往。',bg:'night',x:62,y:44,night:1}
+};
+var PLACE_ORDER=['clinic','market','plum','camp','tavern','palace','study','courtyard'];
+var PERIODS=['晨','午','夕','夜'];
+var SEASONS=['春','夏','秋','冬'];
+/* 禮物／物品 */
+var ITEMS={
+ sachet:{n:'安神香囊',p:30,d:'親手調配的安神香',k:'gift'},
+ candy:{n:'糖人',p:8,d:'市集買來的糖人',k:'gift'},
+ wine:{n:'烈酒',p:25,d:'一罈好酒',k:'gift'},
+ whet:{n:'磨劍石',p:20,d:'上好的磨劍石',k:'gift'},
+ bamboo:{n:'竹簡',p:15,d:'空白竹簡一卷',k:'gift'},
+ book:{n:'兵書竹簡',p:40,d:'孫子兵法抄本',k:'gift'},
+ copybook:{n:'名家字帖',p:45,d:'名家手書字帖',k:'gift'},
+ plumsp:{n:'梅花',p:0,d:'梅林折下的一枝梅',k:'gift'},
+ qinpu:{n:'古琴譜',p:35,d:'失傳琴曲殘譜',k:'gift'},
+ warmer:{n:'暖手爐',p:30,d:'小巧的銅暖手爐',k:'gift'},
+ tale:{n:'民間話本',p:12,d:'市井流傳的話本',k:'gift'},
+ ink:{n:'墨錠',p:20,d:'松煙墨錠',k:'gift'},
+ osm:{n:'桂花糖',p:10,d:'一包桂花糖',k:'gift'},
+ go:{n:'墨玉棋子',p:50,d:'一盒墨玉棋子',k:'gift'},
+ sword:{n:'好劍',p:80,d:'一柄青銅好劍',k:'gift'},
+ zhu:{n:'筑曲',p:30,d:'新譜的筑曲',k:'gift'},
+ dew:{n:'新茶般的清露',p:18,d:'收集晨露煮成的清飲',k:'gift'},
+ herb:{n:'草藥',p:5,d:'常用草藥，可製藥',k:'mat'},
+ rare:{n:'珍稀藥材',p:40,d:'雪蓮、靈芝之屬',k:'mat'},
+ salve:{n:'金創藥',p:20,d:'止血生肌',k:'med'},
+ pill:{n:'清心丸',p:25,d:'寧神定悸',k:'med'}
+};
+var SHOP=['candy','wine','whet','bamboo','book','copybook','qinpu','warmer','tale','ink','osm','go','sword','zhu','dew','herb','rare'];
+/* 製藥配方 */
+var RECIPES=[{id:'sachet',n:'安神香囊',need:{herb:2},med:3},{id:'salve',n:'金創藥',need:{herb:2},med:2},{id:'pill',n:'清心丸',need:{herb:1,rare:1},med:6},{id:'dew',n:'清露',need:{herb:1},med:1}];
+/* 問診病例：望聞問切 */
+var CASES=[
+ {p:'咳嗽不止的老婦',sym:['久咳','痰白清稀','畏寒'],dx:'風寒束肺',wrong:['肺熱壅盛','肝火上炎'],rx:'麻黃杏仁湯',rxw:['白虎湯','龍膽瀉肝湯'],lv:1},
+ {p:'面紅目赤的屠戶',sym:['頭痛','易怒','口苦'],dx:'肝火上炎',wrong:['風寒束肺','脾胃虛寒'],rx:'龍膽瀉肝湯',rxw:['理中湯','麻黃杏仁湯'],lv:1},
+ {p:'腹痛喜按的書生',sym:['腹痛綿綿','喜溫喜按','食少'],dx:'脾胃虛寒',wrong:['食積停滯','肝火上炎'],rx:'理中湯',rxw:['保和丸','白虎湯'],lv:1},
+ {p:'高熱口渴的役夫',sym:['壯熱','大汗','口渴喜冷飲'],dx:'陽明氣分熱盛',wrong:['風寒束肺','陰虛內熱'],rx:'白虎湯',rxw:['麻黃杏仁湯','六味地黃丸'],lv:2},
+ {p:'失眠多夢的繡娘',sym:['心悸','失眠多夢','健忘'],dx:'心脾兩虛',wrong:['肝火上炎','痰熱擾心'],rx:'歸脾湯',rxw:['龍膽瀉肝湯','溫膽湯'],lv:2},
+ {p:'噯腐吞酸的富商',sym:['脘腹脹滿','噯腐吞酸','厭食'],dx:'食積停滯',wrong:['脾胃虛寒','肝胃不和'],rx:'保和丸',rxw:['理中湯','逍遙散'],lv:1},
+ {p:'潮熱盜汗的寡婦',sym:['午後潮熱','盜汗','五心煩熱'],dx:'陰虛內熱',wrong:['陽明氣分熱盛','心脾兩虛'],rx:'六味地黃丸',rxw:['白虎湯','歸脾湯'],lv:3},
+ {p:'刀傷化膿的兵士',sym:['傷口紅腫','流膿','發熱'],dx:'金瘡熱毒',wrong:['風寒束肺','陰虛內熱'],rx:'仙方活命飲',rxw:['麻黃杏仁湯','六味地黃丸'],lv:2}
+];
+/* 角色病況治療（神醫專屬）：每人一套診斷 */
+var CURE={
+ yingzheng:{sym:['頭痛如裂','夜不能寐','脈弦而細'],dx:'肝陽上亢、心神不寧',wrong:['風寒頭痛','食積'],rx:'天麻鉤藤飲加安神香',rxw:['麻黃湯','保和丸']},
+ mengtian:{sym:['肩痛遇寒加重','活動受限','舊傷處硬結'],dx:'瘀血阻絡',wrong:['風熱犯表','脾虛'],rx:'活血化瘀膏配針灸',rxw:['白虎湯','歸脾湯']},
+ lisi:{sym:['胃脘隱痛','飢時加重','神疲'],dx:'肝胃不和、勞倦傷脾',wrong:['陽明熱盛','風寒'],rx:'逍遙散合四君子湯',rxw:['白虎湯','麻黃湯']},
+ fusu:{sym:['手足不溫','畏寒咳嗽','脈沉遲'],dx:'陽虛寒凝',wrong:['陰虛內熱','肝火'],rx:'當歸四逆湯',rxw:['白虎湯','龍膽瀉肝湯']},
+ hanfei:{sym:['心悸怔忡','言語滯澀','夜多驚醒'],dx:'心氣不足、痰濁阻竅',wrong:['肝火上炎','食積'],rx:'溫膽湯加遠志菖蒲',rxw:['白虎湯','保和丸']},
+ jingke:{sym:['酒後胸悶','唇色微紫','脈澀'],dx:'舊毒伏絡',wrong:['風寒束肺','心脾兩虛'],rx:'解毒化瘀湯，戒酒七日',rxw:['麻黃湯','歸脾湯']},
+ xuanye:{sym:['舊傷未癒','失血後虛','面色蒼白'],dx:'氣血兩虛、金瘡未斂',wrong:['肝火','食積'],rx:'八珍湯合金創藥',rxw:['白虎湯','龍膽瀉肝湯']}
+};
+/* 章節主線 */
+var CHAPTERS=[
+ {n:'第一章 · 下山',goal:'在咸陽開設醫館，打響名聲（名聲達 10）'},
+ {n:'第二章 · 入宮',goal:'奉召入宮，為秦王診治頭風'},
+ {n:'第三章 · 香中毒',goal:'查出安神香中的毒從何而來'},
+ {n:'第四章 · 風雨欲來',goal:'在韓非之獄與荊軻之約間抉擇'},
+ {n:'終章 · 心之所向',goal:'向心上人表明心意'}
+];
+/* 好感里程碑＝CG */
+var CGS={
+ yingzheng:[{id:'yz1',n:'夜半診脈',d:'燭火下，他第一次讓人觸碰他的手腕。'},{id:'yz2',n:'玄袍覆肩',d:'寒夜裡，他把外袍披在你肩上。'},{id:'yz3',n:'章台月下',d:'「留下來。寡人……我，需要你。」'}],
+ mengtian:[{id:'mt1',n:'糖人與少年',d:'他把唯一的糖人塞進你手裡。'},{id:'mt2',n:'策馬北原',d:'他帶你策馬，風從耳邊呼嘯而過。'},{id:'mt3',n:'銀甲下的心跳',d:'「等我從北疆回來，娶你。」'}],
+ lisi:[{id:'ls1',n:'梅下對弈',d:'他執黑，你執白，梅花落在棋盤上。'},{id:'ls2',n:'卸下笑容',d:'深夜書房，他終於不再微笑。'},{id:'ls3',n:'一枝梅',d:'「這天下我都要算計，唯獨你，我認輸。」'}],
+ fusu:[{id:'fs1',n:'暖爐與白裘',d:'他把暖手爐遞給你，自己的手卻冰涼。'},{id:'fs2',n:'琴聲',d:'他為你彈了一首未完成的曲子。'},{id:'fs3',n:'雪中誓言',d:'「若有來日，我想與你看太平盛世。」'}],
+ hanfei:[{id:'hf1',n:'墨痕',d:'他寫給你的第一個字，是你的名字。'},{id:'hf2',n:'雨夜長談',d:'那一夜，他一個字也沒有結巴。'},{id:'hf3',n:'不再孤筆',d:'「我、我想……與你同著一部書。」'}],
+ jingke:[{id:'jk1',n:'酒肆初逢',d:'他笑著把酒碗推到你面前。'},{id:'jk2',n:'筑聲',d:'高漸離擊筑，他為你而歌。'},{id:'jk3',n:'易水寒',d:'「這一次，我想為自己活下去。」'}],
+ xuanye:[{id:'xy1',n:'影中人',d:'他從暗處接住了跌落的你。'},{id:'xy2',n:'名字',d:'你叫他「玄夜」，他愣了很久。'},{id:'xy3',n:'摘下面具',d:'「我不是影子了。我是你的人。」'}]
+};
+/* 結局 */
+var ENDINGS={
+ he_yingzheng:{n:'鳳棲章台',k:'HE',d:'你成了他唯一不設防的人。天下歸一那日，他執你之手登上高台。'},
+ he_mengtian:{n:'北原長歌',k:'HE',d:'北疆安寧，少年將軍卸甲歸來，在梅樹下向你求親。'},
+ he_lisi:{n:'梅骨',k:'HE',d:'權謀半生，他把最後一枚棋子放在你掌心：「我輸給你了。」'},
+ he_fusu:{n:'仁者春風',k:'HE',d:'你治好了他的寒症，也陪他走出了另一條路。'},
+ he_hanfei:{n:'同著一書',k:'HE',d:'他沒有死在雲陽獄中。你們隱於山林，共著一部醫法之書。'},
+ he_jingke:{n:'易水不寒',k:'HE',d:'他沒有走向易水。你們策馬天涯，筑聲與酒香相伴。'},
+ he_xuanye:{n:'影歸',k:'隱藏',d:'影子有了名字，也有了歸處。你們消失在世人眼中，從此只為彼此而活。'},
+ be_yingzheng:{n:'深宮鎖',k:'BE',d:'他愛你，卻更怕失去你。宮門深鎖，你再也見不到青山。'},
+ be_hanfei:{n:'雲陽獄',k:'BE',d:'你來遲了一步。獄中只留下一卷寫著你名字的竹簡。'},
+ be_jingke:{n:'風蕭蕭',k:'BE',d:'易水之畔，他回頭對你笑了一下，便再也沒有回來。'},
+ normal:{n:'懸壺濟世',k:'NE',d:'你沒有選擇任何人，而是成了咸陽人人敬重的女神醫。'},
+ hidden_doctor:{n:'天下名醫',k:'隱藏',d:'眾人皆為你傾心，你卻一笑，帶著藥箱走遍天下。'}
+};
+/* 節日 */
+var FESTIVALS=[{d:3,n:'上巳節',s:0,t:'水邊祓禊，男女相約踏青。'},{d:37,n:'夏祓',s:1,t:'驅疫祈福之日，市集燈火通明。'},{d:67,n:'乞巧',s:2,t:'女子穿針乞巧，月下許願。'},{d:97,n:'臘祭',s:3,t:'歲末大祭，宮中設宴。'}];
+var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];
+
+/* ---- 02_state.js ---- */
+/* ===== 狀態、設定、存檔 ===== */
+var S=null;
+var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-chat',temp:0.85,maxTok:1800,aiTimeout:60,preset:'deepseek',hdr:'',aiSrc:'api',aiBlock:'',
+ typer:true,speed:2,auto:1.6,font:17,diff:'normal',pace:'mid',inmode:'say',sfx:true,adult:false,firewall:true,wsane:true,decld:true,ncmd:true,actd:true};
+var SET={};
+var PRESETS={
+ deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。建議用 deepseek-chat。'},
+ xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-latest',models:['grok-latest','grok-4.3','grok-3-mini'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
+ openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform.openai.com 建立 API Key。'},
+ openrouter:{n:'OpenRouter',base:'https://openrouter.ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter.ai 建立 Key；模型名寫成「廠商/模型」。'},
+ gemini:{n:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',models:['gemini-2.5-flash','gemini-2.5-pro'],key:'到 aistudio.google.com 取得 API Key。'},
+ groq:{n:'Groq',base:'https://api.groq.com/openai/v1',model:'llama-3.3-70b-versatile',models:['llama-3.3-70b-versatile','qwen/qwen3-32b'],key:'到 console.groq.com 建立 API Key。'},
+ custom:{n:'自訂（OpenAI 相容）',base:'',model:'',models:[],key:'自行填入 Base URL、模型名與 Key。'}
+};
+var PRESET_ORDER=['deepseek','xai','openai','openrouter','gemini','groq','custom'];
+function loadSettings(){var o={};try{o=JSON.parse(localStorage.getItem('qlv_settings')||'{}')||{};}catch(e){o={};}
+ SET={};for(var k in DEFSET)SET[k]=(o[k]!==undefined&&typeof o[k]===typeof DEFSET[k])?o[k]:DEFSET[k];}
+function saveSettings(){try{localStorage.setItem('qlv_settings',JSON.stringify(SET));}catch(e){}}
+/* ---- 工具 ---- */
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+var _seed=Date.now()%2147483647;
+function rand(){_seed=(_seed*16807)%2147483647;return (_seed-1)/2147483646;}
+function rnd(n){return Math.floor(rand()*n);}
+function pick(a){return a[rnd(a.length)];}
+function roll(p){return rand()*100<p;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function cn(id){return id==='p'?(S?S.p.name:'你'):(CHARS[id]?CHARS[id].n:(id||''));}
+function diffMul(){return {easy:1.5,normal:1,hard:0.75}[SET.diff]||1;}
+/* ---- 新遊戲 ---- */
+function newState(name){
+ var s={v:1,day:1,per:0,ch:0,flags:{},p:{name:name||DEF_NAMES[0],med:12,cha:8,wit:8,fame:2,mind:70,gold:120,hp:100,exp:0},
+  inv:{herb:4,sachet:1,salve:1,candy:0},c:{},mem:{},facts:[],letters:[],cg:{},endings:{},log:[],back:[],evseen:{},
+  thread:null,pend:null,world:{maj:[],jail:{}},quests:[],place:'clinic',pendMs:[],chDay:1,secrets:{p:[{k:'master',t:'師父青囊子臨終前留下一卷禁方',kn:[]}]},seed:Date.now()%100000};
+ CHAR_ORDER.forEach(function(id){var c=CHARS[id];
+  s.c[id]={aff:0,trust:0,heart:0,jeal:0,sec:0,hp:{yingzheng:62,mengtian:70,lisi:72,fusu:58,hanfei:60,jingke:68,xuanye:50}[id],cured:0,stage:0,met:0,last:-9,gifts:0,dates:0,mood:'平靜',thought:'',knot:0,jailed:0,away:0};
+  s.mem[id]=[];});
+ return s;
+}
+/* ---- 存檔 ---- */
+var SAVE_KEY='qlv_save_';
+function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:S.p.name,day:S.day,ch:S.ch,s:S};localStorage.setItem(SAVE_KEY+slot,JSON.stringify(o));if(!quiet)toast('💾 已存檔（'+slotName(slot)+'）');return true;}catch(e){toast('存檔失敗：'+e.message);return false;}}
+function slotName(s){return s==='auto'?'自動':'檔位 '+s;}
+function slotInfo(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o)return null;return {t:o.t,name:o.name,day:o.day,ch:o.ch};}catch(e){return null;}}
+function loadSlot(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o||!o.s)return false;S=o.s;migrate();return true;}catch(e){return false;}}
+function migrate(){if(!S.pendMs)S.pendMs=[];if(!S.place)S.place='clinic';if(S.chDay===undefined)S.chDay=1;if(!S.world)S.world={maj:[],jail:{}};if(!S.back)S.back=[];if(!S.quests)S.quests=[];CHAR_ORDER.forEach(function(id){if(!S.c[id])S.c[id]=newState().c[id];if(!S.mem[id])S.mem[id]=[];});}
+function addLog(t){if(!S)return;S.log.push({d:S.day,t:String(t).slice(0,120)});if(S.log.length>120)S.log.shift();}
+/* ---- 時間 ---- */
+function dateStr(){var s=Math.floor((S.day-1)/30)%4;var d=(S.day-1)%30+1;return SEASONS[s]+' · 第'+d+'日 · '+PERIODS[S.per];}
+function season(){return Math.floor((S.day-1)/30)%4;}
+function perName(){return PERIODS[S.per];}
+
+/* ---- 03_art.js ---- */
+/* ===== 美術：SVG 古風動漫立繪／背景／CG（assets/ 有對應圖檔時自動改用圖檔） ===== */
+var ART={cache:{}};
+(function(){
+ var AF=(typeof ASSET_FILES!=='undefined'?ASSET_FILES:[]);
+ ART.file=function(key){for(var i=0;i<AF.length;i++){var f=AF[i];if(f.replace(/\.(png|webp|jpg|jpeg)$/i,'')===key)return 'assets/'+f;}return '';};
+ function g(id,stops,x2,y2){var s='<linearGradient id="'+id+'" x1="0" y1="0" x2="'+(x2||0)+'" y2="'+(y2===undefined?1:y2)+'">';stops.forEach(function(st){s+='<stop offset="'+st[0]+'" stop-color="'+st[1]+'"'+(st[2]!==undefined?' stop-opacity="'+st[2]+'"':'')+'/>';});return s+'</linearGradient>';}
+ function rg(id,stops,cx,cy,r){var s='<radialGradient id="'+id+'" cx="'+(cx||0.5)+'" cy="'+(cy||0.5)+'" r="'+(r||0.5)+'">';stops.forEach(function(st){s+='<stop offset="'+st[0]+'" stop-color="'+st[1]+'"'+(st[2]!==undefined?' stop-opacity="'+st[2]+'"':'')+'/>';});return s+'</radialGradient>';}
+ function shade(hex,amt){var c=hex.replace('#','');if(c.length===3)c=c.replace(/./g,'$&$&');var n=parseInt(c,16);var r=(n>>16)&255,gg=(n>>8)&255,b=n&255;
+  function f(v){return Math.max(0,Math.min(255,Math.round(amt<0?v*(1+amt):v+(255-v)*amt)));}
+  return '#'+((1<<24)+(f(r)<<16)+(f(gg)<<8)+f(b)).toString(16).slice(1);}
+ ART.shade=shade;
+ /* ---------- 立繪 ---------- */
+ /* expr: normal|smile|blush|sad|angry|shy */
+ ART.portrait=function(id,expr){
+  var key='p_'+id+'_'+(expr||'normal');if(ART.cache[key])return ART.cache[key];
+  var isH=id==='heroine';var c=isH?HEROINE:CHARS[id];if(!c)return '';
+  var L=c.look,u='q'+id.slice(0,3);expr=expr||'normal';
+  var d='<defs>'+g(u+'hr',[[0,shade(L.hair,0.18)],[0.55,L.hair],[1,L.hair2]])+g(u+'hs',[[0,L.hair2],[1,L.hair]],1,0)
+   +g(u+'rb',[[0,shade(L.robe,0.12)],[0.6,L.robe],[1,shade(L.robe,-0.35)]])+g(u+'rb2',[[0,shade(L.robe2,0.2)],[1,shade(L.robe2,-0.25)]])
+   +g(u+'sk',[[0,shade(L.skin,0.06)],[1,shade(L.skin,-0.06)]])+rg(u+'ir',[[0,shade(L.eye,0.55)],[0.55,L.eye],[1,shade(L.eye,-0.55)]],0.5,0.62,0.6)
+   +rg(u+'bl',[[0,'#ff7a8a',0.55],[1,'#ff7a8a',0]])+g(u+'tr',[[0,shade(L.trim,0.35)],[0.5,L.trim],[1,shade(L.trim,-0.3)]])
+   +'<filter id="'+u+'sd" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="6"/></filter></defs>';
+  var s='';
+  var hl=L.len==='long'?880:(L.len==='mid'?640:440);
+  /* 後髮 */
+  if(L.style==='ponytail'){s+='<path d="M330 150 C 470 160, 520 330, 470 520 C 440 640, 480 760, 520 880 L 400 880 C 400 760, 380 640, 400 520 C 420 380, 400 240, 330 200 Z" fill="url(#'+u+'hr)"/>';
+   s+='<path d="M300 120 C 360 110, 410 140, 420 180" stroke="'+L.robe2+'" stroke-width="12" fill="none" stroke-linecap="round"/>';}
+  if(isH){s+='<path d="M206 270 C 160 420, 168 600, 140 '+(hl)+' C 250 '+(hl-30)+', 350 '+(hl-30)+', 460 '+hl+' C 432 600, 440 420, 394 270 Z" fill="url(#'+u+'hr)"/>';}
+  else if(L.style!=='ponytail'){var w=L.style==='messy'?20:0;s+='<path d="M212 270 C 168 390, 176 520, '+(146-w)+' '+hl+' C 250 '+(hl-20)+', 350 '+(hl-20)+', '+(454+w)+' '+hl+' C 424 520, 432 390, 388 270 Z" fill="url(#'+u+'hr)"/>';
+   if(L.len==='long')s+='<path d="M170 520 C 150 650, 160 760, 130 880 M 430 520 C 450 650, 440 760, 470 880" stroke="'+shade(L.hair,0.25)+'" stroke-width="3" fill="none" opacity=".55"/>';}
+  /* 頭頂髮帽（使頭形圓潤） */
+  s+='<ellipse cx="300" cy="262" rx="100" ry="96" fill="url(#'+u+'hr)"/>';
+  /* 身體／衣袍 */
+  s+='<path d="M268 440 L 332 440 L 345 520 L 255 520 Z" fill="url(#'+u+'sk)"/>';
+  s+='<path d="M300 498 C 236 502, 172 528, 132 596 C 104 660, 84 790, 70 900 L 530 900 C 516 790, 496 660, 468 596 C 428 528, 364 502, 300 498 Z" fill="url(#'+u+'rb)"/>';
+  s+='<path d="M132 596 C 150 560, 200 530, 250 516" stroke="'+shade(L.robe,0.35)+'" stroke-width="3" fill="none" opacity=".45"/>';
+  /* 衣褶 */
+  s+='<path d="M150 640 C 170 720, 165 820, 150 900 M 450 640 C 430 720, 435 820, 450 900 M 220 600 C 230 700, 225 800, 215 900 M 380 600 C 370 700, 375 800, 385 900" stroke="'+shade(L.robe,-0.4)+'" stroke-width="3" fill="none" opacity=".35"/>';
+  /* 交領：內白、中層色、外緣金線 */
+  s+='<path d="M262 505 L 300 640 L 338 505 Z" fill="#f7f1ea"/>';
+  s+='<path d="M250 500 L 300 650 L 312 640 L 268 500 Z" fill="url(#'+u+'rb2)"/><path d="M350 500 L 300 650 L 288 640 L 332 500 Z" fill="url(#'+u+'rb2)"/>';
+  s+='<path d="M226 506 C 250 580, 280 640, 300 700 M 374 506 C 350 580, 320 640, 300 700" stroke="url(#'+u+'tr)" stroke-width="10" fill="none"/>';
+  s+='<path d="M226 506 C 250 580, 280 640, 300 700 M 374 506 C 350 580, 320 640, 300 700" stroke="#fff6dc" stroke-width="1.6" fill="none" opacity=".7"/>';
+  /* 雲紋刺繡 */
+  s+='<g fill="none" stroke="'+L.trim+'" stroke-width="2.4" opacity=".75"><path d="M140 760 c 10 -18 34 -18 40 0 c 6 -14 26 -12 28 4 c -16 6 -52 6 -68 -4z"/><path d="M400 790 c 10 -18 34 -18 40 0 c 6 -14 26 -12 28 4 c -16 6 -52 6 -68 -4z"/></g>';
+  if(L.armor){/* 銀甲肩吞 */
+   s+='<g><path d="M105 620 C 120 560, 190 530, 240 545 C 225 600, 190 650, 120 680 Z" fill="url(#'+u+'tr)"/><path d="M495 620 C 480 560, 410 530, 360 545 C 375 600, 410 650, 480 680 Z" fill="url(#'+u+'tr)"/>';
+   for(var ai=0;ai<4;ai++){s+='<path d="M'+(125+ai*25)+' '+(640-ai*18)+' q 14 18 28 0" stroke="'+shade(L.trim,-0.4)+'" stroke-width="2.5" fill="none"/><path d="M'+(475-ai*25)+' '+(640-ai*18)+' q -14 18 -28 0" stroke="'+shade(L.trim,-0.4)+'" stroke-width="2.5" fill="none"/>';}
+   s+='<circle cx="180" cy="580" r="12" fill="#e8d8a0" stroke="#8a7040" stroke-width="2"/><circle cx="420" cy="580" r="12" fill="#e8d8a0" stroke="#8a7040" stroke-width="2"/></g>';
+   s+='<path d="M60 900 C 70 760, 90 700, 105 660 L 60 900 Z" fill="'+L.robe2+'" opacity=".9"/>';}
+  if(L.fur){s+='<g fill="#fbfbf6" stroke="#d8d6cc" stroke-width="2">';
+   var fx=[[150,600,46],[200,560,44],[255,545,36],[345,545,36],[400,560,44],[450,600,46],[110,660,40],[490,660,40]];
+   fx.forEach(function(f){s+='<circle cx="'+f[0]+'" cy="'+f[1]+'" r="'+f[2]+'"/>';});s+='</g>';
+   s+='<g stroke="#e6e2d6" stroke-width="2" fill="none">';fx.forEach(function(f){s+='<path d="M'+(f[0]-f[2]*0.5)+' '+f[1]+' q '+(f[2]*0.5)+' -'+(f[2]*0.4)+' '+f[2]+' 0"/>';});s+='</g>';}
+  if(isH){/* 藥箱背帶＋腰間香囊 */
+   s+='<path d="M180 560 L 420 900" stroke="#8a5a3a" stroke-width="14"/><path d="M180 560 L 420 900" stroke="#d8b080" stroke-width="2" stroke-dasharray="6 8"/>';
+   s+='<g transform="translate(390 780)"><path d="M0 0 C -26 10, -26 60, 0 70 C 26 60, 26 10, 0 0Z" fill="#c8384a"/><path d="M-6 -2 L 0 -22 L 6 -2" stroke="#d4a84a" stroke-width="3" fill="none"/><circle cy="35" r="7" fill="#f4d58a"/></g>';}
+  /* 脖子陰影 */
+  s+='<path d="M268 470 C 285 490, 315 490, 332 470 L 332 500 C 315 510, 285 510, 268 500 Z" fill="'+shade(L.skin,-0.15)+'" opacity=".6"/>';
+  /* 耳朵 */
+  s+='<path d="M222 330 C 205 325, 205 370, 226 385 Z" fill="'+shade(L.skin,-0.06)+'"/><path d="M378 330 C 395 325, 395 370, 374 385 Z" fill="'+shade(L.skin,-0.06)+'"/>';
+  if(isH)s+='<circle cx="218" cy="392" r="5" fill="#e8d8b0"/><path d="M218 397 v 18" stroke="#c8a860" stroke-width="2"/><circle cx="218" cy="420" r="4" fill="#d24a5a"/>';
+  /* 臉 */
+  var chin=isH?452:462,jw=isH?0:4;
+  s+='<path d="M222 290 C 220 360, '+(238-jw)+' 420, 300 '+chin+' C '+(362+jw)+' 420, 380 360, 378 290 C 370 230, 230 230, 222 290 Z" fill="url(#'+u+'sk)"/>';
+  s+='<path d="M232 400 C 255 440, 280 452, 300 '+chin+'" stroke="'+shade(L.skin,-0.22)+'" stroke-width="2" fill="none" opacity=".5"/>';
+  /* 眉 */
+  var by=isH?318:314,bt={normal:0,smile:-2,blush:0,sad:8,angry:-8,shy:4}[expr]||0;
+  var bc=shade(L.hair,0.1);
+  s+='<path d="M236 '+(by+bt)+' C 252 '+(by-8)+', 270 '+(by-8)+', 284 '+(by-2-(expr==='angry'?-6:0))+'" stroke="'+bc+'" stroke-width="'+(isH?4:5)+'" fill="none" stroke-linecap="round"/>';
+  s+='<path d="M364 '+(by+bt)+' C 348 '+(by-8)+', 330 '+(by-8)+', 316 '+(by-2-(expr==='angry'?-6:0))+'" stroke="'+bc+'" stroke-width="'+(isH?4:5)+'" fill="none" stroke-linecap="round"/>';
+  /* 眼 */
+  function eye(cx,dir){var e='',ey=352;var hw=isH?22:23,h=isH?17:13;
+   if(expr==='smile'||expr==='blush'&&!isH){e+='<path d="M'+(cx-hw)+' '+(ey+2)+' Q '+cx+' '+(ey-14)+' '+(cx+hw)+' '+(ey+2)+'" stroke="#2a1a1a" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+    e+='<path d="M'+(cx-hw+6)+' '+(ey+1)+' Q '+cx+' '+(ey-8)+' '+(cx+hw-6)+' '+(ey+1)+'" stroke="'+L.eye+'" stroke-width="3" fill="none" opacity=".6"/>';return e;}
+   var tilt=dir*(isH?2:5);
+   e+='<path d="M'+(cx-hw)+' '+(ey+tilt*0.4)+' C '+(cx-hw*0.5)+' '+(ey-h)+', '+(cx+hw*0.5)+' '+(ey-h-tilt)+', '+(cx+hw)+' '+(ey-4-tilt)+' C '+(cx+hw*0.6)+' '+(ey+h*0.9)+', '+(cx-hw*0.6)+' '+(ey+h*0.9)+', '+(cx-hw)+' '+(ey+tilt*0.4)+' Z" fill="#fbf8f4"/>';
+   var irY=ey+(expr==='sad'?2:0),irR=isH?12:10;
+   e+='<ellipse cx="'+(cx+dir*1)+'" cy="'+irY+'" rx="'+irR+'" ry="'+(irR*1.25)+'" fill="url(#'+u+'ir)"/>';
+   e+='<ellipse cx="'+(cx+dir*1)+'" cy="'+(irY+1)+'" rx="'+(irR*0.45)+'" ry="'+(irR*0.6)+'" fill="#1a0e10"/>';
+   e+='<circle cx="'+(cx+dir*1-4)+'" cy="'+(irY-5)+'" r="'+(isH?4:3.2)+'" fill="#fff"/><circle cx="'+(cx+dir*1+4)+'" cy="'+(irY+5)+'" r="1.8" fill="#fff" opacity=".8"/>';
+   /* 上眼線（加粗、眼尾上挑） */
+   e+='<path d="M'+(cx-hw-2)+' '+(ey+1+tilt*0.4)+' C '+(cx-hw*0.5)+' '+(ey-h-2)+', '+(cx+hw*0.5)+' '+(ey-h-2-tilt)+', '+(cx+hw+4)+' '+(ey-6-tilt)+'" stroke="#1e1214" stroke-width="'+(isH?5:5.5)+'" fill="none" stroke-linecap="round"/>';
+   if(isH)e+='<path d="M'+(cx+hw)+' '+(ey-6)+' l 8 -5 M'+(cx+hw-3)+' '+(ey-9)+' l 6 -7" stroke="#1e1214" stroke-width="2.5" stroke-linecap="round"/>';
+   e+='<path d="M'+(cx-hw*0.6)+' '+(ey+h*0.85)+' Q '+cx+' '+(ey+h*1.05)+' '+(cx+hw*0.7)+' '+(ey+h*0.7)+'" stroke="'+shade(L.eye,-0.3)+'" stroke-width="1.6" fill="none" opacity=".6"/>';
+   if(expr==='sad'||expr==='shy')e+='<path d="M'+(cx-hw)+' '+(ey-h-6)+' Q '+cx+' '+(ey-h-12)+' '+(cx+hw)+' '+(ey-h-8)+'" stroke="#1e1214" stroke-width="1.6" fill="none" opacity=".5"/>';
+   return e;}
+  s+=eye(262,-1)+eye(338,1);
+  /* 鼻與口 */
+  s+='<path d="M302 380 C 300 395, 296 402, 300 406" stroke="'+shade(L.skin,-0.3)+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+  var my=isH?428:432;
+  var mouth={normal:'M288 '+my+' Q 300 '+(my+3)+' 312 '+my,smile:'M284 '+(my-2)+' Q 300 '+(my+9)+' 316 '+(my-2),blush:'M290 '+my+' Q 300 '+(my+5)+' 310 '+my,sad:'M288 '+(my+3)+' Q 300 '+(my-3)+' 312 '+(my+3),angry:'M288 '+(my+2)+' L 312 '+(my+1),shy:'M292 '+my+' Q 300 '+(my+3)+' 308 '+my}[expr];
+  s+='<path d="'+mouth+'" stroke="#a04a4a" stroke-width="'+(isH?3.2:2.8)+'" fill="none" stroke-linecap="round"/>';
+  if(isH)s+='<path d="M292 '+(my+1)+' Q 300 '+(my+4)+' 308 '+(my+1)+'" stroke="#e46a7a" stroke-width="3" fill="none" opacity=".55"/>';
+  if(expr==='blush'||expr==='shy'||isH){s+='<ellipse cx="248" cy="392" rx="'+(isH?22:20)+'" ry="9" fill="url(#'+u+'bl)" opacity="'+(expr==='blush'||expr==='shy'?1:0.45)+'"/><ellipse cx="352" cy="392" rx="'+(isH?22:20)+'" ry="9" fill="url(#'+u+'bl)" opacity="'+(expr==='blush'||expr==='shy'?1:0.45)+'"/>';
+   if(expr==='blush'||expr==='shy')s+='<path d="M236 388 l 6 -8 M 246 390 l 6 -8 M 354 390 l 6 -8 M 364 388 l 6 -8" stroke="#e05a6a" stroke-width="1.6" opacity=".6"/>';}
+  if(L.mask){s+='<path d="M226 388 C 250 380, 350 380, 374 388 C 372 430, 340 462, 300 466 C 260 462, 228 430, 226 388 Z" fill="#1c1c26"/><path d="M226 388 C 250 380, 350 380, 374 388" stroke="'+L.trim+'" stroke-width="2" fill="none"/>';}
+  /* 前髮 */
+  var hf='url(#'+u+'hr)';
+  if(isH){
+   s+='<path d="M216 300 C 210 220, 260 180, 300 182 C 345 180, 392 220, 384 300 C 370 270, 352 250, 330 244 C 320 270, 300 282, 280 286 C 286 270, 288 258, 282 246 C 260 256, 240 272, 216 300 Z" fill="'+hf+'"/>';
+   s+='<path d="M222 300 C 205 380, 214 460, 196 540 C 214 500, 232 440, 236 380 Z M378 300 C 395 380, 386 460, 404 540 C 386 500, 368 440, 364 380 Z" fill="'+hf+'"/>';
+   /* 雙髻＋髮簪步搖 */
+   s+='<circle cx="232" cy="200" r="38" fill="'+hf+'"/><circle cx="368" cy="200" r="38" fill="'+hf+'"/>';
+   s+='<path d="M200 188 C 220 176, 246 176, 262 188" stroke="'+shade(L.hair,0.3)+'" stroke-width="3" fill="none"/><path d="M338 188 C 354 176, 380 176, 400 188" stroke="'+shade(L.hair,0.3)+'" stroke-width="3" fill="none"/>';
+   s+='<g><path d="M372 170 L 430 130" stroke="#d4a84a" stroke-width="4"/><circle cx="432" cy="128" r="9" fill="#e8607a"/><circle cx="420" cy="122" r="6" fill="#f6a8b8"/><circle cx="440" cy="138" r="6" fill="#f6a8b8"/><path d="M432 136 v 40 M 426 140 v 30 M 438 140 v 30" stroke="#d4a84a" stroke-width="1.6"/><circle cx="432" cy="178" r="3.5" fill="#e8607a"/><circle cx="426" cy="172" r="3" fill="#fff"/><circle cx="438" cy="172" r="3" fill="#fff"/></g>';
+   s+='<path d="M210 210 C 216 190, 228 180, 240 176" stroke="#f6b8c6" stroke-width="6" fill="none" stroke-linecap="round"/>';
+  }else{
+   var st=L.style;
+   if(st==='messy'){s+='<path d="M212 310 C 196 230, 250 170, 304 170 C 360 170, 410 220, 390 312 L 372 270 L 362 300 L 344 252 L 328 292 L 306 246 L 288 296 L 270 252 L 254 300 L 240 262 L 230 306 Z" fill="'+hf+'"/>';
+    s+='<path d="M214 248 C 260 228, 340 226, 388 248" stroke="'+L.robe2+'" stroke-width="10" fill="none"/><path d="M388 248 C 410 256, 420 290, 410 330" stroke="'+L.robe2+'" stroke-width="7" fill="none"/>';}
+   else if(st==='short'){s+='<path d="M214 320 C 200 230, 250 176, 302 176 C 356 176, 404 226, 388 320 C 378 290, 368 276, 356 268 L 350 300 L 334 262 L 318 306 L 302 260 L 286 302 L 272 262 L 256 300 L 248 268 C 234 280, 222 296, 214 320 Z" fill="'+hf+'"/>';}
+   else{
+    s+='<path d="M214 318 C 200 226, 250 176, 302 176 C 356 176, 404 226, 386 318 C 374 286, 362 268, 346 258 C 344 282, 334 300, 322 314 C 324 290, 318 270, 306 254 C 296 280, 282 298, 262 306 C 270 288, 272 272, 266 258 C 244 270, 226 290, 214 318 Z" fill="'+hf+'"/>';
+   }
+   /* 鬢髮長縷 */
+   var sl=st==='short'?440:(st==='messy'?500:560);
+   s+='<path d="M220 300 C 204 380, 214 460, 196 '+sl+' C 216 '+(sl-60)+', 234 440, 238 370 Z" fill="'+hf+'"/><path d="M380 300 C 396 380, 386 460, 404 '+sl+' C 384 '+(sl-60)+', 366 440, 362 370 Z" fill="'+hf+'"/>';
+   /* 髮絲高光 */
+   s+='<path d="M250 220 C 270 205, 330 205, 352 222" stroke="'+shade(L.hair,0.45)+'" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>';
+   if(st==='crown'){s+='<g transform="translate(0 22)"><path d="M262 178 L 270 120 L 300 100 L 330 120 L 338 178 Z" fill="url(#'+u+'tr)" stroke="'+shade(L.trim,-0.45)+'" stroke-width="2"/><path d="M240 132 L 360 132" stroke="url(#'+u+'tr)" stroke-width="8" stroke-linecap="round"/><path d="M220 126 L 380 126" stroke="'+shade(L.trim,-0.4)+'" stroke-width="2"/>';
+    for(var ci=0;ci<5;ci++){s+='<path d="M'+(240+ci*30)+' 134 v '+(22+ci%2*8)+'" stroke="#e8d8a0" stroke-width="2"/><circle cx="'+(240+ci*30)+'" cy="'+(160+ci%2*8)+'" r="3.5" fill="#c83a3a"/>';}
+    s+='<circle cx="300" cy="150" r="9" fill="#c83a3a" stroke="#f4dc9a" stroke-width="2"/></g>';}
+   else if(st==='guan'||st==='half'){s+='<g><path d="M276 176 C 276 140, 324 140, 324 176 Z" fill="'+hf+'"/><path d="M280 168 L 284 136 L 316 136 L 320 168 Z" fill="url(#'+u+'tr)" stroke="'+shade(L.trim,-0.45)+'" stroke-width="2"/><path d="M250 150 L 350 150" stroke="#e8dcc0" stroke-width="5" stroke-linecap="round"/>'+(st==='half'?'<circle cx="352" cy="150" r="7" fill="#7ab89a"/>':'')+'</g>';}
+   else if(st==='ponytail'){s+='<path d="M290 170 C 300 150, 330 150, 340 172" stroke="'+L.robe2+'" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M300 178 L 296 150 L 330 150 L 326 178 Z" fill="url(#'+u+'tr)"/>';}
+  }
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet">'+d
+   +'<ellipse cx="300" cy="880" rx="250" ry="40" fill="#000" opacity=".12" filter="url(#'+u+'sd)"/>'+s
+   +'<path d="M222 290 C 220 360, 238 420, 300 '+chin+'" stroke="'+shade(L.skin,-0.35)+'" stroke-width="1.4" fill="none" opacity=".35"/></svg>';
+  ART.cache[key]=svg;return svg;
+ };
+ /* ---------- 背景 ---------- */
+ function sky(id,a,b,c){return g(id,[[0,a],[0.55,b],[1,c]]);}
+ function mist(y,op){return '<path d="M0 '+y+' C 150 '+(y-30)+', 300 '+(y+20)+', 450 '+(y-10)+' S 750 '+(y-30)+', 900 '+y+' L 900 '+(y+120)+' L 0 '+(y+120)+' Z" fill="#fff" opacity="'+op+'"/>';}
+ function plum(x,y,sc,col){var s='<g transform="translate('+x+' '+y+') scale('+sc+')"><path d="M0 0 C 60 -40, 120 -60, 200 -140 M 80 -50 C 110 -90, 150 -100, 170 -160 M 140 -95 C 190 -100, 230 -90, 280 -110" stroke="#3a2820" stroke-width="9" fill="none" stroke-linecap="round"/>';
+  var pts=[[60,-40],[110,-70],[170,-150],[200,-140],[150,-100],[230,-95],[280,-110],[95,-60],[185,-120],[255,-100],[130,-80]];
+  pts.forEach(function(p,i){s+='<g transform="translate('+p[0]+' '+p[1]+')">';for(var k=0;k<5;k++){var a=k*72*Math.PI/180;s+='<circle cx="'+(Math.cos(a)*7).toFixed(1)+'" cy="'+(Math.sin(a)*7).toFixed(1)+'" r="6" fill="'+col+'" opacity=".92"/>';}s+='<circle r="3" fill="#f6d27a"/></g>';});
+  return s+'</g>';}
+ function lantern(x,y,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -40 v 14" stroke="#3a2a20" stroke-width="2"/><ellipse cx="0" cy="0" rx="18" ry="24" fill="#d8443a"/><ellipse cx="0" cy="0" rx="10" ry="22" fill="#f08a5a" opacity=".6"/><rect x="-10" y="-27" width="20" height="5" fill="#3a2a20"/><rect x="-10" y="22" width="20" height="5" fill="#3a2a20"/><path d="M0 27 v 16" stroke="#d4a84a" stroke-width="2"/><circle cx="0" cy="0" r="40" fill="#ffb060" opacity=".14"/></g>';}
+ ART.bg=function(k){
+  var key='bg_'+k;if(ART.cache[key])return ART.cache[key];
+  var d='<defs>',s='';
+  if(k==='clinic'){d+=sky('bgc','#f6e8d6','#e8d2b6','#b89070');
+   s+='<rect width="900" height="1600" fill="url(#bgc)"/>';
+   for(var r=0;r<6;r++)for(var c=0;c<5;c++){s+='<rect x="'+(60+c*160)+'" y="'+(160+r*110)+'" width="140" height="92" rx="6" fill="#8a5a3a" stroke="#5a3820" stroke-width="4"/><circle cx="'+(130+c*160)+'" cy="'+(206+r*110)+'" r="7" fill="#d4a84a"/><rect x="'+(92+c*160)+'" y="'+(176+r*110)+'" width="76" height="18" fill="#f4ead8" opacity=".85"/>';}
+   s+='<rect x="0" y="860" width="900" height="40" fill="#6a4228"/><rect x="0" y="1180" width="900" height="420" fill="#a87850"/><rect x="80" y="1100" width="740" height="90" rx="8" fill="#7a4a2a"/>';
+   s+='<g><circle cx="200" cy="1080" r="34" fill="#c8a070"/><rect x="380" y="1040" width="140" height="60" rx="8" fill="#d8c8a8"/><path d="M620 1100 l 40 -80 l 40 80 z" fill="#5a7a5a"/></g>';
+   s+=lantern(120,120,1.4)+lantern(780,120,1.4);s+='<rect width="900" height="1600" fill="#fff4e0" opacity=".12"/>';}
+  else if(k==='palace'){d+=sky('bgp','#b8cce0','#f0e0d0','#f8e8e0');
+   s+='<rect width="900" height="1600" fill="url(#bgp)"/>'+mist(420,0.5);
+   s+='<path d="M100 520 L 450 380 L 800 520 Z" fill="#2a1a1a"/><path d="M60 530 L 450 395 L 840 530 L 820 545 L 80 545 Z" fill="#3a2222"/><rect x="160" y="545" width="580" height="300" fill="#8a2a2a"/>';
+   for(var pi=0;pi<6;pi++)s+='<rect x="'+(180+pi*104)+'" y="545" width="26" height="300" fill="#a8302e"/>';
+   s+='<path d="M120 845 L 780 845 L 860 1600 L 40 1600 Z" fill="#c8b8a8"/>';for(var si=0;si<14;si++)s+='<path d="M'+(120-si*6)+' '+(860+si*52)+' L '+(780+si*6)+' '+(860+si*52)+'" stroke="#a89888" stroke-width="3"/>';
+   s+='<g><rect x="60" y="300" width="10" height="560" fill="#2a2020"/><path d="M70 310 C 140 330, 130 470, 70 480 Z" fill="#1c1418"/><rect x="830" y="300" width="10" height="560" fill="#2a2020"/><path d="M830 310 C 760 330, 770 470, 830 480 Z" fill="#1c1418"/></g>';
+   s+=mist(900,0.25);}
+  else if(k==='plum'){d+=sky('bgm','#e8eef4','#f6eef0','#f0e4e6');
+   s+='<rect width="900" height="1600" fill="url(#bgm)"/><path d="M0 700 C 200 600, 400 680, 600 620 S 850 640, 900 600 L 900 1600 L 0 1600 Z" fill="#dfe6ea"/>'+mist(640,0.6);
+   s+=plum(-20,700,2.2,'#e86a82')+plum(500,420,1.6,'#f29aaa')+plum(80,1180,1.8,'#d94a6a')+plum(560,1100,1.5,'#f6b6c2');
+   s+='<path d="M0 1350 C 300 1300, 600 1380, 900 1320 L 900 1600 L 0 1600 Z" fill="#f8f8fa"/>';
+   for(var pe=0;pe<40;pe++)s+='<ellipse cx="'+rnd0(900,pe*37)+'" cy="'+rnd0(1600,pe*91)+'" rx="5" ry="3" fill="#f29aaa" opacity=".7" transform="rotate('+(pe*23)+' '+rnd0(900,pe*37)+' '+rnd0(1600,pe*91)+')"/>';}
+  else if(k==='market'){d+=sky('bgk','#f8dcb8','#f6e8d0','#e8d0b0');
+   s+='<rect width="900" height="1600" fill="url(#bgk)"/>'+mist(500,0.35);
+   s+='<path d="M0 640 L 260 520 L 260 900 L 0 900 Z" fill="#8a5a3a"/><path d="M900 640 L 640 520 L 640 900 L 900 900 Z" fill="#8a5a3a"/><path d="M-20 650 L 280 510 L 300 530 L 0 680 Z" fill="#3a2a22"/><path d="M920 650 L 620 510 L 600 530 L 900 680 Z" fill="#3a2a22"/>';
+   s+='<rect x="0" y="900" width="900" height="700" fill="#c8a880"/>';
+   ['#c83a3a','#3a6a8a','#d4a84a'].forEach(function(col,i){var x=140+i*240;s+='<g><path d="M'+(x-90)+' 960 L '+(x+90)+' 960 L '+(x+110)+' 1010 L '+(x-110)+' 1010 Z" fill="'+col+'"/><rect x="'+(x-90)+' " y="1010" width="180" height="120" fill="#7a5030"/><rect x="'+(x-100)+'" y="1010" width="8" height="200" fill="#4a3020"/><rect x="'+(x+92)+'" y="1010" width="8" height="200" fill="#4a3020"/></g>';});
+   s+=lantern(300,560)+lantern(600,560)+lantern(450,520,1.2);
+   s+='<rect x="420" y="380" width="8" height="300" fill="#4a3020"/><path d="M428 390 L 520 400 L 510 520 L 428 510 Z" fill="#e8d8b0"/><text x="474" y="470" font-size="54" text-anchor="middle" fill="#a8302e" font-family="serif">市</text>';}
+  else if(k==='camp'){d+=sky('bgx','#9ab0c8','#d8d0c0','#c8b090');
+   s+='<rect width="900" height="1600" fill="url(#bgx)"/><path d="M0 700 L 200 520 L 380 660 L 560 480 L 760 640 L 900 560 L 900 1600 L 0 1600 Z" fill="#7a8a98"/>'+mist(640,0.4);
+   s+='<path d="M0 860 C 300 820, 600 880, 900 840 L 900 1600 L 0 1600 Z" fill="#b8a07a"/>';
+   [[160,960],[480,900],[760,980]].forEach(function(t){s+='<path d="M'+(t[0]-120)+' '+(t[1]+120)+' L '+t[0]+' '+(t[1]-40)+' L '+(t[0]+120)+' '+(t[1]+120)+' Z" fill="#e8dcc4" stroke="#8a7a5a" stroke-width="4"/><path d="M'+t[0]+' '+(t[1]-40)+' L '+t[0]+' '+(t[1]+120)+'" stroke="#8a7a5a" stroke-width="3"/><path d="M'+(t[0]-24)+' '+(t[1]+120)+' L '+t[0]+' '+(t[1]+40)+' L '+(t[0]+24)+' '+(t[1]+120)+' Z" fill="#3a2a22"/>';});
+   s+='<rect x="660" y="520" width="8" height="380" fill="#3a2a22"/><path d="M668 530 C 760 540, 780 620, 668 660 Z" fill="#1c1418"/><text x="712" y="610" font-size="44" fill="#d4a84a" font-family="serif" text-anchor="middle">秦</text>';}
+  else if(k==='night'){d+=sky('bgn','#0e1428','#1e2a48','#2a3050');
+   s+='<rect width="900" height="1600" fill="url(#bgn)"/><circle cx="650" cy="300" r="110" fill="#fbf2d6"/><circle cx="650" cy="300" r="200" fill="#fbf2d6" opacity=".08"/>';
+   for(var stt=0;stt<40;stt++)s+='<circle cx="'+rnd0(900,stt*53)+'" cy="'+rnd0(700,stt*29)+'" r="'+(1+stt%3*0.6)+'" fill="#fff" opacity=".7"/>';
+   s+='<rect x="0" y="820" width="900" height="80" fill="#2a2030"/><path d="M-20 820 L 920 820 L 900 790 L 0 790 Z" fill="#1a1420"/><rect x="0" y="900" width="900" height="700" fill="#262a3a"/>';
+   for(var bi=0;bi<7;bi++){var bx=40+bi*30;s+='<path d="M'+bx+' 1600 C '+(bx+10)+' 1200, '+(bx-10)+' 900, '+(bx+5)+' 500" stroke="#2e4a3a" stroke-width="10" fill="none"/>';for(var lf=0;lf<5;lf++)s+='<path d="M'+(bx+5)+' '+(600+lf*160)+' q 40 -10 70 10 q -40 6 -70 -10z" fill="#3a6a4a" opacity=".85"/>';}
+   s+=lantern(720,880,1.3)+lantern(560,920,1)+mist(1200,0.06);}
+  else if(k==='study'){d+=sky('bgs','#e8dcc8','#d8c8a8','#a8906a');
+   s+='<rect width="900" height="1600" fill="url(#bgs)"/>';
+   for(var sh=0;sh<5;sh++){s+='<rect x="40" y="'+(180+sh*130)+'" width="360" height="12" fill="#5a3a22"/>';for(var sc2=0;sc2<9;sc2++)s+='<rect x="'+(52+sc2*38)+'" y="'+(110+sh*130)+'" width="30" height="70" rx="6" fill="'+(sc2%2?'#c8a870':'#b89058')+'" stroke="#7a5a30" stroke-width="2"/>';}
+   s+='<rect x="500" y="200" width="340" height="520" fill="#f4ead6" stroke="#5a3a22" stroke-width="14"/>';for(var wl=1;wl<4;wl++){s+='<path d="M'+(500+wl*85)+' 200 V 720 M 500 '+(200+wl*130)+' H 840" stroke="#5a3a22" stroke-width="6"/>';}
+   s+='<rect x="0" y="1100" width="900" height="500" fill="#8a6440"/><rect x="200" y="1020" width="500" height="90" rx="8" fill="#5a3a22"/><path d="M300 1010 h 160" stroke="#c8b080" stroke-width="10"/><circle cx="560" cy="1000" r="14" fill="#2a2420"/>';}
+  else if(k==='tavern'){d+=sky('bgt','#3a2a26','#6a4430','#8a5a3a');
+   s+='<rect width="900" height="1600" fill="url(#bgt)"/><rect x="0" y="0" width="900" height="120" fill="#2a1a16"/>';
+   for(var tb=0;tb<6;tb++)s+='<rect x="'+(tb*170)+'" y="0" width="22" height="900" fill="#3a2418"/>';
+   s+=lantern(150,260,1.3)+lantern(450,220,1.5)+lantern(750,260,1.3);
+   s+='<rect x="0" y="1000" width="900" height="600" fill="#5a3a26"/>';
+   [[200,1080],[640,1120]].forEach(function(t){s+='<ellipse cx="'+t[0]+'" cy="'+t[1]+'" rx="150" ry="40" fill="#7a5034"/><rect x="'+(t[0]-10)+'" y="'+t[1]+'" width="20" height="160" fill="#4a2e1c"/><path d="M'+(t[0]-40)+' '+(t[1]-50)+' q 20 -40 40 0 v 30 h -40 z" fill="#8a7a6a"/>';});
+   s+='<rect x="380" y="460" width="10" height="320" fill="#2a1a12"/><path d="M390 470 L 520 480 L 510 640 L 390 630 Z" fill="#e8d8b0"/><text x="452" y="575" font-size="64" text-anchor="middle" fill="#8a2a22" font-family="serif">酒</text>';}
+  else{/* title */d+=sky('bgz','#f4dfe2','#f8eee6','#e8d8d0');
+   s+='<rect width="900" height="1600" fill="url(#bgz)"/><path d="M0 760 L 160 560 L 300 700 L 460 480 L 640 680 L 780 540 L 900 640 L 900 1600 L 0 1600 Z" fill="#c8ced8" opacity=".7"/>'+mist(680,0.7);
+   s+='<path d="M0 960 L 220 760 L 420 900 L 640 740 L 900 900 L 900 1600 L 0 1600 Z" fill="#a8b4c0" opacity=".6"/>'+mist(980,0.55)+plum(-40,420,2.3,'#e86a82')+plum(560,1500,2,'#f29aaa');
+   for(var pt=0;pt<36;pt++)s+='<ellipse cx="'+rnd0(900,pt*41)+'" cy="'+rnd0(1600,pt*97)+'" rx="6" ry="3.5" fill="#f29aaa" opacity=".75" transform="rotate('+(pt*31)+' '+rnd0(900,pt*41)+' '+rnd0(1600,pt*97)+')"/>';}
+  d+='</defs>';
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" preserveAspectRatio="xMidYMid slice">'+d+s+'</svg>';
+  ART.cache[key]=svg;return svg;
+ };
+ function rnd0(m,k){return Math.abs((k*9301+49297)%233280)/233280*m|0;}
+ /* 女主角 */
+ window.HEROINE={n:'女主角',look:{hair:'#2a1c1c',hair2:'#5a3a3a',robe:'#f6e6e8',robe2:'#d8607a',trim:'#d4a84a',eye:'#7a4a3a',skin:'#fbe8de',style:'buns',len:'long'}};
+ /* 取得圖：回傳 HTML（優先圖檔） */
+ ART.html=function(kind,id,expr){
+  var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));
+  var f=ART.file(key)||(kind==='char'?ART.file('char_'+id):'');
+  if(f)return '<img src="'+f+'" alt="" draggable="false">';
+  if(kind==='bg')return ART.bg(id);
+  if(kind==='cg')return ART.cg(id);
+  return ART.portrait(id,expr);
+ };
+ /* CG：背景＋角色近景＋光暈花瓣＋金框 */
+ ART.cg=function(cgid){
+  var who='',bgk='plum',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
+  var nIdx=cgid.slice(-1)|0;var c=CHARS[who];if(!c)return '';
+  bgk={yingzheng:['night','palace','night'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','night','study'],jingke:['tavern','tavern','night'],xuanye:['night','night','plum']}[who][nIdx-1]||'plum';
+  var ex=['normal','smile','blush'][nIdx-1]||'smile';
+  var bgs=ART.bg(bgk).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+  var por=ART.portrait(who,ex).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+  var hp=ART.portrait('heroine','blush').replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" preserveAspectRatio="xMidYMid slice"><g>'+bgs+'</g><rect width="900" height="1600" fill="'+c.col+'" opacity=".18"/>'
+   +'<g transform="translate(-160 360) scale(1.25)" opacity=".96">'+hp+'</g><g transform="translate(240 160) scale(1.45)">'+por+'</g>'
+   +'<radialGradient id="cgv" cx=".5" cy=".45" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a0e14" stop-opacity=".55"/></radialGradient><rect width="900" height="1600" fill="url(#cgv)"/>'
+   +'<rect x="24" y="24" width="852" height="1552" fill="none" stroke="#d4a84a" stroke-width="4"/><rect x="38" y="38" width="824" height="1524" fill="none" stroke="#d4a84a" stroke-width="1.5" opacity=".7"/></svg>';
+ };
+})();
+
+/* ---- 04_ai.js ---- */
+/* ===== AI：萬用 OpenAI 相容 API＋手動貼上模式；知情防火牆、反失憶、斷線接續（沿用《秦風》M13/M15/M20-M27 思路） ===== */
+var AI={};
+AI.ready=function(){if(!SET.ai)return false;if(SET.aiSrc==='manual')return true;if(S&&S.aiPaused)return false;if(AI.isBlocked())return false;if(AI.cool&&Date.now()<AI.cool)return false;return !!SET.key||SET.preset==='custom'||/^https?:\/\/(localhost|127\.)/.test(SET.base);};
+AI.manual=function(){return !!SET.ai&&SET.aiSrc==='manual';};
+AI.sig=function(){return String(SET.key||'')+'|'+AI.endpoint()+'|'+String(SET.model||'');};
+AI.isBlocked=function(){var b=SET.aiBlock;if(!b)return false;var i=b.indexOf('\u0001');return i>0&&b.slice(0,i)===AI.sig();};
+AI.block=function(m){SET.aiBlock=AI.sig()+'\u0001'+String(m||'').slice(0,160);saveSettings();};
+AI.unblock=function(){SET.aiBlock='';AI.cool=0;saveSettings();if(S){S.aiPaused=0;S.aiFails=0;}};
+AI.endpoint=function(){var b=String(SET.base||'').replace(/\s+/g,'').replace(/\/+$/,'');if(/\/chat\/completions$/.test(b))return b;return b+'/chat/completions';};
+AI.headers=function(){var h={'Content-Type':'application/json'};if(SET.key)h.Authorization='Bearer '+SET.key;String(SET.hdr||'').split(/[\n;]+/).forEach(function(p){var m=p.match(/^\s*([A-Za-z0-9\-_]+)\s*[:=]\s*(.+?)\s*$/);if(m)h[m[1]]=m[2];});return h;};
+AI.timeoutFetch=function(url,opts,ms){return new Promise(function(res,rej){var done=false,ctrl=null;try{ctrl=new AbortController();opts.signal=ctrl.signal;}catch(e){}
+ var t=setTimeout(function(){if(done)return;done=true;try{ctrl&&ctrl.abort();}catch(e){}rej({kind:'timeout'});},ms);
+ fetch(url,opts).then(function(r){if(done)return;done=true;clearTimeout(t);res(r);},function(e){if(done)return;done=true;clearTimeout(t);rej({kind:'net',e:e});});});};
+AI.quirks={};
+AI.call=function(messages,o){o=o||{};var q=AI.quirks[AI.endpoint()+'|'+SET.model]||(AI.quirks[AI.endpoint()+'|'+SET.model]={});var depth=o.depth||0;
+ var body={model:SET.model,messages:messages,stream:false};if(!q.notemp)body.temperature=SET.temp;if(q.mct)body.max_completion_tokens=o.maxTok||SET.maxTok;else body.max_tokens=o.maxTok||SET.maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
+ var t0=Date.now();
+ return AI.timeoutFetch(AI.endpoint(),{method:'POST',headers:AI.headers(),body:JSON.stringify(body)},(o.timeout||SET.aiTimeout)*1000).then(function(r){return r.text().then(function(txt){var j=null;try{j=JSON.parse(txt);}catch(e){}
+  if(!r.ok){var ms=String((j&&j.error&&(j.error.message||j.error))||txt.slice(0,160));var again=0;
+   if((r.status===400||r.status===422)&&depth<3){if(!q.mct&&/max_completion_tokens/i.test(ms)){q.mct=1;again=1;}else if(!q.notemp&&/temperature/i.test(ms)){q.notemp=1;again=1;}else if(!q.nofmt){q.nofmt=1;again=1;}}
+   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1});throw {kind:'http',status:r.status,msg:ms};}
+  var c=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;if(typeof c!=='string'||!c.trim())throw {kind:'empty'};return {text:c,ms:Date.now()-t0};});});};
+AI.errMsg=function(e){if(!e)return '未知錯誤';if(e.kind==='timeout')return '連線逾時（'+SET.aiTimeout+' 秒）';if(e.kind==='net')return '無法連上 AI 服務（網絡或 CORS）';if(e.kind==='empty')return 'AI 回應為空';if(e.kind==='parse'||e.kind==='schema')return 'AI 回應格式不正確';
+ if(e.kind==='http'){if(e.status===402)return '餘額不足（HTTP 402）';if(e.status===401||e.status===403)return 'API Key 無效（HTTP '+e.status+'）';if(e.status===404)return '找不到模型或端點（HTTP 404）';if(e.status===429)return '請求太頻繁（HTTP 429）';return 'AI 請求失敗（HTTP '+e.status+'）';}return String(e.message||e);};
+AI.extractJSON=function(text){var t=String(text).trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;t=t.slice(a,b+1);
+ try{return JSON.parse(t);}catch(e){}try{return JSON.parse(t.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(t.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
+var EXPRS=['normal','smile','blush','sad','angry','shy'];
+AI.cleanFx=function(fx){if(!fx||typeof fx!=='object')return null;var o={};
+ if(fx.p&&typeof fx.p==='object'){o.p={};['med','cha','wit','fame','mind','gold','hp'].forEach(function(k){if(typeof fx.p[k]==='number')o.p[k]=clamp(Math.round(fx.p[k]),k==='gold'?-80:-6,k==='gold'?80:6);});}
+ if(fx.c&&typeof fx.c==='object'){o.c={};for(var id in fx.c){if(!CHARS[id]||typeof fx.c[id]!=='object')continue;o.c[id]={};['aff','trust','heart','jeal'].forEach(function(k){if(typeof fx.c[id][k]==='number')o.c[id][k]=clamp(Math.round(fx.c[id][k]),-8,8);});}}
+ if(fx.mem&&typeof fx.mem==='object'){o.mem={};for(id in fx.mem){if(CHARS[id]&&typeof fx.mem[id]==='string')o.mem[id]=fx.mem[id].slice(0,60);}}
+ return o;};
+AI.validate=function(j){if(!j||typeof j!=='object')throw {kind:'parse'};var t=j.scene||j.text;if(typeof t!=='string'||t.length<8)throw {kind:'schema'};
+ var out={scene:t.trim(),speaker:CHARS[j.speaker]?j.speaker:'',expr:EXPRS.indexOf(j.expr)>=0?j.expr:'normal',bg:PLACES[j.bg]?j.bg:'',choices:[],fx:AI.cleanFx(j.fx),facts:[],recap:typeof j.recap==='string'?j.recap.slice(0,60):''};
+ (j.choices||[]).forEach(function(c){var tx=typeof c==='string'?c:(c&&(c.text||c.label));if(typeof tx==='string'&&tx&&out.choices.length<4)out.choices.push({text:tx.slice(0,36),fx:AI.cleanFx(c&&c.fx)});});
+ if(out.choices.length<2)throw {kind:'schema'};
+ (j.facts||j.effects||[]).forEach(function(f){if(f&&typeof f.text==='string'&&out.facts.length<2){var kb=(f.knownBy||[]).filter(function(x){return CHARS[x]||x==='p';});out.facts.push({t:f.text.slice(0,80),kn:kb,sub:CHARS[f.subject]?f.subject:'p'});}});
+ return out;};
+/* ---- 提示 ---- */
+AI.worldRules=function(short){
+ var t='背景：戰國末年秦國咸陽（秦王政在位）。這是乙女向古風戀愛遊戲《'+GAME_TITLE+'》。玩家「'+S.p.name+'」是剛學成下山的女神醫（師承青囊谷青囊子），可攻略角色皆為成年原創動漫化角色：'+CHAR_ORDER.filter(function(id){return !CHARS[id].hidden||S.c[id].met;}).map(function(id){return CHARS[id].n+'('+id+')';}).join('、')+'。嚴禁出現秦以後的事物（紙、茶、瓷器、科舉、佛寺）。';
+ t+=SET.adult?'可有含蓄的成年人曖昧，但不得露骨。':'情感描寫純愛含蓄：牽手、擁抱、眼神、心跳為主，不寫露骨內容。';
+ if(short)return t+'【規則】已相識者不可當初見；角色只知道自己知道的事；〔指令〕必須執行；〔設定〕是作者宣告的事實必須成真；不可無前因拿人或大轉折。';
+ t+='\n【知情防火牆】每位角色只知道【X所知】列出的事與親身經歷；不得說出或暗示自己不知道的秘密（尤其玩家的秘密）。';
+ t+='\n【反失憶】已相識（標「已識」）的角色絕不可表現初次見面，必須記得【記憶】中的往事並自然提及。';
+ t+='\n【輸入分流】〔對白〕是玩家說的話，只讓角色回應；〔指令・行動〕是玩家的動作，必須寫出結果；〔指令・命令〕是玩家以導演身分描述某角色下令，該角色必須真的執行；〔設定・劇情〕是玩家作者宣告的事實，必須直接成真，不可寫成念頭或用「莫非／荒唐／不可能」否定。';
+ t+='\n【世界節制】不可無前因讓角色被捕、下獄、死亡或大轉折；重大事件須有罪證、動機與有權者下令；與玩家無關的大事一筆帶過。';
+ return t;};
+AI.system=function(){return '你是乙女遊戲《'+GAME_TITLE+'》的劇本主持人。'+AI.worldRules()+'\n規則：\n1. 繁體中文，古風、細膩、有畫面感與心動感；每幕 120–240 字，以短句分行，對白用「」並以「角色名：」開頭便於分行顯示。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要角色 id 或空字串","expr":"normal|smile|blush|sad|angry|shy","bg":"'+PLACE_ORDER.join('|')+'","choices":[{"text":"選項(24字內)","fx":{}}],"fx":{"p":{"med":0,"cha":0,"wit":0,"fame":0,"mind":0,"gold":0},"c":{"角色id":{"aff":0,"trust":0,"heart":0,"jeal":0}},"mem":{"角色id":"該角色對此事的記憶短句"}},"facts":[],"recap":"一句概述"}\n3. 數值小幅：p 每項 ±3（gold ±50），c 每項 ±6。角色 id 只能用上列 id。\n4. choices 給 3 個各異選項（溫柔、試探、俏皮或退讓），須按新局面重新生成，不可沿用舊選項。\n5. facts（可空）：真正揭露或改變秘密／關係時才填，最多 2 項：{"text":"一句事實","subject":"p或角色id","knownBy":["角色id"]}。\n6. 不替玩家做決定；不讓角色死亡；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
+AI.charLine=function(id){var c=CHARS[id],r=S.c[id];var mem=(S.mem[id]||[]).slice(-4).map(function(m){return m.t;}).join('／');
+ var kn=FW.knows(id).map(function(f){return f.t;}).slice(0,4).join('；');
+ return c.n+'('+id+'｜'+c.c+(r.met?'｜已識':'｜未識')+')：好感'+r.aff+' 信任'+r.trust+' 心動'+r.heart+' 醋意'+r.jeal+' 健康'+r.hp+(r.cured?'(已醫治)':'('+c.ail+')')+'｜性格：'+c.pers+'｜心態：'+Mood.card(id)+(mem?'｜記憶：'+mem:'')+(kn?'｜所知：'+kn:'');};
+AI.summary=function(){var p=S.p,L=[];
+ L.push('【時間地點】'+dateStr()+'，'+(PLACES[S.place]||PLACES.clinic).n+'；'+CHAPTERS[S.ch].n+'（目標：'+CHAPTERS[S.ch].goal+'）');
+ L.push('【玩家】'+p.name+'：醫術'+p.med+' 魅力'+p.cha+' 才智'+p.wit+' 名聲'+p.fame+' 心境'+p.mind+' 銀兩'+p.gold);
+ var ids=Eng.present();CHAR_ORDER.forEach(function(id){if(ids.indexOf(id)<0&&S.c[id].met&&S.c[id].aff>=15&&ids.length<5)ids.push(id);});
+ if(ids.length)L.push('【人物】\n'+ids.map(AI.charLine).join('\n'));
+ var pub=S.facts.filter(function(f){return f.pub;}).slice(-4).map(function(f){return f.t;});if(pub.length)L.push('【公開事實】'+pub.join('；'));
+ var wl=WS.brief().slice(0,3);if(wl.length)L.push('【近期大事】'+wl.join('；'));
+ if(S.back.length)L.push('【最近幾句】'+S.back.slice(-5).map(function(b){return (b.sp?cn(b.sp)+'：':'')+b.t;}).join('／').slice(0,300));
+ return L.join('\n');};
+AI.userMsg=function(a){var sum=AI.summary();var tag=a.tag||'';var x=a.extra||'';
+ if(a.type==='free')return sum+'\n\n【本回合輸入'+(tag?'：'+tag:'')+'】「'+a.text+'」'+x+'\n請寫出這一幕的經過與角色反應，並給出新的選項。';
+ if(a.type==='date')return sum+'\n\n【約會】玩家與'+cn(a.id)+'在'+PLACES[a.place].n+'約會。'+x+'請寫一段心動的約會場景，speaker='+a.id+'。';
+ if(a.type==='talk')return sum+'\n\n【交談】玩家與'+cn(a.id)+'交談（話題：'+(a.topic||'閒聊')+'）。'+x+'請寫出符合關係階段的對話，speaker='+a.id+'。';
+ return sum+'\n\n請推演下一幕。'+x;};
+AI.request=function(a){var msgs=[{role:'system',content:AI.system()},{role:'user',content:AI.userMsg(a)}];if(a._retry)msgs.push({role:'user',content:'上次輸出不是合法 JSON，請只輸出符合格式的單一 JSON。'});
+ return AI.call(msgs,{}).then(function(res){var j=AI.extractJSON(res.text);try{return AI.validate(j);}catch(e){if(!a._retry){var b={};for(var k in a)b[k]=a[k];b._retry=1;return AI.request(b);}throw e;}});};
+AI.manualPrompt=function(a){return AI.system()+'\n\n=====世界狀態=====\n'+AI.userMsg(a)+'\n\n（請直接輸出 JSON）';};
+AI.fail=function(e){if(e&&e.kind==='cancel')return;var m=AI.errMsg(e);var st=e&&e.kind==='http'?e.status:0;var perm=st===401||st===402||st===403||st===404;
+ if(S){S.aiFails=(S.aiFails||0)+1;if(perm||S.aiFails>=3)S.aiPaused=1;}
+ if(perm){AI.block(m);m+='。AI 已暫停，改用離線劇情；到設定修正後按「測試連線」。';}else if(st===429){AI.cool=Date.now()+60000;m+='（60 秒內改用離線）';}else if(S&&S.aiPaused)m+='。連續失敗，AI 已暫停。';else m+='（已改用離線劇情）';
+ AI.lastErr=m;try{toast('⚠ '+m,3600);}catch(x){}};
+AI.test=function(){return AI.call([{role:'system',content:'只輸出JSON'},{role:'user',content:'回傳 {"ok":true}'}],{maxTok:60,timeout:Math.min(45,SET.aiTimeout)}).then(function(r){AI.unblock();return {ok:true,msg:'連線成功（'+r.ms+' ms）'};},function(e){return {ok:false,msg:AI.errMsg(e)};});};
+/* 執行：回傳 Promise<scene> */
+AI.run=function(a){
+ var rq=AI.manual()?new Promise(function(res,rej){UI.manualDialog(AI.manualPrompt(a),function(txt){try{res(AI.validate(AI.extractJSON(txt)));}catch(e){rej(e);}},function(){rej({kind:'cancel'});});}):AI.request(a);
+ return rq.then(function(r){S.aiFails=0;S.pend=null;
+  r=FW.check(r,a);r=Nom.check(r);
+  if(r.fx)Eng.applyFx(r.fx);
+  r.facts.forEach(function(f){FW.add(f.t,f.kn,f.sub);});
+  var sc=Eng.textScene(r.scene,r.speaker||a.id||'',r.expr,r.bg||S.place);
+  sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:r.speaker||a.id||''},fx:c.fx,ai:1};});
+  sc.ch.push({t:'返回地圖',go:'hub'});sc.ai=1;sc.recap=r.recap;
+  if(r.speaker&&S.c[r.speaker]){S.c[r.speaker].met=1;Eng.keep(r.speaker);}
+  return sc;});};
+/* ===== 知情防火牆（M13 簡化） ===== */
+var FW={};
+FW.add=function(t,kn,sub,opt){opt=opt||{};var f={t:String(t).slice(0,90),kn:(kn||[]).slice(0,8),sub:sub||'p',d:S.day,pub:opt.pub?1:0,kw:opt.kw||''};
+ for(var i=0;i<S.facts.length;i++){if(S.facts[i].t===f.t){f.kn.forEach(function(k){if(S.facts[i].kn.indexOf(k)<0)S.facts[i].kn.push(k);});return S.facts[i];}}
+ S.facts.push(f);if(S.facts.length>60)S.facts.shift();return f;};
+FW.knows=function(id){return S.facts.filter(function(f){return f.pub||f.kn.indexOf(id)>=0;});};
+FW.learn=function(id,ft){S.facts.forEach(function(f){if(f.t===ft&&f.kn.indexOf(id)<0)f.kn.push(id);});};
+/* 洩密檢查：玩家秘密的關鍵字出現在不知情角色的台詞裡 → 刪去該句 */
+FW.check=function(r,a){if(SET.firewall===false)return r;var leaks=[];
+ (S.secrets.p||[]).forEach(function(sec){var kw=sec.kw||(sec.k==='master'?'禁方':'');if(!kw)return;
+  var lines=r.scene.split('\n');var keep=[];lines.forEach(function(l){var m=l.match(/^([^：「]{1,6})[：:]/);var who=m?Eng.idByName(m[1]):'';
+   if(who&&l.indexOf(kw)>=0&&sec.kn.indexOf(who)<0){leaks.push(cn(who));}else keep.push(l);});r.scene=keep.join('\n');});
+ if(leaks.length){r.scene+='\n（'+leaks.join('、')+'並不知道你的秘密，方才的話題被輕輕帶過。）';FW.stat=(FW.stat||0)+1;}
+ return r;};
+/* ===== 反失憶（M21 簡化） ===== */
+var Nom={};
+Nom.check=function(r){var hit=0;var lines=r.scene.split('\n').map(function(l){var m=l.match(/^([^：「]{1,6})[：:]/);var who=m?Eng.idByName(m[1]):(r.speaker||'');
+  if(who&&S.c[who]&&S.c[who].met&&/初次見面|素未謀面|初次相見|你是何人|姑娘是誰|我們見過嗎|從未見過/.test(l)){hit=1;return l.replace(/初次見面|初次相見/g,'又見面了').replace(/素未謀面|從未見過/g,'早已相識').replace(/你是何人|姑娘是誰|我們見過嗎/g,'是你啊');}return l;});
+ if(hit){r.scene=lines.join('\n');Nom.stat=(Nom.stat||0)+1;}return r;};
+/* ===== 心態卡（M20 Bond 簡化） ===== */
+var Mood={};
+Mood.feel=function(id){var r=S.c[id];var sc=r.aff*0.5+r.heart*0.7+r.trust*0.3-r.jeal*0.2;
+ if(r.heart>=80)return '深愛';if(r.heart>=55)return '傾心';if(r.heart>=30)return '心動';if(r.aff>=40)return '親近';if(r.aff>=15)return '友善';if(r.aff<=-10)return '疏遠';return '平淡';};
+Mood.card=function(id){var r=S.c[id],c=CHARS[id];var f=Mood.feel(id);var goal=r.thought||({深愛:'想與她共度一生',傾心:'想把她留在身邊',心動:'在意她的一舉一動',親近:'願意與她多說幾句',友善:'對她頗有好感',疏遠:'對她有所戒備',平淡:'暫且觀望'})[f];
+ return f+'；'+goal+(r.jeal>=30?'；醋意難掩':'')+(r.sec>=1?'；已向她吐露心結':'');};
+Mood.note=function(id,t){if(!S.mem[id])S.mem[id]=[];var m=S.mem[id];if(m.length&&m[m.length-1].t===t)return;m.push({d:S.day,t:String(t).slice(0,60)});if(m.length>16)m.shift();};
+
+/* ---- 05_engine.js ---- */
+/* ===== 引擎：場景、時間、數值、里程碑、章節、結局 ===== */
+var Eng={};var NODES={};
+(function(){
+ Eng.idByName=function(nm){nm=String(nm||'').replace(/\s/g,'');for(var i=0;i<CHAR_ORDER.length;i++){var c=CHARS[CHAR_ORDER[i]];if(nm===c.n||nm.indexOf(c.n)>=0)return CHAR_ORDER[i];}
+  if(/秦王|大王|王上|陛下/.test(nm))return 'yingzheng';if(/將軍/.test(nm))return 'mengtian';if(/公子扶蘇|長公子/.test(nm))return 'fusu';if(/影衛|蒙面/.test(nm))return 'xuanye';return '';};
+ /* 某角色此刻在哪 */
+ Eng.where=function(id){var r=S.c[id],c=CHARS[id];if(r.jailed)return '';if(r.away&&r.away>S.day)return '';if(r.here&&r.here.d===S.day)return r.here.pl;if(S.focusAt&&S.focusAt.id===id&&Eng.now()-S.focusAt.t<=2)return S.focusAt.pl;
+  if(c.lock>S.ch&&!r.met)return '';if(c.hidden&&!S.flags.xy_open)return '';return c.at[perName()]||'';};
+ Eng.now=function(){return S.day*4+S.per;};
+ Eng.keep=function(id){if(id&&S.c[id])S.focusAt={id:id,pl:S.place,t:Eng.now()};};
+ Eng.present=function(pl){pl=pl||S.place;return CHAR_ORDER.filter(function(id){return Eng.where(id)===pl;});};
+ Eng.unlocked=function(pl){var P=PLACES[pl];if(!P)return false;if(P.need&&S.ch<P.need&&!S.flags.palace_ok)return false;return true;};
+ /* 數值 */
+ function popC(id,k,v){if(!v)return;var r=S.c[id];var mul=(v>0&&(k==='aff'||k==='heart'||k==='trust'))?diffMul():1;var d=Math.round(v*mul);if(!d)d=v>0?1:-1;r[k]=clamp(r[k]+d,k==='aff'?-50:0,100);
+  UI.pop(id,k,d);}
+ Eng.c=function(id,o,why){if(!S.c[id])return;for(var k in o)popC(id,k,o[k]);if(why)Mood.note(id,why);Eng.checkMs(id);};
+ Eng.p=function(o){var P=S.p;for(var k in o){if(P[k]===undefined)continue;P[k]=clamp(P[k]+o[k],k==='gold'?0:0,k==='gold'?99999:(k==='mind'||k==='hp'?100:999));if(o[k])UI.popP(k,o[k]);}};
+ Eng.applyFx=function(fx){if(!fx)return;if(fx.p)Eng.p(fx.p);if(fx.c)for(var id in fx.c)Eng.c(id,fx.c[id]);if(fx.mem)for(id in fx.mem)Mood.note(id,fx.mem[id]);};
+ Eng.item=function(k,n){S.inv[k]=Math.max(0,(S.inv[k]||0)+n);if(!S.inv[k])delete S.inv[k];};
+ /* 場景：文字 → 行 */
+ Eng.textScene=function(text,sp,ex,bg){var lines=[];String(text||'').split(/\n+/).forEach(function(l){l=l.trim();if(!l)return;
+   var m=l.match(/^([^：「」\s]{1,6})[：:]\s*(.*)$/);var who=m?Eng.idByName(m[1]):'';
+   if(m&&(who||m[1]===S.p.name||m[1]==='你')){lines.push({sp:who||'p',ex:ex,t:m[2]});}else lines.push({sp:'',t:l});});
+  return {lines:lines,focus:sp||'',ex:ex||'normal',bg:bg||S.place};};
+ Eng.L=function(arr,focus,bg,ch,o){/* arr: [[sp,text,expr]] 或字串 */var lines=arr.map(function(x){if(typeof x==='string')return {sp:'',t:x};return {sp:x[0],t:x[1],ex:x[2]};});
+  var sc={lines:lines,focus:focus||'',bg:bg||S.place,ch:ch||[{t:'繼續',go:'hub'}]};if(o)for(var k in o)sc[k]=o[k];return sc;};
+ /* 時間 */
+ Eng.pass=function(n){n=n||1;for(var i=0;i<n;i++){S.per++;if(S.per>3){S.per=0;S.day++;Eng.newDay();}}};
+ Eng.newDay=function(){CHAR_ORDER.forEach(function(id){var r=S.c[id];r.talked=0;if(r.jeal>0)r.jeal=Math.max(0,r.jeal-2);if(!r.cured&&r.hp>40&&rand()<0.06)r.hp-=3;});
+  S.p.mind=clamp(S.p.mind+2,0,100);WS.tick();Letters.tick();if(SET.autosave!==false)saveSlot('auto',true);};
+ /* 里程碑 */
+ var MS=[{aff:25,heart:0,trust:0},{aff:50,heart:25,trust:20},{aff:75,heart:55,trust:40}];
+ Eng.msReady=function(id){var r=S.c[id];if(r.stage>=3)return false;var m=MS[r.stage];return r.met&&r.aff>=m.aff&&r.heart>=m.heart&&r.trust>=m.trust&&!(r.stage===2&&S.ch<2);};
+ Eng.checkMs=function(id){if(Eng.msReady(id)&&S.pendMs.indexOf(id)<0)S.pendMs.push(id);};
+ /* 章節推進檢查（每次回地圖） */
+ Eng.chapterCheck=function(){var need=Pace.mul();
+  if(S.ch===0&&S.p.fame>=10&&!S.evseen.summon)return 'evSummon';
+  if(S.ch===1&&S.c.yingzheng.met&&S.day>=S.chDay+Math.round(5*need)&&!S.evseen.poison)return 'evPoison';
+  if(S.ch===2&&S.flags.poison_solved&&S.day>=S.chDay+Math.round(4*need)&&!S.evseen.storm)return 'evStorm';
+  if(S.ch===3&&S.day>=S.chDay+Math.round(6*need)&&!S.evseen.finale)return 'evFinale';
+  if(S.ch<4&&S.day>=Math.round(110*need)&&!S.evseen.finale){S.ch=3;return 'evFinale';}
+  return '';};
+ Eng.setCh=function(n){S.ch=n;S.chDay=S.day;UI.banner(CHAPTERS[n].n,CHAPTERS[n].goal);addLog('〔章節〕'+CHAPTERS[n].n);};
+ /* 回地圖前的待處理事件 */
+ Eng.pending=function(){
+  if(S.pendMs.length){var id=S.pendMs.shift();if(Eng.msReady(id))return {go:'ms',a:{id:id}};}
+  var cc=Eng.chapterCheck();if(cc)return {go:cc,a:{}};
+  var fe=Eng.festival();if(fe)return {go:'festival',a:{i:fe}};
+  var j=Eng.jealousy();if(j)return {go:'jealous',a:j};
+  if(S.pend&&S.pend.text&&!S.pend.shown){S.pend.shown=1;return {go:'resume',a:{}};}
+  return null;};
+ Eng.festival=function(){for(var i=0;i<FESTIVALS.length;i++){var f=FESTIVALS[i];var dd=(S.day-1)%120+1;if(dd===f.d&&!S.evseen['fe'+i+'_'+Math.floor((S.day-1)/120)])return i+1;}return 0;};
+ Eng.jealousy=function(){if(S.day-(S.flags.lastJeal||-99)<6)return null;var hi=CHAR_ORDER.filter(function(id){return S.c[id].jeal>=40&&S.c[id].heart>=25&&Eng.where(id);});if(!hi.length)return null;
+  var a=hi[0];var b=CHAR_ORDER.filter(function(id){return id!==a&&S.c[id].heart>=20;}).sort(function(x,y){return S.c[y].heart-S.c[x].heart;})[0];if(!b)return null;return {a:a,b:b};};
+ /* 結局判定 */
+ Eng.endingFor=function(id){var r=S.c[id];if(!id)return CHAR_ORDER.filter(function(x){return S.c[x].aff>=60;}).length>=4?'hidden_doctor':'normal';
+  if(id==='hanfei'&&S.flags.hanfei_jail&&!S.flags.hanfei_saved)return 'be_hanfei';
+  if(id==='jingke'&&S.flags.jingke_left&&!S.flags.jingke_stopped)return 'be_jingke';
+  if(id==='yingzheng'&&r.jeal>=70)return 'be_yingzheng';
+  if(r.stage>=3&&r.trust>=55)return 'he_'+id;
+  return 'normal';};
+ Eng.end=function(key){S.endings[key]=S.day;var g=Meta.get();g.endings[key]=1;Meta.save();addLog('〔結局〕'+ENDINGS[key].n);};
+ /* CG 解鎖（跨存檔記在 Meta） */
+ Eng.cg=function(id){S.cg[id]=S.day;var g=Meta.get();g.cg[id]=1;Meta.save();};
+ /* 背景回顧 */
+ Eng.back=function(l){S.back.push({sp:l.sp||'',t:String(l.t).slice(0,140),d:S.day});if(S.back.length>200)S.back.shift();};
+})();
+/* 跨存檔資料：CG 相冊、結局、圖鑑 */
+var Meta={get:function(){if(Meta._g)return Meta._g;var g={};try{g=JSON.parse(localStorage.getItem('qlv_meta')||'{}')||{};}catch(e){g={};}if(!g.cg)g.cg={};if(!g.endings)g.endings={};if(!g.seen)g.seen={};Meta._g=g;return g;},save:function(){try{localStorage.setItem('qlv_meta',JSON.stringify(Meta._g));}catch(e){}}};
+/* 劇情節奏 */
+var Pace={mul:function(){return {slow:1.4,mid:1,fast:0.7}[SET.pace]||1;}};
+/* ===== 世界節制（M26 簡化）：自主大事須有前因、全局限頻 ===== */
+var WS={};
+WS.log=function(t,why,tag){S.world.maj.push({d:S.day,t:t,why:why||'',tag:tag||'傳聞'});if(S.world.maj.length>30)S.world.maj.shift();addLog('〔'+(tag||'傳聞')+'〕'+t+(why?'——'+why:''));};
+WS.brief=function(){return S.world.maj.filter(function(m){return S.day-m.d<=30;}).slice(-8).reverse().map(function(m){return '〔'+m.tag+'〕'+m.t+(m.why?'——'+m.why:'');});};
+WS.allow=function(){if(SET.wsane===false)return rand()<0.3;var last=S.world.maj.filter(function(m){return m.tag!=='你所為';});var ld=last.length?last[last.length-1].d:-99;
+ var cd={slow:12,mid:8,fast:5}[SET.pace]||8;if(S.day-ld<cd)return false;var n30=last.filter(function(m){return S.day-m.d<30;}).length;if(n30>=({slow:2,mid:3,fast:4}[SET.pace]||3))return false;return rand()<0.35;};
+var WEVENTS=[
+ {t:'李斯上〈諫逐客書〉，秦王收回逐客令',why:'起因：宗室欲驅逐六國客卿',need:function(){return S.ch>=1;},fx:function(){S.c.lisi.trust=clamp(S.c.lisi.trust+2,0,100);}},
+ {t:'北疆胡騎犯邊，蒙恬奉命巡邊數日',why:'起因：邊報告急',need:function(){return S.c.mengtian.met&&S.day>12;},fx:function(){S.c.mengtian.away=S.day+2;}},
+ {t:'咸陽城南時疫初起，醫者稀缺',why:'起因：春寒反覆、井水不潔',need:function(){return true;},fx:function(){S.flags.plague=S.day;}},
+ {t:'韓國使者入秦，朝中議論存韓之策',why:'起因：秦欲伐韓，韓王遣使周旋',need:function(){return S.ch>=1;},fx:function(){}},
+ {t:'市井傳言：燕國有刺客入關',why:'據傳起因：燕太子丹在秦受辱而歸（詳情不明）',need:function(){return S.ch>=2;},fx:function(){}}
+];
+WS.tick=function(){if(!WS.allow())return;var c=WEVENTS.filter(function(e,i){return e.need()&&!S.evseen['we'+i];});if(!c.length)return;var e=pick(c);S.evseen['we'+WEVENTS.indexOf(e)]=1;e.fx();WS.log(e.t,e.why,'傳聞');};
+
+/* ---- 06_story.js ---- */
+/* ===== 劇情：開場、地點、角色互動、里程碑、章節事件、節日、修羅場、結局（離線劇本；AI 可接手潤色與自由互動） ===== */
+(function(){
+ var P=function(){return S.p.name;};
+ function ch(t,go,a,o){var c={t:t,go:go||'hub'};if(a)c.a=a;if(o)for(var k in o)c[k]=o[k];return c;}
+ window.ch=ch;
+ /* ---------- 開場 ---------- */
+ NODES.start=function(){S.place='clinic';
+  return Eng.L(['青囊谷的晨霧散得很慢。',
+   '師父青囊子把一只舊藥箱交到你手中——箱角刻著一個小小的「囊」字。',
+   ['','「'+P()+'，為師能教的，都教給你了。」'],
+   '他咳了兩聲，又從袖中取出一卷以蠟封口的帛書：「這卷禁方，非到萬不得已，莫要示人。」',
+   '你跪下，向師父磕了三個頭。',
+   '七日後，你背著藥箱，走進了咸陽城。'],'', 'title',[ch('走進咸陽','prologue2')]);};
+ NODES.prologue2=function(){S.place='market';
+  return Eng.L(['咸陽市集人聲鼎沸，糖人、竹簡、藥材，琳瑯滿目。',
+   '忽然人群一陣騷動——一匹驚馬撞翻了攤子，一名白袍銀甲的年輕將軍飛身勒馬，左肩卻滲出了血。',
+   ['mengtian','「都退開！別傷著人——嘶……」','normal'],
+   '他咬著牙，按住肩頭。血順著銀甲的縫隙往下淌。',
+   ['p','（是舊傷崩裂。）你放下藥箱，撥開人群走了過去。']],'mengtian','market',
+   [ch('🩺「將軍別動，我是大夫。」','meetMt',{how:'help'}),ch('🤔 先觀察，再上前','meetMt',{how:'watch'})]);};
+ NODES.meetMt=function(a){var c=S.c.mengtian;c.met=1;Eng.c('mengtian',{aff:a.how==='help'?10:5,trust:a.how==='help'?6:3},'在市集被'+P()+'救治肩傷');
+  Eng.p({fame:3,med:1});FW.add('蒙恬左肩有舊箭傷',['mengtian'],'mengtian');
+  return Eng.L([['mengtian','「你……是大夫？這麼年輕？」','normal'],
+   '你沒有答話，只俐落地止了血，敷上金創藥，再以銀針封住穴位。',
+   ['mengtian','「……不疼了？」他愣愣地看著你，忽然笑開，露出一顆小虎牙，「我叫蒙恬！姑娘怎麼稱呼？」','smile'],
+   ['p','「'+P()+'。城南新開的青囊醫館，將軍若肩痛，可來複診。」'],
+   ['mengtian','「一定去！」他把一個剛買的糖人塞進你手裡，「謝禮，先欠著。」','smile'],
+   '你看著手裡歪歪扭扭的糖人，忍不住笑了。','——這是你在咸陽遇見的第一個人。'],'mengtian','market',[ch('前往醫館','introClinic')]);};
+ NODES.introClinic=function(){S.place='clinic';Eng.pass(1);
+  return Eng.L(['你在城南賃下一間小鋪，掛上「青囊醫館」的木匾。','藥櫃一格格排開，藥香漸漸盈滿了屋子。',
+   '【目標】在咸陽行醫、打響名聲（名聲達 10），自然會有貴人找上門來。',
+   '小提示：點「地圖」前往各處；在醫館「坐診」可問診賺取名聲；遇見的人會記住你們之間的每一件事。'],'','clinic',[ch('開始在咸陽的日子','hub')]);};
+ /* ---------- 地點 ---------- */
+ NODES.go=function(a){var pl=a.pl;if(!Eng.unlocked(pl))return Eng.L(['那裡現在還去不了。'],'',S.place,[ch('返回地圖','hub')]);
+  if(PLACES[pl].night&&S.per<3){return Eng.L(['夜色庭院只在入夜後才有人。要等到夜裡嗎？'],'',S.place,[ch('🌙 等到入夜再去','goNight',{pl:pl}),ch('返回地圖','hub')]);}
+  if(S.place!==pl){S.focusAt=null;CHAR_ORDER.forEach(function(id){var r=S.c[id];if(r.here&&r.here.pl===S.place)r.here=null;});}S.place=pl;return NODES.place({});};
+ NODES.goNight=function(a){while(S.per<3)Eng.pass(1);S.place=a.pl;return NODES.place({});};
+ NODES.place=function(){var pl=S.place,Pl=PLACES[pl];var here=Eng.present(pl);
+  var ls=[Pl.n+'·'+perName()+'。'+Pl.d];var cs=[];
+  if(S.c.xuanye&&pl==='courtyard'&&S.flags.xy_open&&!S.c.xuanye.met)return NODES.meet({id:'xuanye'});
+  here.forEach(function(id){var r=S.c[id];if(!r.met){cs.push(ch('👤 '+CHARS[id].sub,'meet',{id:id}));}else cs.push(ch('💬 '+CHARS[id].n+'（'+Mood.feel(id)+'）','talk',{id:id}));});
+  if(here.length)ls.push(here.map(function(id){return S.c[id].met?CHARS[id].n+'在這裡。':'那裡站著一位'+CHARS[id].sub+'。';}).join(''));else ls.push('此刻這裡沒有熟悉的身影。');
+  if(pl==='clinic'){cs.push(ch('🩺 坐診問診','diag'),ch('⚗️ 製藥','craft'),ch('🛏 歇息（回復心境）','rest'));}
+  if(pl==='market'){cs.push(ch('🛍 逛市集買東西','shop'),ch('🌿 採買草藥','herb'));}
+  if(pl==='plum'){cs.push(ch('🌸 折一枝梅','plumPick'),ch('🌿 林間採藥','herb'));}
+  if(S.ch===2&&!S.flags.poison_solved&&(pl==='market'||pl==='study'||pl==='courtyard')&&!S.flags['clue_'+pl])cs.unshift(ch('🔍 調查安神香的線索','clue',{k:pl}));
+  if(S.ch===2&&!S.flags.poison_solved&&pl==='palace'&&['market','study','courtyard'].every(function(x){return S.flags['clue_'+x];}))cs.unshift(ch('⚖️ 向秦王指認真兇','accuse'));
+  if(pl==='camp'&&!here.length)cs.push(ch('🩹 為傷兵義診','campAid'));
+  if(pl==='tavern')cs.push(ch('🍶 聽筑飲酒','tavernSit'));
+  cs.push(ch('🗺 返回地圖','hub'));
+  return Eng.L(ls,here[0]||'',Pl.bg==='night'?'courtyard':pl,cs,{placeView:1});};
+ /* ---------- 初遇 ---------- */
+ var MEET={
+  lisi:[['','梅林深處，一位青衣男子正獨自對著殘局，指尖拈著一枚白子。'],['lisi','「姑娘看了半晌，可看出這一局的生路？」','smile'],['p','「白子看似被圍，其實東南角還有一口氣。」'],['lisi','他微微一怔，隨即笑意更深：「在下李斯，上蔡人，客居秦國。姑娘好眼力。」','smile'],['','他笑得溫和，可那雙眼睛，像在掂量你值幾兩。']],
+  jingke:[['','酒肆裡筑聲正酣，一個落拓劍客醉臥長凳，酒罈滾到了你腳邊。'],['jingke','「哎——姑娘，撿到便是緣分，賞臉喝一碗？」','smile'],['p','「你酒後胸悶，唇色發紫，再喝下去會出事。」'],['jingke','他眨了眨眼，忽然大笑：「有意思！荊軻浪跡半生，頭一回被人當面說要死了。」','smile'],['','他把酒碗推到你面前——卻沒有再往自己碗裡倒。']],
+  yingzheng:[['','章台殿深，燭影搖紅。玄袍金冠的青年從竹簡堆中抬起頭。'],['yingzheng','「你就是那個女醫？……太年輕了。」','normal'],['p','「醫術不看年紀。大王頭痛幾年了？」'],['yingzheng','他的目光冷了一瞬，又落回你的藥箱上：「……七年。」','normal'],['','殿中侍者皆屏住了呼吸——敢這樣問秦王的人，你是第一個。']],
+  fusu:[['','蘭台書房，白狐裘的公子正對著一卷殘簡輕咳。'],['fusu','「抱歉，失禮了。」他溫和地向你頷首，「在下扶蘇。姑娘是父王召來的醫者？」','smile'],['p','「公子手足冰涼，咳聲帶寒，是先天寒症吧。」'],['fusu','他愣了愣，把暖手爐遞給你：「書房冷，姑娘先暖暖手。我的病……不急。」','smile'],['','他總是這樣，先顧著別人。']],
+  hanfei:[['','雨打蘭台，一位墨衣公子獨坐窗下，筆走如飛。'],['hanfei','「你、你是……」他放下筆，耳根微紅，「在、在下韓非。」','shy'],['p','「我聽過公子的書。〈孤憤〉〈五蠹〉，字字如刀。」'],['hanfei','他沉默許久，低聲道：「……很少有人，聽、聽我說完一句話。」','sad'],['','你把一杯溫水推到他手邊：「那我等你說完。」']],
+  mengtian:[['mengtian','「是你！」蒙恬笑著跑過來，「肩膀好多了，我正想去醫館找你。」','smile']],
+  xuanye:[['','月色下，一道黑影自牆頭掠過。你腳下一滑，眼看就要跌進池中——'],['','一隻手穩穩扣住了你的腰。'],['xuanye','「……小心。」','normal'],['','銀髮，黑巾覆面。他放開你，退後兩步，像是隨時要融進夜色。'],['p','「你一直在跟著我？」'],['xuanye','「……奉命。」他頓了頓，「但方才那一下，不是命令。」','normal']]
+ };
+ NODES.meet=function(a){var id=a.id,r=S.c[id];r.met=1;var L0=MEET[id]||[['',CHARS[id].n+'向你點頭致意。']];
+  Eng.c(id,{aff:5,trust:2},'初識'+P());Meta.get().seen[id]=1;Meta.save();Eng.pass(0);
+  if(id==='xuanye'){FW.add('玄夜奉相邦之命監視'+P(),['xuanye'],'xuanye');}
+  return Eng.L(L0.map(function(x){return [x[0],x[1],x[2]];}),id,S.place,[ch('💬 繼續交談','talk',{id:id}),ch('🗺 告辭','hub')]);};
+ /* ---------- 互動選單 ---------- */
+ NODES.talk=function(a){var id=a.id,c=CHARS[id],r=S.c[id];S.focus=id;Eng.keep(id);
+  var g=greet(id);var cs=[ch('🗨 閒聊','chat',{id:id,topic:'近況'}),ch('🎯 問他的心願','chat',{id:id,topic:'目標'}),ch('🎁 送禮','giftMenu',{id:id})];
+  if(r.trust>=35&&r.sec<1)cs.push(ch('🕯 探問心結','chat',{id:id,topic:'心結'}));
+  if(!r.cured)cs.push(ch('🩺 為他診脈（'+c.ail+'）','cure',{id:id}));
+  cs.push(ch(r.aff>=20?'🌸 邀他同遊':'🌸 邀他同遊（好感 20 解鎖）',r.aff>=20?'dateMenu':'talk',{id:id}));
+  cs.push(ch('🗺 告辭','place'));
+  return Eng.L([[id,g,exprOf(id)]],id,S.place,cs,{talk:id});};
+ function exprOf(id){var r=S.c[id];if(r.jeal>=40)return 'angry';if(r.heart>=55)return 'blush';if(r.aff>=25)return 'smile';return 'normal';}
+ Eng.exprOf=exprOf;
+ var GREET={
+  yingzheng:{平淡:'「何事。」',友善:'「你來了。坐。」',親近:'「今日頭不疼。……大概是你的香囊。」',心動:'「寡人等你很久了。」他頓了頓，「……說笑的。」',傾心:'「過來，讓我看看你。」',深愛:'「你在，我便睡得著。」',疏遠:'「退下。」'},
+  mengtian:{平淡:'「大夫！」',友善:'「'+'今天也來看我練槍嗎？」',親近:'「我、我剛好路過……真的！」',心動:'「看到你，我就忘了自己要說什麼了。」',傾心:'「等北疆平定，我有話想對你說。」',深愛:'「你是我想守護的天下。」',疏遠:'「……哦。」'},
+  lisi:{平淡:'「姑娘有何見教？」',友善:'「又見面了，今日可要再對一局？」',親近:'「在你面前，我總是不小心多說幾句真話。」',心動:'「我算得盡天下人心，唯獨算不準你。」',傾心:'「別對旁人笑得這樣好看。」',深愛:'「這天下我要算計，唯獨你，我認輸。」',疏遠:'「姑娘請自便。」'},
+  fusu:{平淡:'「姑娘安好。」',友善:'「今日天冷，姑娘可帶了手爐？」',親近:'「與你說話，總覺得書房也暖了些。」',心動:'「我新譜了一首曲子……想先彈給你聽。」',傾心:'「若有來日，我想與你看太平盛世。」',深愛:'「你是我寒冬裡唯一的春天。」',疏遠:'「……抱歉，我有些乏了。」'},
+  hanfei:{平淡:'「……你、你好。」',友善:'「你來了。我、我寫了新的一篇。」',親近:'「和你說話，我、我不太結巴了。」',心動:'「我想、想把你寫進書裡。」',傾心:'「別走。……再、再待一會兒。」',深愛:'「我這一生的字，都想寫給你。」',疏遠:'「……」'},
+  jingke:{平淡:'「喲，小大夫。」',友善:'「來，今天我請客——喝水，聽你的。」',親近:'「你一來，這酒肆都亮了。」',心動:'「我這種人，本不該動心的。」',傾心:'「跟我走吧，天涯海角。」',深愛:'「為了你，我想活下去。」',疏遠:'「……走吧，別管我。」'},
+  xuanye:{平淡:'「……」',友善:'「你又一個人走夜路。」',親近:'「……玄夜。我記得這個名字。」',心動:'「你受傷的時候，我比自己受傷還痛。」',傾心:'「我不想再只是影子。」',深愛:'「我是你的人。只是你的。」',疏遠:'「……退後。」'}
+ };
+ function greet(id){var f=Mood.feel(id);return (GREET[id]&&GREET[id][f])||'「……」';}
+ /* ---------- 閒聊 ---------- */
+ var CHAT={
+  近況:{yingzheng:['「六國未平，寡人睡不著。」','「今日又批了一百二十斤竹簡。」','「呂相今日又在朝上說了很多。寡人都記著。」'],mengtian:['「今天操練，我一個人挑翻了十個！」','「北疆的雪，比咸陽大多了。」','「父親又罵我了……說我心太軟。」'],lisi:['「近日朝中風向微妙，姑娘出入宮禁，要多留心。」','「我新得了一幅字帖，可惜無人共賞。」','「這一局棋，我下了三年。」'],fusu:['「我在讀〈詩〉。〈蒹葭〉那一篇，總讓我想起……」','「今日又咳了，不礙事。」','「民間的話本，比宮裡的奏疏有意思。」'],hanfei:['「我、我在寫〈說難〉。說服人，真難。」','「韓國……又送信來了。」','「雨夜最好，沒人來打擾。」'],jingke:['「昨夜和高漸離喝到天亮，他擊筑，我唱歌。」','「最近總有人跟著我。」他笑，「大概是仰慕者。」','「劍要磨，酒要喝，人生苦短嘛。」'],xuanye:['「今夜無事。」','「相邦府……沒什麼可說的。」','「你今天在市集多看了那支簪子三眼。」']},
+  目標:{yingzheng:'「天下。」他看著你，「一統天下，終結亂世。這條路上，寡人不需要同情。」',mengtian:'「守住北疆！讓那些村子的孩子，不用再怕胡人的馬蹄聲。」',lisi:'「位極人臣。」他笑，「姑娘覺得我俗？可我見過廁中鼠與倉中鼠，便再也不想做前者。」',fusu:'「我想讓父王看見，治天下，不只有嚴刑峻法一條路。」',hanfei:'「保、保全韓國。還有……讓我的書，有人讀懂。」',jingke:'「士為知己者死。」他把劍往桌上一拍，又笑了，「說笑的——大概。」',xuanye:'「……沒有。影子沒有心願。」他停了停，「若有，大概是……為自己活一次。」'},
+  心結:{yingzheng:'他沉默很久，終於開口：「邯鄲。小時候在邯鄲為質，夜裡總有人往窗裡扔石頭。……後來，我便不太睡得著了。」',mengtian:'「我……違過軍令。為了回去救一個村子。父親至今不肯原諒我。」他低頭，「可我不後悔。」',lisi:'「我曾是上蔡一個小吏。」他第一次沒有笑，「那些看不起我的眼神，我一個都沒忘。」',fusu:'「我寫了很多諫書，一封也不敢呈給父王。」他苦笑，「我怕他失望，更怕……他根本不看。」',hanfei:'「我入秦，身、身負韓王密令。」他握緊筆，「我知道，此行……九死一生。」',jingke:'他放下酒碗，眼神忽然清醒得可怕：「燕太子丹，於我有知遇之恩。有一件事，我答應了他。」',xuanye:'「相邦命我監視你。」他低聲道，「每一份回報，我都改過。」'}
+ };
+ NODES.chat=function(a){var id=a.id,r=S.c[id],t=a.topic;var line;Eng.pass(1);
+  if(t==='近況'){line=pick(CHAT.近況[id]);if(!r.talked){Eng.c(id,{aff:3},'和'+P()+'閒聊');r.talked=1;}}
+  else if(t==='目標'){line=CHAT.目標[id];if(!r.goalKnown){r.goalKnown=1;Eng.c(id,{aff:2,trust:3},'向'+P()+'說起心願');}}
+  else{line=CHAT.心結[id];r.sec=1;Eng.c(id,{trust:6,heart:4},'向'+P()+'吐露心結');FW.add(CHARS[id].secret,[id],id);Mood.note(id,'把心結告訴了'+P());}
+  if(AI.ready()&&t!=='心結'){return aiScene({type:'talk',id:id,topic:t,extra:'（離線參考台詞：'+line+'）'},function(){return chatScene(id,line,t);});}
+  return chatScene(id,line,t);};
+ function chatScene(id,line,t){var ex=t==='心結'?'sad':exprOf(id);return Eng.L([[id,line,ex]],id,S.place,[ch('💬 繼續','talk',{id:id}),ch('🗺 告辭','place')]);}
+ /* ---------- 送禮 ---------- */
+ NODES.giftMenu=function(a){var id=a.id;var cs=[];for(var k in S.inv){if(ITEMS[k]&&ITEMS[k].k!=='mat'&&S.inv[k]>0)cs.push(ch('🎁 '+ITEMS[k].n+' ×'+S.inv[k],'gift',{id:id,k:k}));}
+  if(!cs.length)return Eng.L(['你翻了翻藥箱——沒有可以送的東西。去市集逛逛，或在醫館製藥吧。'],id,S.place,[ch('↩ 返回','talk',{id:id})]);
+  cs.push(ch('↩ 返回','talk',{id:id}));return Eng.L([['','要送'+CHARS[id].n+'什麼？']],id,S.place,cs);};
+ NODES.gift=function(a){var id=a.id,k=a.k,c=CHARS[id],r=S.c[id],it=ITEMS[k];Eng.item(k,-1);Eng.pass(1);r.gifts++;
+  var like=c.likes.indexOf(it.n)>=0,line,ex;
+  var med=(k==='sachet'&&id==='yingzheng')||(k==='salve'&&(id==='mengtian'||id==='xuanye'))||(k==='pill'&&id==='hanfei')||(k==='warmer'&&id==='fusu');
+  if(like||med){Eng.c(id,{aff:8,heart:4,trust:2},'收到'+P()+'送的'+it.n+'，很喜歡');line=GIFT_LIKE[id];ex='blush';}
+  else if(r.gifts>3&&rand()<0.3){Eng.c(id,{aff:1},'又收到'+it.n);line='「你總是送我東西……」他無奈地笑了笑，「下次，人來就好。」';ex='smile';}
+  else{Eng.c(id,{aff:3},'收到'+P()+'送的'+it.n);line='「多謝。」'+c.n+'收下了'+it.n+'，看不出喜不喜歡。';ex='normal';}
+  /* 吃醋：在場有心動者 */
+  var jl=[];Eng.present().forEach(function(o){if(o!==id&&S.c[o].heart>=25){S.c[o].jeal=clamp(S.c[o].jeal+10,0,100);UI.pop(o,'jeal',10);jl.push(CHARS[o].n);}});
+  var L0=[[id,line,ex]];if(jl.length)L0.push(['',jl.join('、')+'在一旁看著，神色有些複雜。']);
+  return Eng.L(L0,id,S.place,[ch('💬 繼續','talk',{id:id}),ch('🗺 告辭','place')]);};
+ var GIFT_LIKE={yingzheng:'他把東西握在手裡很久，才低聲道：「……寡人收下了。」耳根卻有些紅。',mengtian:'「哇！你怎麼知道我喜歡這個！」他笑得像個孩子。',lisi:'「姑娘竟記得我的喜好。」他輕笑，「這可不好——我會當真的。」',fusu:'「這太貴重了……」他小心地收好，「我會珍惜的。」',hanfei:'「謝、謝謝。」他低著頭，把東西貼在胸口。',jingke:'「知我者，小大夫也！」他大笑，眼底卻有一瞬的溫柔。',xuanye:'他沉默地接過，指尖微微發抖：「……從來沒有人送過我東西。」'};
+ /* ---------- 約會 ---------- */
+ NODES.dateMenu=function(a){var id=a.id;var cs=PLACE_ORDER.filter(function(pl){return Eng.unlocked(pl)&&pl!=='clinic';}).map(function(pl){return ch('📍 '+PLACES[pl].n+(DATE_FAV[id]===pl?' ♥':''),'date',{id:id,pl:pl});});
+  cs.push(ch('↩ 返回','talk',{id:id}));return Eng.L([['','想和'+CHARS[id].n+'去哪裡？（♥ 是他喜歡的地方）']],id,S.place,cs);};
+ var DATE_FAV={yingzheng:'courtyard',mengtian:'camp',lisi:'plum',fusu:'study',hanfei:'courtyard',jingke:'tavern',xuanye:'courtyard'};
+ var DATE_Q={yingzheng:['「你可知寡人為何選這裡？」',['因為安靜','因為這裡看得見整座咸陽','因為……有我在？']],mengtian:['「要不要我教你騎馬？」',['好呀！','我怕摔……','你先表演給我看']],lisi:['「若你是我，這一步棋會怎麼走？」',['以退為進','直取中宮','我不下棋，我看你']],fusu:['「這首曲子還沒有名字，你替它取一個吧。」',['春風','蒹葭','就叫它你的名字']],hanfei:['「你、你覺得……我的書，會有人讀懂嗎？」',['我讀懂了','會的，千百年後也會','讀不懂的是他們的損失']],jingke:['「若有一天我不告而別，你會怪我嗎？」',['會，所以別走','不怪，但我會去找你','先把酒戒了再說']],xuanye:['「……你不怕我嗎？」',['不怕','有一點，但更想靠近你','你才是怕我的那個吧']]};
+ var DATE_BEST={yingzheng:2,mengtian:0,lisi:2,fusu:2,hanfei:0,jingke:1,xuanye:1};
+ NODES.date=function(a){var id=a.id,pl=a.pl,r=S.c[id];S.place=pl;Eng.pass(1);r.dates++;
+  var fav=DATE_FAV[id]===pl;var q=DATE_Q[id];
+  var sc=Eng.L([['',PLACES[pl].n+'。'+CHARS[id].n+'走在你身側，'+(fav?'神情比平日放鬆許多。':'似乎有些拘謹。')],[id,q[0],fav?'smile':'normal']],id,pl,
+   q[1].map(function(t,i){return ch('💗 '+t,'dateEnd',{id:id,pl:pl,i:i,fav:fav?1:0});}));
+  if(AI.ready()){return aiScene({type:'date',id:id,place:pl,extra:'（約會中他會問：'+q[0]+'；請以此為核心，choices 給三種回應）'},function(){return sc;});}
+  return sc;};
+ NODES.dateEnd=function(a){var id=a.id,best=DATE_BEST[id]===a.i;var gain={aff:best?8:4,heart:best?7:3,trust:2};if(a.fav){gain.aff+=3;gain.heart+=2;}
+  Eng.c(id,gain,'和'+P()+'在'+PLACES[a.pl].n+'約會'+(best?'，很開心':''));
+  CHAR_ORDER.forEach(function(o){if(o!==id&&S.c[o].heart>=30){S.c[o].jeal=clamp(S.c[o].jeal+6,0,100);}});
+  var line=best?DATE_HAPPY[id]:'「……嗯。」'+CHARS[id].n+'想了想，輕輕笑了一下。';
+  return Eng.L([[id,line,best?'blush':'smile'],['','天色漸晚，你們並肩走回城中。']],id,a.pl,[ch('🗺 返回地圖','hub')]);};
+ var DATE_HAPPY={yingzheng:'他怔住，隨即別過臉去：「……放肆。」唇角卻壓不住地上揚。',mengtian:'「好！抓緊我！」他把你抱上馬背，風從耳邊呼嘯而過。',lisi:'他看了你很久，忽然低笑：「這一局，我竟不想贏了。」',fusu:'他的手指停在琴弦上，聲音輕得像雪：「……好。就叫它你的名字。」',hanfei:'「你、你讀懂了？」他眼眶微紅，「那……就夠了。」',jingke:'「不許去找我！」他嚷著，卻偷偷把酒罈推遠了些，「……我不走就是了。」',xuanye:'他沉默很久，然後很輕很輕地，握住了你的指尖。'};
+ /* ---------- 診治角色 ---------- */
+ NODES.cure=function(a){return {medic:{who:a.id},lines:[{sp:'',t:'你搭上'+CHARS[a.id].n+'的脈……望、聞、問、切，一樣都不能少。'}],focus:a.id,bg:S.place,ch:[]};};
+ NODES.cureDone=function(a){var id=a.id,r=S.c[id],c=CHARS[id];Eng.pass(1);
+  if(a.ok){r.cured=1;r.hp=95;Eng.c(id,{trust:10,aff:6,heart:3},P()+'治好了'+c.ail);Eng.p({med:2,fame:2});r.knot=1;
+   var L0=[['',c.n+'的'+c.ail+'，終於有了起色。'],[id,CURE_THX[id],'blush']];
+   if(r.sec<1){r.sec=1;L0.push(['','或許是信任，他第一次對你說起了藏在心底的事——']);L0.push([id,CHAT.心結[id],'sad']);FW.add(c.secret,[id],id);}
+   return Eng.L(L0,id,S.place,[ch('💬 繼續','talk',{id:id})]);}
+  Eng.c(id,{trust:2},P()+'為我診脈');return Eng.L([['','你的判斷有些偏差，藥方只能暫緩症狀。'],[id,'「無妨。」'+c.n+'看著你，「你已經很用心了。」','smile']],id,S.place,[ch('💬 繼續','talk',{id:id})]);};
+ var CURE_THX={yingzheng:'「七年來……寡人第一次一覺到天明。」',mengtian:'「肩膀一點都不疼了！你是神仙嗎！」',lisi:'「姑娘治好了我的胃，卻讓我的心……也不太安分了。」',fusu:'「手……是暖的。」他看著自己的掌心，笑得像春天。',hanfei:'「我、我說話……好像順了一些。謝謝你。」',jingke:'「戒酒七日？」他哀嚎，「……好吧，聽大夫的。」',xuanye:'「……這是第一次，有人替我包紮。」'};
+ /* ---------- 醫館 ---------- */
+ NODES.diag=function(){var lv=S.p.med>=30?3:(S.p.med>=18?2:1);var pool=CASES.filter(function(c){return c.lv<=lv;});
+  if(S.flags.plague&&S.day-S.flags.plague<10)pool=pool.concat(CASES.filter(function(c){return c.lv===2;}));
+  var ci=CASES.indexOf(pick(pool));return {medic:{ci:ci},lines:[{sp:'',t:'醫館門口來了一位病人：'+CASES[ci].p+'。'}],bg:'clinic',ch:[]};};
+ NODES.diagDone=function(a){var c=CASES[a.ci];Eng.pass(1);
+  if(a.score>=2){var fm=a.score===3?3:2;Eng.p({fame:fm,gold:12+c.lv*8,med:1});return Eng.L(['藥到病除！'+c.p+'千恩萬謝地走了。','「青囊醫館的女大夫，神了！」——消息傳得很快。'],'','clinic',[ch('🩺 再看一位','diag'),ch('🗺 返回地圖','hub')]);}
+  Eng.p({fame:a.score?1:0,mind:-4});return Eng.L(['你的判斷不太準確，病人的症狀只稍有緩解。','（提示：先看齊所有症狀，再對照病機。）'],'','clinic',[ch('🩺 再看一位','diag'),ch('🗺 返回地圖','hub')]);};
+ NODES.craft=function(){var cs=RECIPES.map(function(r){var ok=true,need=[];for(var k in r.need){need.push(ITEMS[k].n+'×'+r.need[k]);if((S.inv[k]||0)<r.need[k])ok=false;}if(S.p.med<r.med)ok=false;
+   return ch((ok?'⚗️ ':'🔒 ')+r.n+'（'+need.join('、')+'｜醫術'+r.med+'）',ok?'craftDo':'craft',{id:r.id});});
+  cs.push(ch('↩ 返回','place'));return Eng.L(['藥櫃裡：'+invStr()],'','clinic',cs);};
+ NODES.craftDo=function(a){var r=RECIPES.filter(function(x){return x.id===a.id;})[0];for(var k in r.need)Eng.item(k,-r.need[k]);Eng.item(r.id,1);Eng.pass(1);Eng.p({med:1});
+  return Eng.L(['你細細研磨、熬煮，製成了一份「'+r.n+'」。'],'','clinic',[ch('⚗️ 繼續製藥','craft'),ch('↩ 返回','place')]);};
+ function invStr(){var a=[];for(var k in S.inv){if(ITEMS[k]&&S.inv[k])a.push(ITEMS[k].n+'×'+S.inv[k]);}return a.join('、')||'空空如也';}
+ Eng.invStr=invStr;
+ NODES.rest=function(){Eng.pass(1);Eng.p({mind:12,hp:10});return Eng.L(['你在醫館後院小憩，聽著簷下風鈴，心緒漸漸平靜。'],'','clinic',[ch('🗺 返回地圖','hub')]);};
+ NODES.herb=function(){Eng.pass(1);var n=2+rnd(2);Eng.item('herb',n);var rare=rand()<0.25;if(rare)Eng.item('rare',1);
+  return Eng.L(['你採得草藥 ×'+n+(rare?'，還意外找到一株珍稀藥材！':'。')],'',S.place,[ch('↩ 返回','place')]);};
+ NODES.plumPick=function(){Eng.item('plumsp',1);Eng.pass(1);return Eng.L(['你折下一枝開得正好的梅花，香氣清冽。'],'','plum',[ch('↩ 返回','place')]);};
+ NODES.shop=function(){var cs=SHOP.map(function(k){var it=ITEMS[k];return ch(it.n+'　'+it.p+'兩',S.p.gold>=it.p?'buy':'shop',{k:k});});cs.push(ch('↩ 返回','place'));
+  return Eng.L(['攤販們熱情吆喝。你有 '+S.p.gold+' 兩銀子。'],'','market',cs,{shop:1});};
+ NODES.buy=function(a){var it=ITEMS[a.k];Eng.p({gold:-it.p});Eng.item(a.k,1);toast('購得 '+it.n);return NODES.shop();};
+ NODES.campAid=function(){Eng.pass(1);Eng.p({fame:2,med:1});if(S.c.mengtian.met)Eng.c('mengtian',{trust:3},P()+'到軍營為傷兵義診');return Eng.L(['你為幾名傷兵換藥正骨。','老兵們紛紛道謝：「女大夫的手，比咱們的刀還穩！」'],'','camp',[ch('↩ 返回','place')]);};
+ NODES.tavernSit=function(){Eng.pass(1);Eng.p({mind:6});var jk=Eng.present('tavern').indexOf('jingke')>=0;if(jk&&S.c.jingke.met)Eng.c('jingke',{aff:2},'和'+P()+'聽筑');
+  return Eng.L(['筑聲錚錚，有人在角落低聲唱著燕地的歌。'+(jk?'荊軻舉碗向你示意，碗裡是清水。':'')],jk?'jingke':'','tavern',[ch('↩ 返回','place')]);};
+ /* ---------- 里程碑 ---------- */
+ var MSS={
+  yingzheng:[[['','深夜，章台殿只剩一盞燈。他忽然伸出手腕：「頭又痛了。」'],['','你替他診脈，指尖觸到他的皮膚——冰涼。'],['yingzheng','「……別走。等寡人睡著再走。」','sad'],['','那一夜，秦王第一次在別人面前睡著了。']],
+   [['','初雪。你從殿中出來，他忽然把玄色外袍披在你肩上。'],['yingzheng','「咸陽的冬天冷。你若病了，誰來醫寡人？」','normal'],['p','「大王是在關心我？」'],['yingzheng','「……是又如何。」','blush']],
+   [['','章台月下。他屏退左右，第一次自稱「我」。'],['yingzheng','「天下我要，你，我也要。」他握住你的手，「留下來。我需要你。」','blush'],['','你聽見他的心跳，和你的一樣快。']]],
+  mengtian:[[['mengtian','「給！」他獻寶似地遞上一個糖人——捏的是你的樣子，歪歪扭扭。','smile'],['mengtian','「我、我學了三天……不像嗎？」','shy'],['','你笑得停不下來。他也跟著笑了。']],
+   [['','北原。他帶你策馬，風從耳邊呼嘯而過。'],['mengtian','「抓緊我！」','smile'],['','你環住他的腰，聽見他悶悶地說：「……其實我心跳得好快。」']],
+   [['mengtian','「我要去北疆了。」他第一次這麼認真地看著你。','normal'],['mengtian','「等我回來——我想娶你。」','blush'],['','銀甲下，他的心跳隔著鐵片傳了過來。']]],
+  lisi:[[['','梅下對弈。他執黑，你執白，梅花落在棋盤上。'],['lisi','「姑娘每一步都出乎我的意料。」','smile'],['lisi','「……我很久沒有這麼開心了。」他說完，自己先愣住了。','shy']],
+   [['','深夜書房。你推門進去，他沒有笑。'],['lisi','「別看我。我現在……大概很難看。」','sad'],['p','「不難看。這樣的你，才是真的你。」'],['','他沉默很久，把額頭輕輕靠在你肩上。']],
+   [['lisi','他把一枝梅放在你掌心。','normal'],['lisi','「這天下我都要算計。唯獨你——我認輸。」','blush']]],
+  fusu:[[['fusu','他把暖手爐遞給你，自己的手卻冰涼。','smile'],['p','「公子自己呢？」'],['fusu','「我……看你暖著，就不冷了。」','shy']],
+   [['','他為你彈了一首曲子。曲到一半，停了。'],['fusu','「後面還沒寫。」他抬頭看你，「我想等……更了解你之後，再寫完它。」','blush']],
+   [['','大雪。他站在梅樹下，白裘落滿了雪。'],['fusu','「若有來日，我想與你看太平盛世。」','blush'],['fusu','「你……願意等我嗎？」','shy']]],
+  hanfei:[[['','他遞給你一片竹簡，上面只有兩個字——你的名字。'],['hanfei','「我、我練了很多遍……」','shy']],
+   [['','雨夜長談。你們從〈孤憤〉談到〈說難〉，從韓國談到天下。'],['','那一夜，他一個字也沒有結巴。'],['hanfei','「原來……我也可以好好說話。」','smile']],
+   [['hanfei','「我、我想……」他深吸一口氣，「與你同著一部書。一輩子。」','blush']]],
+  jingke:[[['jingke','他把酒碗推到你面前，裡面是清水。','smile'],['jingke','「聽大夫的。」他眨眨眼，「我這人，從不聽人勸——你是第一個。」','smile']],
+   [['','高漸離擊筑，荊軻為你而歌。'],['jingke','「風蕭蕭兮……算了，這句不吉利。」他笑著改了詞，「風暖暖兮，有佳人兮。」','blush']],
+   [['jingke','「我答應過太子丹一件事。」他第一次沒有笑。','sad'],['jingke','「可是遇見你之後……我想為自己活下去。」','blush']]],
+  xuanye:[[['','你遇險時，他從暗處接住了你。'],['xuanye','「……不要再一個人走夜路。」','normal']],
+   [['p','「我叫你玄夜，好不好？」'],['','他愣了很久很久。'],['xuanye','「……玄夜。」他低聲重複，像在確認這兩個字的溫度，「好。」','shy']],
+   [['','他摘下了黑巾。月光下，是一張年輕而蒼白的臉。'],['xuanye','「我不是影子了。」他說，「我是你的人。」','blush']]]
+ };
+ NODES.ms=function(a){var id=a.id,r=S.c[id];var st=r.stage;var script=MSS[id][st];r.stage=st+1;var cg=CGS[id][st];Eng.cg(cg.id);
+  Mood.note(id,'與'+P()+'：'+cg.n);addLog('〔心動〕'+CHARS[id].n+'·'+cg.n);Letters.send(id,'ms'+(st+1));
+  if(st===1)Eng.c(id,{trust:3});
+  var sc=Eng.L(script.map(function(x){return [x[0],x[1],x[2]];}),id,'',[ch('✨ 收進回憶','msEnd',{id:id,cg:cg.id})],{cg:cg.id,msTitle:CHARS[id].n+' · '+cg.n});
+  sc.bg={yingzheng:['courtyard','palace','courtyard'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','courtyard','study'],jingke:['tavern','tavern','courtyard'],xuanye:['courtyard','courtyard','plum']}[id][st];
+  return sc;};
+ NODES.msEnd=function(a){UI.cgShow(a.cg,function(){UI.go('hub');});return {wait:1};};
+ /* ---------- 主線事件 ---------- */
+ NODES.evSummon=function(){S.evseen.summon=1;Eng.setCh(1);S.flags.palace_ok=1;
+  var hasLs=S.c.lisi.met;S.c.lisi.met=1;
+  return Eng.L([['','你的名聲傳進了宮裡。這日清晨，一位青衣客卿親自來到醫館。'],['lisi',hasLs?'「又見面了，'+P()+'姑娘。這次，是大王要見你。」':'「在下李斯。大王頭風久治不癒，聽聞姑娘妙手，特命在下相請。」','smile'],
+   ['lisi','「宮中規矩多，姑娘行事……要多留一個心眼。」他說得溫和，眼神卻意味深長。','normal'],['','【第二章】咸陽宮、蘭台書房已開放。']],'lisi','clinic',[ch('入宮覲見秦王','go',{pl:'palace'})]);};
+ NODES.evPoison=function(){S.evseen.poison=1;Eng.setCh(2);S.flags.xy_open=1;
+  return Eng.L([['','秦王的頭風忽然加重，夜裡驚醒時竟嘔出黑血。'],['','你查驗殿中的安神香——香灰裡，摻著一味不該有的「斷腸草」。'],['yingzheng','「查。」他按著額角，聲音冷得像冰，「寡人只信你。」','angry'],
+   ['','【第三章】查出香中之毒的來歷：在市集、蘭台書房與夜色庭院尋找線索（集齊 3 條即可指認）。']],'yingzheng','palace',[ch('開始調查','hub')]);};
+ /* 線索：在對應地點出現選項 */
+ NODES.clue=function(a){var k=a.k;S.flags['clue_'+k]=1;Eng.pass(1);var txt={market:'藥販回憶：前些日子，有位相邦府的管事買走了大量斷腸草。',study:'蘭台的出入簿上，香料的經手人一欄被人刮去了名字——墨跡卻還在背面滲著。',courtyard:'月下，玄夜遞給你一片燒剩的香包：「相邦府的。……你沒見過我。」'}[k];
+  if(k==='courtyard'){S.c.xuanye.met=1;Eng.c('xuanye',{aff:4,trust:4},'暗中把線索交給'+P());}
+  var n=['market','study','courtyard'].filter(function(x){return S.flags['clue_'+x];}).length;
+  var cs=[ch('🗺 返回地圖','hub')];if(n>=3)cs.unshift(ch('⚖️ 向秦王指認真兇','accuse'));
+  return Eng.L(['【線索 '+n+'/3】'+txt],k==='courtyard'?'xuanye':'',k==='courtyard'?'courtyard':k,cs);};
+ NODES.accuse=function(){return Eng.L([['yingzheng','「說吧。是誰？」','normal']],'yingzheng','palace',[ch('指認：相邦府的人','accuseDo',{w:'lv'}),ch('指認：李斯','accuseDo',{w:'lisi'}),ch('指認：宮中香官','accuseDo',{w:'xiang'})]);};
+ NODES.accuseDo=function(a){S.flags.poison_solved=1;
+  if(a.w==='lv'){Eng.c('yingzheng',{trust:12,aff:6},P()+'查出香中毒的真相');Eng.p({fame:5});S.flags.poison_right=1;WS.log('秦王徹查安神香案，相邦府數名管事下獄','起因：'+S.p.name+'查得斷腸草購買與經手證據','消息');
+   return Eng.L([['yingzheng','他看著你呈上的證據，久久不語。','normal'],['yingzheng','「……呂不韋。」他念這三個字時，像在咀嚼一塊冰。','angry'],['yingzheng','「你做得很好。從今日起，你可自由出入章台。」','smile']],'yingzheng','palace',[ch('繼續','hub')]);}
+  Eng.c('yingzheng',{trust:-6},'冤枉了無辜之人');if(a.w==='lisi')Eng.c('lisi',{aff:-12,trust:-10},P()+'在王前指認我');
+  return Eng.L([['yingzheng','「證據不足。」他冷冷道，「你讓寡人失望了。」','angry'],['','真兇逍遙法外——但事情總算暫時平息。']],'yingzheng','palace',[ch('繼續','hub')]);};
+ NODES.evStorm=function(){S.evseen.storm=1;Eng.setCh(3);var L0=[['','風雨欲來。']];var cs=[];
+  if(S.c.hanfei.met){S.flags.hanfei_jail=1;S.c.hanfei.jailed=1;L0.push(['','韓非因韓國之事被下雲陽獄。據傳，是李斯上書言其「終為韓不為秦」。']);WS.log('韓非被下雲陽獄','起因：李斯上書，言韓非終為韓不為秦','消息');
+   cs.push(ch('⚖️ 為韓非向秦王求情','saveHf'));}
+  if(S.c.jingke.met){S.flags.jingke_left=1;S.c.jingke.away=S.day+999;L0.push(['','同一夜，荊軻在醫館門口留下一壺酒，不告而別——酒壺下壓著一片竹簡：「易水見。」']);cs.push(ch('🐎 追去易水','stopJk'));}
+  L0.push(['','【第四章】在韓非之獄與荊軻之約間，你只來得及先做一件事。']);
+  cs.push(ch('🗺 暫且回到醫館','hub'));return Eng.L(L0,'','night',cs);};
+ NODES.saveHf=function(){var yz=S.c.yingzheng;var ok=yz.trust>=30||S.p.fame>=25||SET.diff==='easy';S.evseen.choseStorm=1;
+  if(ok){S.flags.hanfei_saved=1;S.c.hanfei.jailed=0;Eng.c('hanfei',{aff:10,heart:8,trust:10},P()+'救我出雲陽獄');Eng.c('yingzheng',{trust:-3,jeal:8});if(S.flags.jingke_left)S.flags.jingke_gone=1;
+   return Eng.L([['yingzheng','「你為了他，來求寡人？」他盯著你，良久，「……放人。」','angry'],['hanfei','雲陽獄門開時，他看見你，竹簡從手中滑落。','blush'],['hanfei','「你、你來了。」','blush']],'hanfei','palace',[ch('繼續','hub')]);}
+  return Eng.L([['yingzheng','「此事，寡人自有決斷。」他沒有看你。','normal'],['','你的求情沒有被採納。（提示：秦王信任或名聲不足）'],['','也許還有別的辦法……']],'yingzheng','palace',[ch('繼續','hub')]);};
+ NODES.stopJk=function(){S.evseen.choseStorm=1;var r=S.c.jingke;var ok=r.heart>=30||r.cured||SET.diff==='easy';
+  if(ok){S.flags.jingke_stopped=1;r.away=0;Eng.c('jingke',{aff:10,heart:10,trust:8},P()+'追到易水攔下我');if(S.flags.hanfei_jail&&!S.flags.hanfei_saved)S.flags.hanfei_late=1;
+   return Eng.L([['','易水寒風如刀。你策馬趕到時，他正要登船。'],['jingke','「……你怎麼來了。」他的聲音發啞。','sad'],['p','「你答應過我，要為自己活下去。」'],['jingke','他看了你很久，終於把劍扔進了易水：「……好。這條命，歸你了。」','blush']],'jingke','night',[ch('繼續','hub')]);}
+  return Eng.L([['','你趕到易水時，只看見遠去的船影。'],['','風蕭蕭，水寒寒。']],'','night',[ch('繼續','hub')]);};
+ NODES.evFinale=function(){S.evseen.finale=1;Eng.setCh(4);
+  var cand=CHAR_ORDER.filter(function(id){return S.c[id].met&&S.c[id].stage>=2;});
+  var cs=cand.map(function(id){return ch('💗 向'+CHARS[id].n+'表明心意','endingGo',{id:id});});
+  cs.push(ch('🧰 誰也不選，繼續行醫','endingGo',{id:''}));
+  return Eng.L([['','歲末，咸陽城下了一場大雪。'],['','你站在醫館門口，想起這一年遇見的每一個人。'],['','有些話，終究要說出口。']],'','plum',cs);};
+ NODES.endingGo=function(a){var key=Eng.endingFor(a.id);Eng.end(key);var E=ENDINGS[key];var id=a.id||'';
+  var L0=[['','【'+E.k+' · '+E.n+'】'],['',E.d]];if(id&&key.indexOf('he_')===0)L0.splice(1,0,[id,CHARS[id].n+'握住你的手，久久沒有放開。','blush']);
+  return Eng.L(L0,id,key.indexOf('be_')===0?'night':'plum',[ch('🏮 回到標題','title'),ch('📖 繼續遊玩（結局後）','hub')],{ending:key});};
+ /* ---------- 節日 ---------- */
+ NODES.festival=function(a){var f=FESTIVALS[a.i-1];S.evseen['fe'+(a.i-1)+'_'+Math.floor((S.day-1)/120)]=1;
+  var cand=CHAR_ORDER.filter(function(id){return S.c[id].met&&S.c[id].aff>=15&&Eng.where(id)!==''||S.c[id].met&&S.c[id].aff>=30;}).slice(0,4);
+  var cs=cand.map(function(id){return ch('🏮 邀'+CHARS[id].n+'同過'+f.n,'festDate',{id:id,i:a.i});});cs.push(ch('獨自過節','hub'));
+  return Eng.L([['','今日是'+f.n+'。'+f.t]],'', f.s===3?'palace':(f.s===2?'courtyard':'market'),cs);};
+ NODES.festDate=function(a){var f=FESTIVALS[a.i-1];var id=a.id;Eng.pass(1);Eng.c(id,{aff:8,heart:8},'與'+P()+'同過'+f.n);
+  CHAR_ORDER.forEach(function(o){if(o!==id&&S.c[o].heart>=25)S.c[o].jeal=clamp(S.c[o].jeal+8,0,100);});
+  var line={0:'「水邊風大，站我身後。」',1:'「燈火這麼多，我只看得見你。」',2:'「你許了什麼願？……我許的願，和你有關。」',3:'「新的一年，也請你在我身邊。」'}[f.s];
+  return Eng.L([['',f.n+'。'+CHARS[id].n+'與你並肩。'],[id,line,'blush']],id,f.s===2?'courtyard':'market',[ch('🗺 返回地圖','hub')]);};
+ /* ---------- 修羅場 ---------- */
+ NODES.jealous=function(a){S.flags.lastJeal=S.day;var A=a.a,B=a.b;
+  return Eng.L([['','你正與'+CHARS[B].n+'說話，'+CHARS[A].n+'忽然出現在身後。'],[A,JEAL[A]||'「……打擾了？」','angry'],[B,'「'+CHARS[A].n+'也在？真巧。」','normal'],['','空氣忽然變得很安靜。']],A,S.place,
+   [ch('🍬 先哄'+CHARS[A].n,'jealDo',{a:A,b:B,op:'a'}),ch('😌 坦然：「我們只是說話。」','jealDo',{a:A,b:B,op:'calm'}),ch('😈 讓他們自己比比看','jealDo',{a:A,b:B,op:'tease'})]);};
+ var JEAL={yingzheng:'「寡人的醫者，何時輪到旁人來說話？」',mengtian:'「你們……在聊什麼呀？」他笑得很勉強。',lisi:'「姑娘真是忙。」他依舊微笑，指節卻捏得發白。',fusu:'「抱歉，我只是……路過。」他垂下眼。',hanfei:'「我、我先走了。」他轉身時差點撞到柱子。',jingke:'「喲，小大夫身邊熱鬧啊。」',xuanye:'牆頭的影子動了一下。'};
+ NODES.jealDo=function(a){var A=a.a,B=a.b;
+  if(a.op==='a'){Eng.c(A,{jeal:-20,aff:4,heart:2},P()+'在'+cn(B)+'面前先哄我');Eng.c(B,{jeal:10,aff:-2});}
+  else if(a.op==='calm'){Eng.c(A,{jeal:-8,trust:3});Eng.c(B,{trust:2});}
+  else{Eng.c(A,{jeal:6,heart:3});Eng.c(B,{jeal:6,heart:3});Eng.p({cha:1});}
+  var t={a:CHARS[A].n+'的神色緩和下來，彆扭地「哼」了一聲。',calm:'兩人對視一眼，各自收回了目光。',tease:'兩人同時看向你——你笑著溜走了。'}[a.op];
+  return Eng.L([['',t]],A,S.place,[ch('🗺 返回地圖','hub')]);};
+ /* ---------- AI 接續 ---------- */
+ function aiScene(req,off){return {async:req,fb:off};}
+ Eng.aiScene=aiScene;
+ NODES.aiNext=function(a){var t=a.text;Eng.pass(1);
+  if(AI.ready())return aiScene({type:'free',text:t,id:a.id,tag:'選項'},function(){return offNext(a);});
+  return offNext(a);};
+ function offNext(a){var id=a.id||S.focus||'';Eng.keep(id);if(id&&S.c[id]){Eng.c(id,{aff:2},P()+'：'+a.text);return Eng.L([['','你選擇了：「'+a.text+'」。'],[id,Speak.reply(id,a.text),exprOf(id)]],id,S.place,[ch('💬 繼續交談','talk',{id:id}),ch('🗺 返回地圖','hub')]);}
+  return Eng.L(['你選擇了：「'+a.text+'」。日子靜靜地過去。'],'',S.place,[ch('🗺 返回地圖','hub')]);}
+ /* M15 斷線接續 */
+ NODES.resume=function(){var p=S.pend;if(!p)return {go:'hub'};
+  return Eng.L(['【未完成的劇情】上次 AI 中斷時，你正在：「'+p.text.slice(0,40)+'」'],p.id||'',S.place,[ch('🔁 AI 重試接續','resumeAi'),ch('📖 以離線劇情接續','resumeOff'),ch('🗑 放下這件事','resumeDrop')]);};
+ NODES.resumeAi=function(){var p=S.pend;if(!p)return {go:'hub'};if(AI.ready())return aiScene(p.req,function(){return offNext({text:p.text,id:p.id});});return NODES.resumeOff();};
+ NODES.resumeOff=function(){var p=S.pend;S.pend=null;return p?offNext({text:p.text,id:p.id}):{go:'hub'};};
+ NODES.resumeDrop=function(){S.pend=null;return {go:'hub'};};
+})();
+
+/* ---- 07_input.js ---- */
+/* ===== 書信 ===== */
+var Letters={};
+(function(){
+ var TPL={
+  yingzheng:{low:'寡人頭風略減。香囊尚有餘香。——政',mid:'今夜月色甚好。寡人批完竹簡，忽想起你說過的話。……無他事。——政',high:'見字如面。咸陽宮太大，你不在時，竟顯得空。明日早些來。——政',ms1:'昨夜睡得很沉。這是七年來的第一次。——政',ms2:'外袍不必還了。冬日長，你留著。——政',ms3:'天下未定，可我已經定了。——政'},
+  mengtian:{low:'大夫！肩膀不疼啦！改天請你吃糖人！——蒙恬',mid:'今天練槍的時候走神了，被副將笑了半天。都怪你。——蒙恬',high:'北疆的星星很亮，可我只想著咸陽的某個人。——恬',ms1:'糖人捏得醜，你別笑我……好吧你可以笑。——蒙恬',ms2:'下次還帶你騎馬！這次換你抓韁繩！——恬',ms3:'等我。我一定回來。——恬'},
+  lisi:{low:'梅林殘局，靜候姑娘。——李斯',mid:'近日朝中多事，姑娘出入宮禁，切記謹言。此信閱後即焚。——斯',high:'我這一生算盡人心，卻算不到會為一封回信等上三日。——斯',ms1:'與姑娘對弈，是近年最快意之事。——李斯',ms2:'那夜的事，請你忘了。……不，別忘。——斯',ms3:'梅花開了。我在梅下等你。——斯'},
+  fusu:{low:'天寒，望姑娘添衣。手爐已託人送至醫館。——扶蘇',mid:'讀〈蒹葭〉，所謂伊人，在水一方。忽覺此句寫得極好。——扶蘇',high:'今日咳得少了。大約是因為想著你，便忘了咳。——扶蘇',ms1:'手爐你留著。我……其實不太冷。——扶蘇',ms2:'那首曲子，我又寫了一小段。等你來聽。——扶蘇',ms3:'雪停了。你願意等我，我便什麼都不怕了。——扶蘇'},
+  hanfei:{low:'謝、謝謝你的水。——非',mid:'新寫一篇，想、想請你先看。——韓非',high:'寫信不會結巴。所以我想多寫一些給你。今日雨，想你。——非',ms1:'你的名字很好寫。我寫了一百遍。——非',ms2:'那夜我沒有結巴。是因為你。——非',ms3:'書名我想好了。上面要有你的名字。——非'},
+  jingke:{low:'小大夫，今日沒喝酒。誇我。——荊軻',mid:'高漸離說我最近笑得太傻。你說是為什麼？——軻',high:'我這種浪蕩的人，竟也開始怕死了。……都是你害的。——軻',ms1:'清水也挺好喝的。因為是你倒的。——軻',ms2:'那首歌，以後只唱給你聽。——軻',ms3:'易水我不去了。我要留在有你的地方。——軻'},
+  xuanye:{low:'夜路危險。——（無署名）',mid:'今日市集那支簪子，已放在你窗台。——（無署名）',high:'……玄夜。我寫了自己的名字。——玄夜',ms1:'不要再一個人走夜路。——（無署名）',ms2:'玄夜。——玄夜',ms3:'影子有了名字，也有了想去的地方。——玄夜'}
+ };
+ Letters.send=function(id,kind){var t=TPL[id][kind];if(!t)return;S.letters.push({id:id,d:S.day,t:t,read:0,rep:0,k:kind});if(S.letters.length>60)S.letters.shift();UI.badge();toast('✉ 收到'+CHARS[id].n+'的來信');};
+ Letters.tick=function(){if(S.day-(S.flags.lastLetter||-9)<3)return;var c=CHAR_ORDER.filter(function(id){return S.c[id].met&&S.c[id].aff>=20&&!S.c[id].jailed;});if(!c.length||rand()>0.4)return;
+  var id=pick(c);var r=S.c[id];var k=r.heart>=40?'high':(r.aff>=40?'mid':'low');S.flags.lastLetter=S.day;Letters.send(id,k);};
+ Letters.unread=function(){return S?S.letters.filter(function(l){return !l.read;}).length:0;};
+ Letters.reply=function(i,tone,text){var l=S.letters[i];if(!l||l.rep)return;l.rep=tone;l.rt=text||'';var id=l.id;
+  var g={warm:{aff:3,heart:3},tease:{aff:2,heart:4},polite:{aff:2,trust:2},free:{aff:3,heart:2,trust:1}}[tone]||{aff:1};Eng.c(id,g,P2()+'回信：'+(text||{warm:'溫柔的回覆',tease:'俏皮的回覆',polite:'得體的回覆'}[tone]));};
+ function P2(){return S.p.name;}
+})();
+/* ===== 輸入分流（M24：說話／指令；M27：設定） ===== */
+var Speak={};
+Speak.reply=function(id,t){var c=CHARS[id],r=S.c[id];
+ if(/喜歡你|愛你|心悅|傾心/.test(t))return r.heart>=50?'「……我也是。」他的聲音很輕，卻很清楚。':(r.aff>=25?'他愣住，耳根慢慢紅了：「你、你說什麼……」':'「姑娘說笑了。」他避開了你的目光。');
+ if(/謝謝|多謝|感謝/.test(t))return '「不必言謝。」'+(r.aff>=30?'他頓了頓，「你開心就好。」':'');
+ if(/對不起|抱歉/.test(t))return '「無妨。」他看著你，語氣軟了下來。';
+ if(/想你|想念/.test(t))return r.heart>=30?'「……我也想你。」':'「想我？」他有些意外。';
+ if(/病|痛|傷|藥/.test(t))return '「你是大夫，聽你的。」';
+ if(/[？?]|嗎|呢/.test(t))return pick(['「你為何這樣問？」他想了想，「……讓我想想。」','「這個嘛——」他笑了笑，「下次再告訴你。」','「你想知道？」他看著你，「那你先告訴我，你的答案。」']);
+ return pick(['「嗯。」他認真地聽著。','「你說的話，我都記著。」','他沒有說話，只是靜靜地看著你。','「……你總是這樣，讓人意外。」']);};
+/* 行動（M22 Act 簡化） */
+var Act={};
+Act.RULES=[
+ {re:/包紮|上藥|敷藥|療傷/,f:function(id){var r=S.c[id];if(r.hp<90){r.hp=clamp(r.hp+8,0,100);Eng.c(id,{trust:3,aff:2},P0()+'替我包紮');return '你仔細替'+cn(id)+'上藥包紮。他安靜地看著你的手。';}return '他身上並沒有傷。「……你想碰我，直說便是。」';}},
+ {re:/診脈|把脈|切脈|看病/,f:function(id){return {go:'cure',a:{id:id}};}},
+ {re:/擁抱|抱住|抱他|抱緊|抱抱/,f:function(id){var r=S.c[id];if(r.heart>=30){Eng.c(id,{heart:4,aff:2},P0()+'抱住了我');return '你抱住了'+cn(id)+'。他僵了一瞬，然後慢慢地、用力地回抱住你。';}Eng.c(id,{aff:-1,jeal:0});return cn(id)+'吃了一驚，輕輕扶住你的肩，退開半步：「……姑娘？」';}},
+ {re:/牽手|牽他|握住他的手|握手|拉住他/,f:function(id){var r=S.c[id];if(r.heart>=18){Eng.c(id,{heart:3},P0()+'牽了我的手');return '你牽起他的手。他沒有掙開，指尖微微收緊。';}return '你伸出手，他看了看，只是把一卷竹簡放進你手裡。';}},
+ {re:/親|吻/,f:function(id){var r=S.c[id];if(r.heart>=55){Eng.c(id,{heart:6,aff:3},P0()+'吻了我');return '你踮起腳。他閉上眼睛——月光很靜，心跳很吵。';}Eng.c(id,{aff:-2});return cn(id)+'紅著臉別開頭：「這、這樣不合禮數……」';}},
+ {re:/摸頭|揉頭髮|捏臉/,f:function(id){Eng.c(id,{aff:1,heart:1});return cn(id)+'怔了怔，無奈地任你胡鬧。';}},
+ {re:/撫琴|彈琴|唱歌|跳舞|吹簫/,f:function(id){Eng.p({cha:1});if(id)Eng.c(id,{aff:2},P0()+'為我奏樂');return '你一曲終了，'+(id?cn(id)+'久久沒有說話。':'四下靜了片刻。');}},
+ {re:/敬酒|喝酒|飲酒|乾杯/,f:function(id){if(id==='jingke'){Eng.c(id,{aff:3});return '「好！」荊軻與你碰碗——你的碗裡是酒，他的碗裡是水。';}Eng.p({mind:3});return '你淺酌一口，酒意微醺。';}},
+ {re:/煎藥|熬藥|製藥|配藥/,f:function(){return {go:'craft'};}},
+ {re:/離開|告辭|回去|返回地圖/,f:function(){return {go:'hub'};}}
+];
+function P0(){return S.p.name;}
+Act.parse=function(t){for(var i=0;i<Act.RULES.length;i++)if(Act.RULES[i].re.test(t))return Act.RULES[i];return null;};
+/* 導演命令（M25 Ncmd 簡化：命令一定執行，但需有權者） */
+var Ncmd={};
+Ncmd.AUTH={yingzheng:9,lisi:5,mengtian:5,fusu:4,hanfei:1,jingke:1,xuanye:1};
+Ncmd.parse=function(t){var m=t.match(/^(.{1,6}?)(?:命人|下令|命令|吩咐|派人|叫人|令人|命|令|叫|派|讓)(.*)$/);if(!m)return null;var sub=Eng.idByName(m[1]);if(!sub)return null;
+ var rest=m[2];var tgt='';CHAR_ORDER.forEach(function(id){if(id!==sub&&rest.indexOf(CHARS[id].n)>=0&&!tgt)tgt=id;});
+ var kind=/拿下|抓|逮|下獄|關押|囚/.test(rest)?'arrest':(/放了|釋放|赦|放出/.test(rest)?'free':(/殺|斬|處死|賜死/.test(rest)?'kill':(/召|傳|叫.*來|請.*來|帶.*來/.test(rest)?'summon':(/賞|賜/.test(rest)?'reward':'gen'))));
+ return {sub:sub,tgt:tgt,kind:kind,raw:t};};
+Ncmd.exec=function(c){var A=Ncmd.AUTH[c.sub]||1,s=cn(c.sub),tg=c.tgt?cn(c.tgt):'';
+ if(c.kind==='arrest'){if(!c.tgt)return s+'下令拿人，卻沒有說拿誰。侍衛面面相覷。';if(A<5||(Ncmd.AUTH[c.tgt]||1)>=A)return s+'想下令拿下'+tg+'，但他沒有這個權力（需要秦王之令）。';
+  S.c[c.tgt].jailed=1;WS.log(tg+'被'+s+'下令收押','起因：你作為導演下達的命令（'+c.raw.slice(0,20)+'）','你所為');Eng.c(c.tgt,{trust:-5});return s+'一聲令下，甲士上前拿下了'+tg+'。'+tg+'被押了下去。（可再下令「釋放」）';}
+ if(c.kind==='free'){if(!c.tgt)return s+'想放人，卻沒說放誰。';if(!S.c[c.tgt].jailed)return tg+'並未被關押。';if(A<5)return s+'沒有放人的權力。';S.c[c.tgt].jailed=0;if(c.tgt==='hanfei')S.flags.hanfei_saved=1;WS.log(tg+'獲釋','起因：'+s+'下令（你的命令）','你所為');return s+'下令放人。'+tg+'走出了牢門。';}
+ if(c.kind==='kill'){if(!c.tgt)return '……';if(A<9)return s+'沒有生殺之權。';S.c[c.tgt].jailed=1;WS.log(tg+'被下獄待審','起因：'+s+'動了殺心，經你勸阻改為收押','你所為');return s+'動了殺心——但這是一個不讓任何人死去的故事。'+tg+'改為收押待審。';}
+ if(c.kind==='summon'){if(!c.tgt)return s+'命人去傳話。';var r=S.c[c.tgt];if(r.jailed)return tg+'身陷囹圄，來不了。';r.here={d:S.day,per:S.per,pl:S.place};r.met=1;return s+'命人傳召，片刻後，'+tg+'來到了'+PLACES[S.place].n+'。';}
+ if(c.kind==='reward'){Eng.p({gold:30});return s+'吩咐賞你三十兩銀子。';}
+ return s+'依言吩咐下去，眾人領命而去。';};
+/* 劇情宣告（M27 Decl 簡化：宣告即成真） */
+var Decl={};
+Decl.apply=function(t){var out={lines:[],focus:''};var x=t.replace(/^[\/／]?設定[:：\s]*/,'').trim();var m;
+ function say(s){out.lines.push(s);}
+ m=x.match(/^(那人|他|此人|這人|那位公子|那男子|眼前之人)(?:便是|就是|原來是|其實是|正是)(.{1,6})$/);
+ if(m){var id=Eng.idByName(m[2]);if(id){var r=S.c[id];var was=r.met;r.met=1;r.here={d:S.day,per:S.per,pl:S.place};out.focus=id;FW.add(cn(id)+'曾隱瞞身分與'+S.p.name+'相見',[id],id);if(!was)Eng.c(id,{aff:5});say('原來，那人正是'+cn(id)+'。'+(was?'':'他微微一笑，不再隱瞞。'));Mood.note(id,'在'+PLACES[S.place].n+'微服與'+S.p.name+'相見，身分被識破');return out;}}
+ m=x.match(/^(.{1,6}?)(?:很想|想要|有意|想|欲)(?:結識|認識|見|接近)(?:我|她)/);
+ if(m){id=Eng.idByName(m[1]);if(id){r=S.c[id];if(r.jailed){say('（宣告調整）'+cn(id)+'此刻身陷囹圄，改為：他託人捎來口信，盼與你相見。');Mood.note(id,'想結識'+S.p.name);return out;}r.met=1;r.here={d:S.day,per:S.per,pl:S.place};out.focus=id;Eng.c(id,{aff:5},'主動來結識'+S.p.name);r.thought='想結識她、了解她';say(cn(id)+'主動朝你走來，目光裡帶著毫不掩飾的興趣。');return out;}}
+ m=x.match(/^(.{1,6}?)(?:其實|一直|早已|早就|偷偷)?(?:喜歡|暗戀|傾心|愛慕|心儀)(?:著)?(?:我|她)/);
+ if(m){id=Eng.idByName(m[1]);if(id){r=S.c[id];r.met=1;var cap=SET.decld?60:100;var add=Math.max(0,Math.min(15,cap-r.heart));Eng.c(id,{heart:add,aff:6},'其實早已對'+S.p.name+'動心');FW.add(cn(id)+'暗中傾心於'+S.p.name,[id],id);out.focus=id;say('（作者設定）'+cn(id)+'其實早已對你動心——只是他還沒說出口。'+(add<15?'（宣告調整：心動上限 '+cap+'，其餘需靠互動）':''));return out;}}
+ m=x.match(/^(.{1,6}?)(?:死了|已死|身亡|被殺)/);
+ if(m){id=Eng.idByName(m[1]);if(id){r=S.c[id];r.hp=30;r.cured=0;say('（宣告調整）這個故事裡沒有人會死去。改為：'+cn(id)+'身受重傷，需要你的醫治。');Mood.note(id,'身受重傷');return out;}}
+ m=x.match(/^(.{1,6}?)(?:病了|病倒|受傷|中毒)/);
+ if(m){id=Eng.idByName(m[1]);if(id){r=S.c[id];r.hp=clamp(r.hp-20,10,100);r.cured=0;out.focus=id;say('（作者設定）'+cn(id)+'病倒了，臉色蒼白。');return out;}}
+ m=x.match(/^(.{1,6}?)(?:來到|在|來了|出現在)(.{0,6})$/);
+ if(m){id=Eng.idByName(m[1]);if(id&&!S.c[id].jailed){S.c[id].met=1;S.c[id].here={d:S.day,per:S.per,pl:S.place};out.focus=id;say(cn(id)+'出現在'+PLACES[S.place].n+'。');return out;}}
+ FW.add(x,[],'p',{pub:1});say('（作者設定，從此成為事實）'+x);return out;};
+/* 主入口 */
+var Input={};
+Input.mode=function(){return SET.inmode||'say';};
+Input.submit=function(raw){var t=String(raw||'').trim();if(!t||!S)return null;var mode=Input.mode();
+ if(/^[\/／]設定/.test(t)){mode='decl';t=t.replace(/^[\/／]設定[:：\s]*/,'');}else if(/^[\/／]指令/.test(t)){mode='cmd';t=t.replace(/^[\/／]指令[:：\s]*/,'');}else if(/^[\/／]說/.test(t)){mode='say';t=t.replace(/^[\/／]說[:：\s]*/,'');}
+ else if(/^[（(].*[）)]$/.test(t)){mode='cmd';t=t.replace(/^[（(]|[）)]$/g,'');}
+ if(!t)return null;var id=S.focus&&Eng.present().indexOf(S.focus)>=0||S.focus&&S.c[S.focus]&&S.c[S.focus].here&&S.c[S.focus].here.d===S.day?S.focus:(Eng.present()[0]||'');
+ if(id)Eng.keep(id);
+ Eng.back({sp:'p',t:(mode==='say'?'':'〔'+(mode==='cmd'?'指令':'設定')+'〕')+t});
+ /* 秘密洩露（M22 Seal）：主動說出秘密 → 對方得知 */
+ if(mode==='say'&&id&&/禁方/.test(t)){var sec=S.secrets.p[0];if(sec.kn.indexOf(id)<0){sec.kn.push(id);FW.add('師父留給'+S.p.name+'一卷禁方',[id],'p');Eng.c(id,{trust:5},S.p.name+'把師門禁方的秘密告訴了我');toast('🔏 '+cn(id)+'得知了你的秘密');}}
+ var tag,off,extra='';
+ if(mode==='decl'){var d=Decl.apply(t);if(d.focus){id=d.focus;S.focus=id;}tag='設定・劇情';extra='（此設定已在遊戲中成真：'+d.lines.join(' ')+'；請直接延續，不得否定）';
+  off=function(){return Eng.L(d.lines.map(function(l){return ['',l];}).concat(id?[[id,Speak.reply(id,t),Eng.exprOf(id)]]:[]),id,S.place,[ch('💬 與'+(id?cn(id):'眾人')+'交談',id?'talk':'place',id?{id:id}:{}),ch('🗺 返回地圖','hub')]);};}
+ else if(mode==='cmd'){var nc=Ncmd.parse(t);
+  if(nc){var res=Ncmd.exec(nc);if(nc.tgt&&S.c[nc.tgt]&&!S.c[nc.tgt].jailed)id=nc.tgt;tag='指令・命令';extra='（命令已執行：'+res+'）';off=function(){return Eng.L([['',res]],id,S.place,[ch('🗺 返回地圖','hub')].concat(id?[ch('💬 與'+cn(id)+'交談','talk',{id:id})]:[]));};}
+  else{var ar=Act.parse(t);var resA=ar?ar.f(id):null;if(resA&&resA.go)return resA;tag='指令・行動';
+   if(!resA)resA='你'+t.replace(/^我/,'')+'。'+(id?cn(id)+'看著你，若有所思。':'');extra='（行動結果：'+resA+'）';
+   off=function(){return Eng.L([['',resA]],id,S.place,[ch('💬 繼續','talk',id?{id:id}:{}),ch('🗺 返回地圖','hub')].filter(function(c){return id||c.go!=='talk';}));};}}
+ else{tag='對白';if(id){Eng.c(id,{aff:S.c[id].talked?0:2},S.p.name+'對我說：「'+t.slice(0,24)+'」');S.c[id].talked=1;}
+  off=function(){return Eng.L(id?[[id,Speak.reply(id,t),Eng.exprOf(id)]]:[['','你的話散在風裡，無人回應。']],id,S.place,[ch('💬 繼續','talk',id?{id:id}:{}),ch('🗺 返回地圖','hub')].filter(function(c){return id||c.go!=='talk';}));};}
+ Eng.pass(mode==='say'?0:1);
+ if(AI.ready()){var req={type:'free',text:t,id:id,tag:tag,extra:extra};S.pend={text:t,id:id,req:req,d:S.day};return {async:req,fb:off,pendKeep:1};}
+ return off();};
+
+/* ---- 08_ui.js ---- */
+/* ===== 介面：VN 播放、地圖、圖鑑、書信、相冊、選單、輸入面板 ===== */
+var UI={tok:0,sc:null,li:0,typing:false,auto:false,skip:false,timer:null,autoT:null};
+function $(id){return document.getElementById(id);}
+function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='on';clearTimeout(toast._t);toast._t=setTimeout(function(){e.className='';},ms||2200);}
+(function(){
+ /* ---------- 視窗（沿用《秦風》VV） ---------- */
+ window.VV={timers:[],vp:function(){return window.visualViewport||null;},
+  h:function(){var v=VV.vp();var h=Math.round(v?v.height:window.innerHeight);return h>100?h:(window.innerHeight||600);},
+  top:function(){var v=VV.vp();return v?Math.max(0,Math.round(v.offsetTop)):0;},
+  kb:function(){var v=VV.vp();return !!(v&&(window.innerHeight-v.height)>120);},
+  coarse:function(){try{var t=(navigator.maxTouchPoints||0)>0;var c=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;return !!(c||(t&&('ontouchstart' in window)));}catch(e){return false;}},
+  apply:function(){var h=VV.h(),t=VV.top();var rs=document.documentElement.style;rs.setProperty('--vvh',h+'px');rs.setProperty('--vvt',t+'px');
+   var app=$('app');var ih=Math.round(window.innerHeight)||h;if(app){app.style.height=ih+'px';}rs.setProperty('--vh',(ih/100)+'px');
+   if(!VV.kb()||t===0){if(window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop){try{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;}catch(e){}}}
+   UI.measure();},
+  kick:function(){VV.apply();while(VV.timers.length)clearTimeout(VV.timers.pop());[50,150,350,600].forEach(function(ms){VV.timers.push(setTimeout(VV.apply,ms));});},
+  init:function(){if(VV.inited)return;VV.inited=1;var v=VV.vp();if(v){v.addEventListener('resize',VV.kick);v.addEventListener('scroll',VV.kick);}
+   window.addEventListener('resize',VV.kick);window.addEventListener('orientationchange',function(){VV.kick();setTimeout(VV.kick,300);});
+   window.addEventListener('scroll',function(){if(!VV.kb())VV.kick();},{passive:true});window.addEventListener('pageshow',VV.kick);
+   document.addEventListener('focusin',VV.kick,true);document.addEventListener('focusout',VV.kick,true);document.addEventListener('visibilitychange',VV.kick);VV.kick();}};
+ UI.measure=function(){var b=$('box');if(b&&b.offsetHeight)document.documentElement.style.setProperty('--boxh',b.offsetHeight+'px');};
+ /* ---------- 畫面切換 ---------- */
+ UI.screen=function(n){['title','game','map'].forEach(function(s){$(s).className='scr'+(s===n?' on':'');});var t=$('tabs');if(t)t.style.display=(n==='title')?'none':'flex';
+  UI.cur=n;if(n==='title')UI.titleInit();UI.measure();};
+ /* ---------- 調度 ---------- */
+ UI.go=function(go,a){a=a||{};if(Kb.open)Kb.close(false);
+  if(go==='title'){UI.stop();UI.screen('title');return;}
+  if(go==='hub'){var pd=Eng.pending();if(pd)return UI.go(pd.go,pd.a);UI.showMap();return;}
+  if(go==='place')go='place';
+  var fn=NODES[go];if(!fn){console.warn('no node',go);UI.showMap();return;}
+  var sc;try{sc=fn(a);}catch(e){console.error('node '+go,e);toast('劇情出錯：'+e.message);UI.showMap();return;}
+  UI.present(sc);};
+ UI.present=function(sc){if(!sc){UI.showMap();return;}if(sc.wait)return;if(sc.go){UI.go(sc.go,sc.a);return;}
+  var tok=++UI.tok;
+  if(sc.async){UI.busy(true);var req=sc.async,fb=sc.fb,keep=sc.pendKeep;
+   AI.run(req).then(function(s2){if(tok!==UI.tok)return;UI.busy(false);if(keep)S.pend=null;UI.present(s2);},function(e){if(tok!==UI.tok)return;UI.busy(false);AI.fail(e);var s3=fb();
+    if(keep&&S.pend&&e&&e.kind!=='cancel'){S.pend.shown=1;s3.ch=(s3.ch||[]).concat([{t:'🔁 AI 恢復後重試接續',go:'resumeAi'}]);}else if(keep)S.pend=null;UI.present(s3);});
+   return;}
+  UI.screen('game');UI.sc=sc;UI.li=0;
+  if(sc.bg)UI.setBg(sc.bg);UI.hud();
+  $('choices').innerHTML='';
+  if(sc.focus&&(!sc.lines.length||!sc.lines[0].sp||sc.lines[0].sp==='p'))UI.setChar(sc.focus,sc.ex&&sc.ex!=='normal'?sc.ex:Eng.exprOf(sc.focus));else if(!sc.focus&&!(sc.lines[0]&&CHARS[sc.lines[0].sp]))UI.setChar('');
+  if(sc.medic){UI.showLine(0,true);setTimeout(function(){Med.open(sc.medic);},sc.lines.length?300:0);return;}
+  UI.showLine(0);};
+ /* ---------- 背景／立繪 ---------- */
+ UI.setBg=function(k){if(k==='courtyard')k='night';if(UI.bgk===k)return;UI.bgk=k;var b=$('bg');b.classList.add('fade');setTimeout(function(){b.innerHTML=ART.html('bg',k);b.classList.remove('fade');},120);};
+ UI.setChar=function(id,ex){var c=$('char'),w=$('cw');if(!id){c.className='hide';UI.cid='';return;}var k=id+'|'+(ex||'normal');if(UI.ck===k&&c.className.indexOf('hide')<0){c.className='';return;}
+  var isNew=UI.cid!==id;UI.cid=id;UI.ck=k;w.innerHTML=ART.html('char',id,ex);c.className='';w.className='cw'+(isNew?' in':' bob');};
+ /* ---------- 台詞播放 ---------- */
+ UI.showLine=function(i,noCh){var sc=UI.sc;clearTimeout(UI.autoT);if(!sc)return;
+  if(i>=sc.lines.length){UI.endLines(noCh);return;}
+  UI.li=i;var l=sc.lines[i];var np=$('nameplate');
+  if(l.sp&&l.sp!==''){np.className='on'+(l.sp==='p'?' pc':'');$('npName').textContent=l.sp==='p'?S.p.name:cn(l.sp);}else np.className='';
+  if(CHARS[l.sp])UI.setChar(l.sp,l.ex||Eng.exprOf(l.sp));
+  $('char').classList.toggle('dim',l.sp==='p');
+  Eng.back(l);
+  var txt=l.sp&&l.sp!==''?l.t:l.t;UI.type(txt,!l.sp);
+  $('box').className='';};
+ UI.type=function(t,nar){var el=$('txt');clearInterval(UI.timer);el.className=nar?'nar':'';
+  if(!SET.typer||UI.skip){el.textContent=t;UI.typing=false;UI.lineDone();return;}
+  var i=0,iv={1:42,2:26,3:12}[SET.speed]||26;UI.typing=true;el.textContent='';UI.full=t;
+  UI.timer=setInterval(function(){i+=SET.speed>=3?2:1;el.textContent=t.slice(0,i);if(i>=t.length){clearInterval(UI.timer);UI.typing=false;UI.lineDone();}},iv);};
+ UI.lineDone=function(){var sc=UI.sc;if(!sc)return;var last=UI.li>=sc.lines.length-1;
+  if(last){UI.endLines();return;}
+  $('box').className='wait';
+  if(UI.skip){UI.autoT=setTimeout(function(){UI.showLine(UI.li+1);},60);}
+  else if(UI.auto){UI.autoT=setTimeout(function(){UI.showLine(UI.li+1);},SET.auto*1000+String(sc.lines[UI.li].t).length*35);}};
+ UI.endLines=function(noCh){$('box').className='';if(UI.skip){UI.skip=false;$('qSkip').classList.remove('on');}if(!noCh)UI.choices(UI.sc.ch||[]);UI.measure();
+  if(UI.sc.cg&&!UI.sc._cgShown){UI.sc._cgShown=1;}};
+ UI.adv=function(){if(!UI.sc||$('kbp').className==='on')return;if(UI.typing){clearInterval(UI.timer);$('txt').textContent=UI.full;UI.typing=false;UI.lineDone();return;}
+  if(UI.li<UI.sc.lines.length-1)UI.showLine(UI.li+1);};
+ UI.stop=function(){clearInterval(UI.timer);clearTimeout(UI.autoT);UI.auto=false;UI.skip=false;try{$('qAuto').classList.remove('on');$('qSkip').classList.remove('on');}catch(e){}};
+ /* ---------- 選項 ---------- */
+ UI.choices=function(list){var box=$('choices');box.innerHTML='';box.className=list.length>5?'many':'';
+  list.forEach(function(c,i){var b=document.createElement('button');var sys=/^(🗺|↩|返回|繼續$|告辭)/.test(c.t)||/返回地圖|告辭|↩/.test(c.t);b.className='cbtn'+(c.ai?' ai':'')+(sys?' sys':'')+(/🔒/.test(c.t)?' lock':'');b.textContent=c.t;b.style.animationDelay=(i*0.04)+'s';
+   b.addEventListener('click',function(ev){ev.stopPropagation();UI.pick(c);});box.appendChild(b);});
+  box.scrollTop=0;};
+ UI.pick=function(c){if(UI.busyOn)return;$('choices').innerHTML='';if(c.fx)Eng.applyFx(c.fx);
+  if(c.ai&&c.t)Eng.back({sp:'p',t:c.t.replace(/^✦ /,'')});UI.go(c.go,c.a);};
+ /* ---------- HUD ---------- */
+ UI.hud=function(){if(!S)return;$('hDay').textContent=SEASONS[season()];$('hPer').textContent=perName();$('hCh').textContent=CHAPTERS[S.ch].n+'　第'+S.day+'日';
+  $('hPlace').textContent=(PLACES[S.place]||PLACES.clinic).n;$('hFame').textContent=S.p.fame;$('hGold').textContent=S.p.gold;UI.badge();};
+ UI.badge=function(){var n=Letters.unread();var b=$('letBadge');if(b){b.textContent=n;b.className=n?'on':'';}};
+ var KN={aff:['好感','a','♥'],trust:['信任','t','信'],heart:['心動','h','♥'],jeal:['醋意','j','醋']};
+ UI.pop=function(id,k,d){if(!d||!KN[k])return;var e=document.createElement('div');e.className='pop'+(d<0?' neg':'');
+  var ic=k==='heart'?'h':KN[k][1];e.innerHTML='<span class="ic '+ic+'">'+(k==='heart'?'♥':KN[k][2])+'</span>'+esc(cn(id))+' '+KN[k][0]+' <b>'+(d>0?'+':'')+d+'</b>';UI.addPop(e);};
+ var PN={med:'醫術',cha:'魅力',wit:'才智',fame:'名聲',mind:'心境',gold:'銀兩',hp:'體力'};
+ UI.popP=function(k,d){if(!PN[k]||!d)return;var e=document.createElement('div');e.className='pop'+(d<0?' neg':'');e.innerHTML='<span class="ic p">'+PN[k][0]+'</span>'+PN[k]+' <b>'+(d>0?'+':'')+d+'</b>';UI.addPop(e);UI.hud();};
+ UI.addPop=function(e){var p=$('pops');if(!p)return;p.appendChild(e);while(p.children.length>4)p.removeChild(p.firstChild);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);},2700);};
+ UI.banner=function(a,b){var e=$('banner');$('bn1').textContent=a;$('bn2').textContent=b||'';e.className='';void e.offsetWidth;e.className='on';setTimeout(function(){e.className='';},2900);};
+ UI.busy=function(on){UI.busyOn=on;$('busy').className=on?'on':'';};
+ UI.cgShow=function(id,cb){var v=$('cgv');var cg=null,who='';for(var k in CGS)CGS[k].forEach(function(x){if(x.id===id){cg=x;who=k;}});if(!cg){if(cb)cb();return;}
+  $('cgimg').innerHTML=ART.html('cg',id);$('cgcap').innerHTML='<b>'+esc(CHARS[who].n+' · '+cg.n)+'</b>'+esc(cg.d)+'<div class="note">（輕觸關閉）</div>';v.className='on';
+  v.onclick=function(){v.className='';v.onclick=null;if(cb)cb();};};
+ /* ---------- 地圖 ---------- */
+ var mapSel='';
+ UI.mapSvg=function(){return '<svg viewBox="0 0 400 560" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e6d0"/><stop offset="1" stop-color="#e8d6ba"/></linearGradient></defs><rect width="400" height="560" fill="url(#mpg)"/>'
+  +'<g fill="none" stroke="#8a7a6a" stroke-width="1.2" opacity=".55"><path d="M10 120 l30 -40 l25 30 l30 -50 l35 60"/><path d="M250 90 l30 -45 l28 34 l26 -40 l40 56"/><path d="M20 140 q 40 -12 80 0"/><path d="M270 110 q 40 -10 90 0"/></g>'
+  +'<path d="M-10 330 C 80 300, 140 360, 220 330 S 360 300, 410 320" stroke="#9fb6be" stroke-width="16" fill="none" opacity=".6"/><path d="M-10 330 C 80 300, 140 360, 220 330 S 360 300, 410 320" stroke="#c7d6da" stroke-width="5" fill="none" opacity=".7"/>'
+  +'<text x="300" y="300" font-size="13" fill="#6a8890" font-family="serif" letter-spacing="4">渭水</text>'
+  +'<rect x="120" y="70" width="190" height="200" fill="none" stroke="#8a6a4a" stroke-width="2" stroke-dasharray="7 4" opacity=".55"/><text x="128" y="88" font-size="11" fill="#8a6a4a" font-family="serif">宮城</text>'
+  +'<g stroke="#a88a6a" stroke-width="1.6" stroke-dasharray="3 5" fill="none" opacity=".8"><path d="M88 392 C 140 370, 180 360, 208 347"/><path d="M208 347 C 230 300, 220 200, 216 123"/><path d="M216 123 L 152 246"/><path d="M88 392 L 80 202"/><path d="M208 347 L 304 403"/><path d="M216 123 C 270 140, 300 160, 328 168"/><path d="M152 246 L 248 246"/></g>'
+  +'<g opacity=".35" fill="#5a7a5a"><circle cx="60" cy="230" r="10"/><circle cx="75" cy="215" r="8"/><circle cx="50" cy="210" r="7"/><circle cx="340" cy="450" r="9"/><circle cx="355" cy="465" r="7"/></g>'
+  +'<g transform="translate(350 510)" font-family="serif"><circle r="22" fill="none" stroke="#8a6a4a" stroke-width="1"/><path d="M0 -20 L 5 0 L 0 20 L -5 0 Z" fill="#b8323a" opacity=".7"/><text y="-26" font-size="10" text-anchor="middle" fill="#8a6a4a">北</text></g></svg>';};
+ UI.showMap=function(){if(!S)return;UI.stop();UI.screen('map');$('choices').innerHTML='';$('mDate').textContent=dateStr().replace(/ · [晨午夕夜]$/,'');$('mPer').textContent=perName();
+  if(!$('mapsvg').innerHTML)$('mapsvg').innerHTML=UI.mapSvg();
+  var h='';PLACE_ORDER.forEach(function(pl){var P=PLACES[pl];var lk=!Eng.unlocked(pl);var who=Eng.present(pl);if(P.night&&S.per<3)who=CHAR_ORDER.filter(function(id){return S.c[id].met&&CHARS[id].at['夜']===pl&&Eng.where(id)!==null;}).slice(0,0);
+   var faces=who.slice(0,3).map(function(id){return '<span class="face">'+(S.c[id].met?ART.html('char',id,'normal'):'<b style="display:flex;height:100%;align-items:center;justify-content:center;font-size:13px">?</b>')+'</span>';}).join('');
+   h+='<button class="pin'+(lk?' lock':'')+(pl===S.place?' cur':'')+(pl===mapSel?' sel':'')+'" data-pl="'+pl+'" style="left:'+P.x+'%;top:'+P.y+'%"><span class="ps">'+(lk?'鎖':P.s)+'</span><span class="pn">'+P.n+'</span>'+(faces?'<span class="faces">'+faces+'</span>':'')+'</button>';});
+  $('pins').innerHTML=h;UI.mapInfo(mapSel||S.place);UI.badge();};
+ UI.mapInfo=function(pl){mapSel=pl;var P=PLACES[pl];if(!P)return;var lk=!Eng.unlocked(pl);var who=Eng.present(pl);
+  var w=who.length?'👤 '+who.map(function(id){return S.c[id].met?CHARS[id].n:CHARS[id].sub;}).join('、'):(P.night&&S.per<3?'🌙 入夜後才有人':'此刻無人');
+  $('mapinfo').innerHTML='<h3>'+P.n+'</h3><p>'+P.d+'</p><div class="who">'+(lk?'🔒 第二章（入宮）後開放':w)+'</div>'+(lk?'':'<button class="go" data-go="'+pl+'">'+(pl===S.place?'停留':'前往')+'</button>');
+  Array.prototype.forEach.call(document.querySelectorAll('.pin'),function(b){b.classList.toggle('sel',b.getAttribute('data-pl')===pl);});};
+ /* ---------- 共用面板 ---------- */
+ var Sh={tab:''};window.Sh=Sh;
+ Sh.open=function(title,tabs,render,tab){$('sheet').className='sheet on';$('shT').textContent=title;Sh.render=render;Sh.tabs=tabs||[];Sh.tab=tab||(tabs&&tabs[0]?tabs[0][0]:'');Sh.draw();};
+ Sh.draw=function(){var t=$('shTabs');t.innerHTML=Sh.tabs.map(function(x){return '<button data-tab="'+x[0]+'" class="'+(x[0]===Sh.tab?'on':'')+'">'+x[1]+'</button>';}).join('');$('shB').innerHTML=Sh.render(Sh.tab)||'';$('shB').scrollTop=0;};
+ Sh.close=function(){$('sheet').className='sheet';Sh.render=null;if(S)UI.hud();UI.badge();if(UI.cur==='map')UI.showMap();};
+ UI.sheet=Sh;
+ /* 圖鑑 */
+ var Gal={};window.Gal=Gal;
+ Gal.open=function(){Sh.open('人物圖鑑',[['list','角色'],['rel','關係網'],['me','我']],Gal.render);};
+ function hearts(v){var n=Math.round(clamp(v,0,100)/20);var s='';for(var i=0;i<5;i++)s+=i<n?'<b>♥</b>':'♡';return s;}
+ Gal.render=function(tab){if(!S)return '<p class="note">請先開始遊戲。</p>';
+  if(tab==='rel')return Gal.rel();if(tab==='me')return Gal.me();if(tab&&tab.indexOf('c:')===0)return Gal.det(tab.slice(2));
+  return '<div class="gal">'+CHAR_ORDER.map(function(id){var c=CHARS[id],r=S.c[id];var k=r.met;if(c.hidden&&!k)return '';
+   return '<button class="gcard'+(k?'':' unk')+'" data-gid="'+id+'"><div class="gp" style="background:linear-gradient(180deg,'+ART.shade(c.col,0.75)+','+ART.shade(c.col,0.92)+')">'+ART.html('char',id,k?Eng.exprOf(id):'normal')+'</div><div class="gn">'+(k?c.n:'？？？')+'</div><div class="gt">'+(k?c.c:c.sub)+'</div>'
+   +(k?'<div class="gf">'+Mood.feel(id)+'</div><div class="hearts">'+hearts(r.aff)+'</div><div class="seals"><i class="'+(r.stage>=1?'on':'')+'"></i><i class="'+(r.stage>=2?'on':'')+'"></i><i class="'+(r.stage>=3?'on':'')+'"></i></div>':'')+'</button>';}).join('')+'</div><p class="note">♥ 好感・印章＝心動里程碑（三枚集滿可迎來告白）。隱藏角色相遇後才會出現。</p>';};
+ Gal.det=function(id){var c=CHARS[id],r=S.c[id];var likesK=r.gifts>=1||r.aff>=15;
+  var bar=function(n,v,cl){return '<span>'+n+'</span><div class="bar '+(cl||'')+'"><i style="width:'+clamp(v,0,100)+'%"></i></div><span>'+v+'</span>';};
+  var mem=(S.mem[id]||[]).slice(-6).reverse().map(function(m){return '・第'+m.d+'日　'+esc(m.t);}).join('<br>');
+  return '<button class="btn" data-gback="1">↩ 返回圖鑑</button><div class="gdet" style="margin-top:8px"><div class="dtop" style="background:linear-gradient(180deg,'+ART.shade(c.col,0.7)+','+ART.shade(c.col,0.94)+')">'+ART.html('char',id,Eng.exprOf(id))+'<div class="dname">'+c.n+'<small>'+c.c+'</small></div></div>'
+   +'<div class="bars">'+bar('好感',r.aff)+bar('信任',r.trust,'t')+bar('心動',r.heart)+bar('醋意',r.jeal,'j')+bar('健康',r.hp,'h')+'</div>'
+   +'<div class="kv"><b>簡介</b>'+esc(c.bio)+'</div><div class="kv"><b>性格</b>'+esc(c.pers)+'</div>'
+   +'<div class="kv"><b>心願</b>'+(r.goalKnown?esc(c.goal):'（與他聊聊心願便知）')+'</div>'
+   +'<div class="kv"><b>心態</b>'+esc(Mood.card(id))+'</div>'
+   +'<div class="kv"><b>病況</b>'+(r.cured?'已醫治（'+c.ail+'）':esc(c.ailD))+'</div>'
+   +'<div class="kv"><b>喜好</b>'+(likesK?c.likes.map(function(x){return '<span class="tag">'+x+'</span>';}).join(''):'？？？（送過禮或熟絡後揭曉）')+'<br><b>忌諱</b>'+(r.aff>=30?c.hates.map(function(x){return '<span class="tag no">'+x+'</span>';}).join(''):'？？？')+'</div>'
+   +'<div class="kv"><b>秘密</b>'+(r.sec?esc(c.secret):'🔒 尚未得知（信任加深或醫好他的病）')+'</div>'
+   +'<div class="kv"><b>回憶</b><div class="mem">'+(mem||'尚無')+'</div></div>'
+   +'<div class="kv"><b>里程碑</b>'+CGS[id].map(function(g,i){return (r.stage>i?'✿ ':'・ ')+g.n;}).join('　')+'</div></div>';};
+ Gal.rel=function(){var met=CHAR_ORDER.filter(function(id){return S.c[id].met;});var cx=200,cy=200,R=140;var pos={};
+  met.forEach(function(id,i){var a=-Math.PI/2+i*2*Math.PI/Math.max(1,met.length);pos[id]=[cx+Math.cos(a)*R,cy+Math.sin(a)*R];});
+  var s='<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">';
+  RELNET.forEach(function(e){if(pos[e[0]]&&pos[e[1]]){var a=pos[e[0]],b=pos[e[1]];s+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="#c9a35a" stroke-width="1.2" stroke-dasharray="4 3"/><text x="'+((a[0]+b[0])/2)+'" y="'+((a[1]+b[1])/2-3)+'" font-size="10" text-anchor="middle" fill="#5a4a44" font-family="serif" paint-order="stroke" stroke="#fbf4ee" stroke-width="3">'+e[2]+'</text>';}});
+  met.forEach(function(id){var p=pos[id],r=S.c[id];var w=1+r.heart/20;s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="#b8323a" stroke-width="'+w+'" opacity=".55"/>';});
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="26" fill="#b8323a"/><text x="'+cx+'" y="'+(cy+5)+'" font-size="14" text-anchor="middle" fill="#fff" font-family="serif">'+esc(S.p.name.slice(0,2))+'</text>';
+  met.forEach(function(id){var p=pos[id];s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="24" fill="#fbf4ee" stroke="'+CHARS[id].col+'" stroke-width="3"/><text x="'+p[0]+'" y="'+(p[1]+5)+'" font-size="14" text-anchor="middle" fill="#2b2321" font-family="serif">'+CHARS[id].n+'</text><text x="'+p[0]+'" y="'+(p[1]+40)+'" font-size="10" text-anchor="middle" fill="#b8323a" font-family="serif">'+Mood.feel(id)+'</text>';});
+  return '<div class="rel">'+s+'</svg></div><p class="note">紅線粗細＝對你的心動；金色虛線＝角色之間的關係。只顯示已相識的人。</p>';};
+ Gal.me=function(){var p=S.p;return '<div class="gdet"><div class="dtop" style="background:linear-gradient(180deg,#f6dfe2,#fbf4ee)">'+ART.html('char','heroine','smile')+'<div class="dname">'+esc(p.name)+'<small>青囊谷女神醫</small></div></div></div>'
+  +'<div class="pstat" style="margin-top:10px"><div>醫術<b>'+p.med+'</b></div><div>魅力<b>'+p.cha+'</b></div><div>才智<b>'+p.wit+'</b></div><div>名聲<b>'+p.fame+'</b></div><div>心境<b>'+p.mind+'</b></div><div>銀兩<b>'+p.gold+'</b></div></div>'
+  +'<div class="kv"><b>藥箱</b>'+esc(Eng.invStr())+'</div><div class="kv"><b>目標</b>'+esc(CHAPTERS[S.ch].n+'：'+CHAPTERS[S.ch].goal)+'</div>'
+  +'<div class="kv"><b>秘密</b>'+esc(S.secrets.p[0].t)+'（知情者：'+(S.secrets.p[0].kn.map(cn).join('、')||'無人')+'）</div>'
+  +'<div class="kv"><b>近期大事</b><div class="mem">'+(WS.brief().map(esc).join('<br>')||'風平浪靜')+'</div></div>';};
+ /* 書信 */
+ var LetUI={};window.LetUI=LetUI;
+ LetUI.open=function(){Sh.open('魚雁往來',[],LetUI.render);};
+ LetUI.render=function(tab){if(!S)return '';if(tab&&tab.indexOf('l:')===0)return LetUI.one(+tab.slice(2));
+  if(!S.letters.length)return '<p class="note" style="text-align:center;margin-top:40px">尚無來信。<br>與人熟絡（好感 20 以上）後，他們會寄信給你。</p>';
+  var h='';for(var i=S.letters.length-1;i>=0;i--){var l=S.letters[i];h+='<button class="env'+(l.read?' read':'')+'" data-lid="'+i+'"><span class="wax">'+CHARS[l.id].n[0]+'</span><span class="ef"><b>'+CHARS[l.id].n+'</b>　<small>第'+l.d+'日</small><p>'+esc(l.t.slice(0,22))+'…</p></span>'+(l.read?(l.rep?'<small>已回</small>':''):'<span class="dot"></span>')+'</button>';}return h;};
+ LetUI.one=function(i){var l=S.letters[i];if(!l)return '';l.read=1;UI.badge();var parts=l.t.split('——');
+  var h='<button class="btn" data-lback="1">↩ 返回信匣</button><div class="jian">'+esc(parts[0])+(parts[1]?'<div class="from">——'+esc(parts[1])+'</div>':'')+'</div>';
+  if(l.rep)h+='<p class="note" style="text-align:center">已回信：'+esc(l.rt||{warm:'溫柔',tease:'俏皮',polite:'得體',free:''}[l.rep])+'</p>';
+  else h+='<div class="reply"><button class="cbtn" data-rep="warm" data-li="'+i+'">💌 溫柔地回信</button><button class="cbtn" data-rep="tease" data-li="'+i+'">😊 俏皮地回信</button><button class="cbtn" data-rep="polite" data-li="'+i+'">📜 得體地回信</button><button class="cbtn ai" data-rep="free" data-li="'+i+'">✍️ 親筆回信（自己寫）</button></div>';
+  return h;};
+ /* 相冊 */
+ var Alb={};window.Alb=Alb;
+ Alb.open=function(){Sh.open('回憶畫卷',[['cg','CG'],['end','結局']],Alb.render);};
+ Alb.render=function(tab){var g=Meta.get();
+  if(tab==='end'){return Object.keys(ENDINGS).map(function(k){var E=ENDINGS[k],on=g.endings[k];return '<div class="endl'+(on?'':' lock')+'"><i>'+E.k+'</i><span>'+(on?'<b>'+E.n+'</b>　'+esc(E.d):'？？？？')+'</span></div>';}).join('')+'<p class="note">已達成 '+Object.keys(g.endings).length+' / '+Object.keys(ENDINGS).length+'。</p>';}
+  var h='<div class="alb">',tot=0,got=0;CHAR_ORDER.forEach(function(id){if(CHARS[id].hidden&&!g.seen[id]&&!CGS[id].some(function(x){return g.cg[x.id];}))return;h+='<h4>'+CHARS[id].n+'</h4>';
+   CGS[id].forEach(function(x){tot++;if(g.cg[x.id]){got++;h+='<button class="cgt" data-cg="'+x.id+'">'+ART.html('cg',x.id)+'<span>'+x.n+'</span></button>';}else h+='<div class="cgt lock"><em>鎖</em><span>？？？</span></div>';});});
+  return h+'</div><p class="note">已收集 '+got+' / '+tot+'（不含隱藏）。CG 跨存檔保留。</p>';};
+ /* 選單 */
+ var MenuUI={};window.MenuUI=MenuUI;
+ MenuUI.open=function(tab){Sh.open('選單',[['main','總覽'],['save','存檔'],['load','讀檔'],['set','設定'],['log','回顧']],MenuUI.render,tab);};
+ MenuUI.render=function(tab){
+  if(tab==='save'||tab==='load')return MenuUI.slots(tab);if(tab==='set')return MenuUI.settings();if(tab==='log')return MenuUI.log();
+  return '<div class="mgrid"><button class="mbtn" data-m="save"><i>💾</i>存檔</button><button class="mbtn" data-m="load"><i>📂</i>讀檔</button><button class="mbtn" data-m="set"><i>⚙</i>設定</button><button class="mbtn" data-m="log"><i>📜</i>回顧</button><button class="mbtn" data-m="alb"><i>🖼</i>畫卷</button><button class="mbtn" data-m="title"><i>🏮</i>標題</button></div>'
+   +(S?Gal.me():'')+'<p class="note">AI：'+(SET.ai?(AI.ready()?'已啟用（'+(SET.aiSrc==='manual'?'手動貼上':(PRESETS[SET.preset]||{}).n||SET.preset)+'）':'已啟用但暫停／未設定 Key → 離線劇情'+(AI.lastErr?'｜'+esc(AI.lastErr):'')):'離線模式')+'</p>';};
+ MenuUI.slots=function(mode){var h='';['auto',1,2,3].forEach(function(s){var i=slotInfo(s);if(mode==='save'&&s==='auto')return;
+  h+='<div class="slot"><div class="si"><b>'+slotName(s)+'</b><br>'+(i?esc(i.name)+'・'+CHAPTERS[i.ch].n+'・第'+i.day+'日<br><small>'+new Date(i.t).toLocaleString()+'</small>':'（空）')+'</div>'
+   +(mode==='save'?'<button class="pri" data-sv="'+s+'">存入</button>':(i?'<button class="pri" data-ld="'+s+'">讀取</button>':''))+'</div>';});
+  return h+'<p class="note">每日清晨自動存檔。存檔保存在此瀏覽器（Safari 與主畫面 App 的存檔互不相通）。</p>';};
+ MenuUI.log=function(){if(!S)return '';return S.back.slice(-80).reverse().map(function(b){return '<div class="logl'+(b.sp==='p'?' me':'')+'">'+(b.sp?'<b>'+esc(b.sp==='p'?S.p.name:cn(b.sp))+'</b>':'')+esc(b.t)+'</div>';}).join('')||'<p class="note">尚無紀錄。</p>';};
+ function seg(key,opts){return '<div class="seg">'+opts.map(function(o){return '<button data-set="'+key+'" data-v="'+o[0]+'" class="'+(String(SET[key])===String(o[0])?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';}
+ MenuUI.settings=function(){var P=PRESETS[SET.preset]||PRESETS.custom;
+  return '<h4>AI 說書人</h4><label class="field">AI 模式'+seg('ai',[[false,'離線劇情'],[true,'AI 生成']])+'</label>'
+   +'<label class="field">來源'+seg('aiSrc',[['api','API 直連'],['manual','手動貼上（Grok App 等）']])+'</label>'
+   +'<label class="field">服務商<select id="sPreset">'+PRESET_ORDER.map(function(k){return '<option value="'+k+'"'+(k===SET.preset?' selected':'')+'>'+PRESETS[k].n+'</option>';}).join('')+'</select></label>'
+   +'<p class="note">'+esc(P.key)+'</p>'
+   +'<label class="field">Base URL<input id="sBase" value="'+esc(SET.base)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
+   +'<label class="field">模型<input id="sModel" list="mdl" value="'+esc(SET.model)+'" autocapitalize="off" autocorrect="off" spellcheck="false"><datalist id="mdl">'+(P.models||[]).map(function(m){return '<option value="'+m+'">';}).join('')+'</datalist></label>'
+   +'<label class="field">API Key（只存在本機）<input id="sKey" type="password" value="'+esc(SET.key)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
+   +'<div class="row"><button class="btn pri" id="sSave">儲存</button><button class="btn" id="sTest">測試連線</button><span id="sMsg" class="note"></span></div>'
+   +(AI.isBlocked()||(S&&S.aiPaused)?'<p class="note" style="color:#b8323a">AI 目前暫停：'+esc(AI.lastErr||SET.aiBlock.split('\u0001')[1]||'')+' <button class="btn" id="sUnblock">恢復 AI</button></p>':'')
+   +'<h4>閱讀</h4><label class="field">打字機效果'+seg('typer',[[true,'開'],[false,'關']])+'</label><label class="field">文字速度'+seg('speed',[[1,'慢'],[2,'中'],[3,'快']])+'</label>'
+   +'<label class="field">自動播放間隔'+seg('auto',[[2.4,'悠閒'],[1.6,'適中'],[0.9,'緊湊']])+'</label><label class="field">字級'+seg('font',[[15,'小'],[17,'中'],[19,'大']])+'</label>'
+   +'<h4>遊戲</h4><label class="field">難度'+seg('diff',[['easy','爽玩'],['normal','一般'],['hard','困難']])+'</label><label class="field">劇情節奏'+seg('pace',[['slow','慢熱'],['mid','適中'],['fast','緊湊']])+'</label>'
+   +'<label class="field">知情防火牆（角色不會知道不該知道的事）'+seg('firewall',[[true,'開'],[false,'關']])+'</label><label class="field">世界節制（大事須有前因）'+seg('wsane',[[true,'開'],[false,'關']])+'</label>'
+   +'<label class="field">宣告寬限（/設定 喜歡我 時心動上限 60）'+seg('decld',[[true,'開'],[false,'關']])+'</label>'
+   +'<p class="note">輸入框左邊的按鈕可切換：💬說（對白）→ ⚙指令（動作或「某人命人…」）→ 📜設定（作者宣告，必定成真）。也可在句首打 /設定、/指令。</p>';};
+ /* ---------- 名字 ---------- */
+ UI.askName=function(cb){var def=DEF_NAMES[0];UI.dialog('女神醫之名','<p class="note">她剛從青囊谷學成下山。為她取個名字吧：</p><label class="field">姓名（2–4 字）<input id="nmIn" maxlength="6" value="'+def+'" autocomplete="off"></label><div class="row">'+DEF_NAMES.map(function(n){return '<button class="btn" data-nm="'+n+'">'+n+'</button>';}).join('')+'</div>',
+  [['取消',null],['下山去','pri',function(){var v=($('nmIn').value||'').replace(/\s/g,'').slice(0,6)||def;cb(v);}]]);
+  setTimeout(function(){Array.prototype.forEach.call(document.querySelectorAll('[data-nm]'),function(b){b.onclick=function(){$('nmIn').value=b.getAttribute('data-nm');};});},0);};
+ UI.dialog=function(t,body,btns){$('dlT').textContent=t;$('dlB').innerHTML=body;var a=$('dlA');a.innerHTML='';(btns||[['確定','pri']]).forEach(function(b){var e=document.createElement('button');e.className='btn'+(b[1]==='pri'?' pri':'');e.textContent=b[0];
+  e.onclick=function(){$('dlg').className='dlg';var f=typeof b[1]==='function'?b[1]:b[2];if(f)f();};a.appendChild(e);});$('dlg').className='dlg on';};
+ UI.manualDialog=function(prompt,ok,cancel){UI.dialog('手動 AI（複製→貼上）','<p class="note">① 複製下方提示詞，貼到 Grok／ChatGPT 等 App；② 把它回覆的 JSON 貼回下面。</p><label class="field">提示詞<textarea id="mpP" rows="5" readonly>'+esc(prompt)+'</textarea></label><button class="btn" id="mpCopy">複製提示詞</button><label class="field">AI 回覆<textarea id="mpA" rows="5"></textarea></label>',
+  [['改用離線',function(){cancel();}],['送出','pri',function(){ok($('mpA').value);}]]);
+  setTimeout(function(){var c=$('mpCopy');if(c)c.onclick=function(){try{navigator.clipboard.writeText(prompt);toast('已複製');}catch(e){$('mpP').select();document.execCommand('copy');}};},0);};
+ /* ---------- 標題 ---------- */
+ UI.titleInit=function(){if(!$('tbg').innerHTML)$('tbg').innerHTML=ART.html('bg','title');var pe=document.querySelector('.tpetals');if(pe&&!pe.innerHTML){var h='';for(var i=0;i<14;i++)h+='<i style="left:'+(i*7.3%100)+'%;animation-duration:'+(7+i%5*1.7)+'s;animation-delay:'+(-i*1.1)+'s"></i>';pe.innerHTML=h;}
+  var has=['auto',1,2,3].some(function(s){return slotInfo(s);});$('tCont').classList.toggle('dis',!has);};
+ UI.newGame=function(){UI.askName(function(nm){S=newState(nm);Meta.get();UI.stop();UI.bgk='';UI.go('start');saveSlot('auto',true);});};
+ UI.loadGame=function(slot){if(!loadSlot(slot)){toast('讀檔失敗');return;}if(S.pend)S.pend.shown=0;Sh.close();UI.bgk='';UI.stop();toast('📂 已讀取（'+slotName(slot)+'）');UI.go('hub');};
+ /* ---------- 輸入 ---------- */
+ var MODES=[['say','💬說'],['cmd','⚙指令'],['decl','📜設定']];
+ UI.modeSync=function(){var m=SET.inmode||'say';var lab=MODES.filter(function(x){return x[0]===m;})[0]||MODES[0];var b=$('mode');b.textContent=lab[1];b.className='mchip '+m;$('kbmode').textContent=lab[1];
+  $('free').placeholder={say:'對眼前的人說…',cmd:'做什麼？例：替他包紮／嬴政命人傳蒙恬',decl:'宣告劇情：例：那人便是嬴政'}[m];};
+ UI.submitFree=function(){var f=$('free');var v=f.value;f.value='';if(!v.trim()||!S||UI.busyOn)return;$('choices').innerHTML='';var r=Input.submit(v);if(!r)return;if(r.go&&!r.lines){UI.go(r.go,r.a);return;}UI.present(r);};
+ /* ---------- 事件綁定 ---------- */
+ UI.bind=function(){
+  var tabs=$('tabs');$('app').appendChild(tabs);
+  $('tNew').onclick=UI.newGame;
+  $('tCont').onclick=function(){if(this.classList.contains('dis'))return;var best=null,bt=0;['auto',1,2,3].forEach(function(s){var i=slotInfo(s);if(i&&i.t>bt){bt=i.t;best=s;}});
+   Sh.open('續寫前緣',[],function(){return MenuUI.slots('load');});};
+  $('tAlbum').onclick=Alb.open;$('tSet').onclick=function(){Sh.open('設定',[],MenuUI.settings);};
+  $('box').addEventListener('click',function(e){if(e.target.closest('#inrow')||e.target.closest('#quick'))return;UI.adv();});
+  $('char').style.pointerEvents='none';
+  $('game').addEventListener('click',function(e){if(e.target===$('game')||e.target.closest('#bg')||e.target.id==='fx')UI.adv();});
+  $('quick').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;e.stopPropagation();var q=b.getAttribute('data-q');
+   if(q==='log')MenuUI.open('log');else if(q==='save')MenuUI.open('save');
+   else if(q==='auto'){UI.auto=!UI.auto;b.classList.toggle('on',UI.auto);if(UI.auto&&!UI.typing)UI.lineDone();}
+   else if(q==='skip'){UI.skip=true;b.classList.add('on');if(UI.typing){clearInterval(UI.timer);$('txt').textContent=UI.full;UI.typing=false;}UI.lineDone();}});
+  $('mode').onclick=function(e){e.stopPropagation();var i=MODES.map(function(x){return x[0];}).indexOf(SET.inmode||'say');SET.inmode=MODES[(i+1)%3][0];saveSettings();UI.modeSync();toast({say:'💬 說：對眼前的人說話',cmd:'⚙ 指令：描述動作，或「某人命人…」導演命令',decl:'📜 設定：宣告劇情事實，必定成真'}[SET.inmode],2600);};
+  $('send').onclick=function(e){e.stopPropagation();if(Kb.on()&&!$('free').value){Kb.show();return;}UI.submitFree();};
+  $('free').addEventListener('keydown',function(e){if(e.isComposing||e.keyCode===229)return;if(e.key==='Enter'){e.preventDefault();UI.submitFree();}});
+  tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!S||UI.busyOn)return;var t=b.getAttribute('data-t');
+   if(t==='map')UI.go('hub');else if(t==='clinic'){UI.go('go',{pl:'clinic'});}else if(t==='gal')Gal.open();else if(t==='let')LetUI.open();else MenuUI.open();});
+  $('hSeal').onclick=function(){Gal.open();Sh.tab='me';Sh.draw();};
+  /* 地圖 */
+  $('pins').addEventListener('click',function(e){var b=e.target.closest('.pin');if(!b)return;var pl=b.getAttribute('data-pl');if(mapSel===pl&&Eng.unlocked(pl)){UI.go('go',{pl:pl});return;}UI.mapInfo(pl);});
+  $('mapinfo').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b)UI.go('go',{pl:b.getAttribute('data-go')});});
+  $('mWait').onclick=function(){Eng.pass(1);UI.go('hub');};
+  $('mBack').onclick=function(){UI.go('place');};
+  /* 面板 */
+  $('shX').onclick=Sh.close;
+  $('shTabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;Sh.tab=b.getAttribute('data-tab');Sh.draw();});
+  $('shB').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;var a;
+   if((a=t.getAttribute('data-gid'))){if(!S.c[a].met)return toast('尚未相識');Sh.tab='c:'+a;Sh.draw();return;}
+   if(t.getAttribute('data-gback')){Sh.tab='list';Sh.draw();return;}
+   if((a=t.getAttribute('data-lid'))!==null){Sh.tab='l:'+a;Sh.draw();return;}
+   if(t.getAttribute('data-lback')){Sh.tab='';Sh.draw();return;}
+   if((a=t.getAttribute('data-rep'))){var li=+t.getAttribute('data-li');if(a==='free'){Kb.ask('親筆回信給'+cn(S.letters[li].id),function(v){if(!v.trim())return;Letters.reply(li,'free',v.slice(0,80));toast('✉ 已寄出');Sh.draw();});return;}Letters.reply(li,a);toast('✉ 已寄出回信');Sh.draw();return;}
+   if((a=t.getAttribute('data-cg'))){UI.cgShow(a,function(){});return;}
+   if((a=t.getAttribute('data-m'))){if(a==='alb'){Alb.open();return;}if(a==='title'){UI.dialog('回到標題','未存檔的進度會遺失（每日清晨有自動存檔）。',[['取消',null],['回到標題','pri',function(){Sh.close();UI.go('title');}]]);return;}Sh.tab=a;Sh.draw();return;}
+   if((a=t.getAttribute('data-sv'))){saveSlot(a==='auto'?'auto':+a);Sh.draw();return;}
+   if((a=t.getAttribute('data-ld'))){UI.loadGame(a==='auto'?'auto':+a);return;}
+   if((a=t.getAttribute('data-set'))){var v=t.getAttribute('data-v');var dv=DEFSET[a];SET[a]=typeof dv==='boolean'?v==='true':(typeof dv==='number'?+v:v);saveSettings();applyLook();Sh.draw();return;}
+   if(t.id==='sSave'||t.id==='sTest'){SET.base=$('sBase').value.trim();SET.model=$('sModel').value.trim();SET.key=$('sKey').value.trim();saveSettings();
+    if(t.id==='sSave'){toast('已儲存設定');return;}$('sMsg').textContent='測試中…';AI.test().then(function(r){var m=$('sMsg');if(m)m.textContent=(r.ok?'✅ ':'❌ ')+r.msg;});return;}
+   if(t.id==='sUnblock'){AI.unblock();toast('AI 已恢復');Sh.draw();return;}});
+  $('shB').addEventListener('change',function(e){if(e.target.id==='sPreset'){var k=e.target.value;var P=PRESETS[k];SET.preset=k;if(P.base)SET.base=P.base;if(P.model)SET.model=P.model;saveSettings();Sh.draw();}});
+  UI.modeSync();
+ };
+})();
+function applyLook(){document.documentElement.style.setProperty('--fs',(SET.font||17)+'px');UI.modeSync&&UI.modeSync();VV.apply();}
+/* ===== 全屏輸入面板（Kb，沿用《秦風》M19：觸控裝置點輸入框 → 覆蓋層 textarea 16px） ===== */
+var Kb={open:false};
+(function(){
+ function el(i){return document.getElementById(i);}
+ Kb.on=function(){return !!(window.VV&&VV.coarse());};
+ Kb.ctx=function(){try{var t=el('txt').textContent||'';t=t.replace(/\s+/g,' ').trim();return t.length>40?'…'+t.slice(-40):t;}catch(e){return '';}};
+ function count(){var ta=el('kbta'),c=el('kbcnt');if(ta&&c)c.textContent=ta.value.length+'/120';}
+ Kb.show=function(cb,ctx){var p=el('kbp'),ta=el('kbta'),f=el('free');if(!p||!ta||Kb.open)return;Kb.open=true;Kb.cb=cb||null;ta.value=cb?'':(f?f.value:'');el('kbctx').textContent=ctx||Kb.ctx();count();
+  document.body.classList.add('kbopen');p.className='on';p.setAttribute('aria-hidden','false');try{VV.apply();}catch(e){}try{ta.focus();var n=ta.value.length;ta.setSelectionRange(n,n);}catch(e2){}};
+ Kb.ask=function(ctx,cb){if(Kb.on())Kb.show(cb,ctx);else{var v=window.prompt(ctx,'');if(v!==null)cb(v);}};
+ Kb.close=function(keep){var p=el('kbp'),ta=el('kbta'),f=el('free');if(!p||!Kb.open)return;Kb.open=false;if(keep&&f&&!Kb.cb)f.value=ta.value;Kb.cb=null;
+  p.className='';p.setAttribute('aria-hidden','true');document.body.classList.remove('kbopen');try{ta.blur();}catch(e){}try{window.scrollTo(0,0);}catch(e2){}try{VV.kick();}catch(e3){}
+  setTimeout(function(){if(!Kb.open){try{window.scrollTo(0,0);}catch(e){}try{VV.apply();}catch(e2){}}},350);};
+ Kb.send=function(){var ta=el('kbta'),f=el('free');if(!ta||!f)return;var v=ta.value;var cb=Kb.cb;if(cb){Kb.cb=null;Kb.close(false);cb(v);return;}f.value=v;Kb.close(false);if(v.replace(/\s+/g,''))UI.submitFree();};
+ Kb.sync=function(){var f=el('free');if(!f)return;if(Kb.on()){f.setAttribute('readonly','readonly');f.setAttribute('inputmode','none');}else{f.removeAttribute('readonly');f.removeAttribute('inputmode');}};
+ Kb.standalone=function(){try{return !!(navigator.standalone||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches));}catch(e){return false;}};
+ Kb.init=function(){if(Kb.inited)return;var p=el('kbp'),ta=el('kbta'),f=el('free');if(!p||!ta||!f)return;Kb.inited=1;Kb.sync();if(Kb.standalone())document.body.classList.add('standalone');
+  f.addEventListener('click',function(e){e.stopPropagation();if(Kb.on()){e.preventDefault();Kb.show();}});
+  f.addEventListener('focus',function(){if(Kb.on()&&!Kb.open){try{f.blur();}catch(e){}Kb.show();}});
+  el('kbsend').addEventListener('click',function(e){e.preventDefault();Kb.send();});
+  el('kbcancel').addEventListener('click',function(e){e.preventDefault();Kb.close(true);});
+  p.addEventListener('click',function(e){if(e.target===p)Kb.close(true);});
+  ta.addEventListener('input',count);
+  ta.addEventListener('keydown',function(e){if(e.isComposing||e.keyCode===229)return;if((e.key==='Enter'||e.keyCode===13)&&!e.shiftKey){e.preventDefault();Kb.send();}else if(e.key==='Escape'){Kb.close(true);}});
+  p.addEventListener('touchmove',function(e){if(e.target===p||e.target.id==='kbbox')e.preventDefault();},{passive:false});
+  try{var mq=window.matchMedia('(pointer:coarse)');mq.addListener&&mq.addListener(Kb.sync);}catch(e){}};
+})();
+
+/* ---- 09_medic.js ---- */
+/* ===== 問診小遊戲：望聞問切 → 辨證 → 處方 ===== */
+var Med={cur:null};
+(function(){
+ function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1);var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+ Med.open=function(o){var d,who=o.who||'';if(who){var c=CURE[who];d={p:CHARS[who].n+'（'+CHARS[who].ail+'）',sym:c.sym,dx:c.dx,wrong:c.wrong,rx:c.rx,rxw:c.rxw};}else d=CASES[o.ci];
+  Med.cur={d:d,who:who,ci:o.ci,rev:[],struck:'',step:'look',dxOk:null,rxOk:null,dxOpts:shuffle([d.dx].concat(d.wrong)),rxOpts:shuffle([d.rx].concat(d.rxw))};
+  if(S.p.med>=25)Med.cur.rev.push(0);
+  $('med').className='sheet med on';$('mdT').textContent=who?'為'+CHARS[who].n+'診治':'坐診問診';Med.draw();};
+ Med.draw=function(){var m=Med.cur,d=m.d;if(!m)return;var who=m.who;
+  var h='<div class="pat"><div class="pav">'+(who?ART.html('char',who,'normal'):'🧓')+'</div><div><b style="font-size:17px">'+esc(d.p)+'</b><div class="note">'+(who?'他把手腕遞給你。':'等著你診治。')+'　醫術 '+S.p.med+'</div></div></div>';
+  if(m.step==='done'){var sc=(m.dxOk?1:0)+(m.rxOk?1:0)+(m.rev.length>=4?1:0);m.score=sc;var ok=who?(m.dxOk&&m.rxOk):sc>=2;m.ok=ok;
+   h+='<div class="mres"><div class="stamp">'+(sc>=3?'妙手回春':(ok?'藥到病除':'尚欠火候'))+'</div><div class="note">辨證 '+(m.dxOk?'✔':'✘ 應為「'+esc(d.dx)+'」')+'　處方 '+(m.rxOk?'✔':'✘ 應為「'+esc(d.rx)+'」')+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起藥箱</button></div>';}
+  else{h+='<h4>四診</h4><div class="four">'+['望','聞','問','切'].map(function(x,i){return '<button data-four="'+i+'" class="'+(m.rev.indexOf(i)>=0?'done':'')+'">'+x+'</button>';}).join('')+'</div>';
+   h+='<div class="sym">'+m.rev.map(function(i){return i<3?'<span>'+esc(d.sym[i])+'</span>':'<span>脈象：可排除「'+esc(m.struck)+'」</span>';}).join('')+(m.rev.length?'':'<span class="note" style="border:0;background:none">輕觸四診收集症狀（至少兩項）</span>')+'</div>';
+   if(m.rev.length>=2&&m.step==='look')h+='<h4>辨證</h4><div class="opts">'+m.dxOpts.map(function(x){return '<button class="cbtn'+(x===m.struck?' lock':'')+'" data-dx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';
+   if(m.step==='rx')h+='<h4>處方</h4><div class="opts">'+m.rxOpts.map(function(x){return '<button class="cbtn" data-rx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';}
+  $('mdB').innerHTML=h;};
+ Med.four=function(i){var m=Med.cur;if(!m||m.rev.indexOf(i)>=0)return;if(i===3){m.struck=m.d.wrong[rnd(m.d.wrong.length)];}m.rev.push(i);Med.draw();};
+ Med.dx=function(x){var m=Med.cur;m.dxOk=x===m.d.dx;m.step='rx';Med.draw();};
+ Med.rx=function(x){var m=Med.cur;m.rxOk=x===m.d.rx;m.step='done';Med.draw();};
+ Med.close=function(){var m=Med.cur;$('med').className='sheet med';Med.cur=null;if(!m)return;if(m.who)UI.go('cureDone',{id:m.who,ok:!!m.ok});else UI.go('diagDone',{ci:m.ci,score:m.score||0});};
+ Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var a;
+  if((a=b.getAttribute('data-four'))!==null)Med.four(+a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-rx'))!==null)Med.rx(a);else if(b.id==='mdDone')Med.close();});};
+})();
+
+/* ---- 99_boot.js ---- */
+/* ===== 啟動 ===== */
+(function(){
+ function boot(){loadSettings();try{if(location.protocol==='https:'&&navigator.onLine!==false){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Ma+Shan+Zheng&text='+encodeURIComponent('青囊秦心乙女');
+   var l2=document.createElement('link');l2.rel='stylesheet';l2.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap';document.head.appendChild(l2);
+   var l3=document.createElement('link');l3.rel='stylesheet';l3.href='https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap&text='+encodeURIComponent('青囊秦心·');document.head.appendChild(l3);}}catch(e){}
+  VV.init();UI.bind();Med.bind();Kb.init();applyLook();UI.screen('title');
+  window.addEventListener('pagehide',function(){if(S)saveSlot('auto',true);});
+  document.addEventListener('visibilitychange',function(){if(document.hidden&&S)saveSlot('auto',true);});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+
+</script>
+</body>
+</html>

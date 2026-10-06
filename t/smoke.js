@@ -1,0 +1,10 @@
+const L=require('./lib');
+(async()=>{const eng=process.argv[2]==='chromium'?L.chromium:L.webkit;const p=await L.open({eng,settings:{typer:false}});
+ await L.shot(p,'01_title');
+ await L.newGame(p,'豆豆');
+ await L.shot(p,'02_prologue');
+ await L.pick(p,/走進咸陽/);await L.flush(p);await L.shot(p,'03_market');
+ await L.pick(p,/將軍別動/);await L.flush(p);await L.shot(p,'04_mengtian');
+ await L.toMap(p);await L.shot(p,'05_map');
+ console.log('name',await p.evaluate(()=>S.p.name),'mt',await p.evaluate(()=>JSON.stringify(S.c.mengtian)));
+ console.log('errs',p.errs);await p.browser_.close();})().catch(e=>{console.error('FAIL',e);process.exit(1);});

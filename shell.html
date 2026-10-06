@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="青囊·秦心">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#f6ebe4">
+<title>青囊·秦心</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='10' fill='%23b8323a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23f6ebe4'/%3E%3Crect x='30' y='30' width='120' height='120' rx='18' fill='%23b8323a'/%3E%3Ctext x='90' y='120' font-size='80' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
+<style>
+/*@@CSS@@*/
+</style>
+</head>
+<body>
+<div id="app">
+ <!-- 標題 -->
+ <section id="title" class="scr on">
+  <div class="tbg" id="tbg"></div>
+  <div class="tpetals" aria-hidden="true"></div>
+  <div class="tlogo">
+   <div class="tseal">乙女</div>
+   <h1><span>青囊</span><i>·</i><span>秦心</span></h1>
+   <div class="tsub">一卷醫書　一顆秦心</div>
+  </div>
+  <div class="tmenu">
+   <button class="tbtn" id="tNew"><b>初入咸陽</b><small>新的故事</small></button>
+   <button class="tbtn" id="tCont"><b>續寫前緣</b><small>讀取存檔</small></button>
+   <button class="tbtn" id="tAlbum"><b>回憶畫卷</b><small>CG・結局</small></button>
+   <button class="tbtn" id="tSet"><b>設定</b><small>AI・文字</small></button>
+  </div>
+  <div class="tfoot">全部角色為原創動漫化人物・離線亦可遊玩</div>
+ </section>
+ <!-- 遊戲 VN -->
+ <section id="game" class="scr">
+  <div id="bg"></div>
+  <div id="fx"></div>
+  <div id="char"><div class="cw" id="cw"></div></div>
+  <header id="hud">
+   <button id="hSeal" class="hseal" aria-label="狀態"><span id="hDay">春</span><small id="hPer">晨</small></button>
+   <div id="hInfo"><div id="hCh">第一章</div><div id="hPlace">青囊醫館</div></div>
+   <div id="hStat"><span title="名聲">✿<b id="hFame">0</b></span><span title="銀兩">◎<b id="hGold">0</b></span></div>
+  </header>
+  <div id="pops"></div>
+  <div id="choices"></div>
+  <div id="box">
+   <div id="nameplate"><span id="npName"></span></div>
+   <div id="quick">
+    <button data-q="log" aria-label="回顧">回顧</button><button data-q="auto" id="qAuto" aria-label="自動">自動</button><button data-q="skip" id="qSkip" aria-label="快進">快進</button><button data-q="save" aria-label="存檔">存檔</button>
+   </div>
+   <div id="face"></div>
+   <div id="txt" aria-live="polite"></div>
+   <div id="next">▼</div>
+   <div id="inrow">
+    <button id="mode" class="mchip">💬說</button>
+    <input id="free" type="text" maxlength="120" placeholder="想說什麼、做什麼…" autocomplete="off" enterkeyhint="send">
+    <button id="send" aria-label="送出">送</button>
+   </div>
+  </div>
+  <nav id="tabs">
+   <button data-t="map"><i>◈</i><span>地圖</span></button>
+   <button data-t="clinic"><i>☤</i><span>醫館</span></button>
+   <button data-t="gal"><i>❀</i><span>圖鑑</span></button>
+   <button data-t="let"><i>✉</i><span>書信</span><em id="letBadge"></em></button>
+   <button data-t="menu"><i>☰</i><span>選單</span></button>
+  </nav>
+ </section>
+ <!-- 地圖 -->
+ <section id="map" class="scr">
+  <div class="mhead"><div class="mseal" id="mDate">春 · 第1日</div><div class="mtitle">咸陽輿圖</div><div class="mper" id="mPer">晨</div></div>
+  <div id="mapbox"><div id="mapsvg"></div><div id="pins"></div></div>
+  <div id="mapinfo"></div>
+  <div class="mfoot"><button id="mWait">⏳ 靜待一個時辰</button><button id="mBack">↩ 回到場景</button></div>
+ </section>
+ <!-- 共用面板 -->
+ <div id="sheet" class="sheet"><div class="shead"><button class="sx" id="shX">✕</button><h2 id="shT"></h2><div id="shTabs"></div></div><div class="sbody" id="shB"></div></div>
+ <div id="med" class="sheet med"><div class="shead"><h2 id="mdT">問診</h2></div><div class="sbody" id="mdB"></div></div>
+ <div id="cgv"><div id="cgimg"></div><div id="cgcap"></div></div>
+ <div id="banner"><div class="bn1" id="bn1"></div><div class="bn2" id="bn2"></div></div>
+ <div id="toast"></div>
+ <div id="dlg" class="dlg"><div class="dbox"><div id="dlT"></div><div id="dlB"></div><div id="dlA"></div></div></div>
+ <div id="busy"><div class="ink"></div><div id="busyT">墨跡暈開中…</div></div>
+</div>
+<!-- 全屏輸入面板（沿用《秦風》M19 修正：觸控裝置點輸入框 → 覆蓋層 textarea 16px） -->
+<div id="kbp" aria-hidden="true"><div id="kbbox"><div id="kbhd"><span id="kbmode">💬說</span><span id="kbctx"></span></div><textarea id="kbta" maxlength="120" rows="4" placeholder="想說什麼、做什麼…（/設定 宣告劇情）" enterkeyhint="send"></textarea><div id="kbft"><span id="kbcnt">0/120</span><button id="kbcancel">收起</button><button id="kbsend">送出</button></div></div></div>
+<script>
+/*@@SCRIPT@@*/
+</script>
+</body>
+</html>

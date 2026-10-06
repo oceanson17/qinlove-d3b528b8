@@ -29,7 +29,8 @@
 - monkey.js <engine> <steps> <seed>：亂點＋亂輸入＋AI 亂碼/失敗，檢查錯誤與數值不變式
 
 ## 已知限制
-- 無圖像生成工具：立繪/背景/CG 為 SVG 佔位，清單與提示詞見 assets/README.md。
+- 立繪、背景、頭像已用正式美術（見下「美術整合」）；CG 仍為佔位（背景＋立繪合成），清單見 assets/README.md。
+- 立繪只有一個表情（無差分），對白表情變化只會有輕微彈動。
 - 離線劇情台詞為固定劇本＋關鍵詞回應；自由對話要開 AI 才豐富。
 - 存檔在瀏覽器 localStorage：Safari 與主畫面 App 不互通。
 
@@ -44,3 +45,13 @@
 8. 魅力／才智原本冇用 → 魅力 15 加送禮/約會收益、才智 15 問診提示、才智 20 可救韓非；加「梅下撫琴」「蘭台讀書」行動；心境低落有提示。
 9. 早期蒙恬「北疆巡邊」會令新手搵唔到人 → 第 12 日後才可能發生。
 10. 全屏輸入面板可直接點模式籤切換說／指令／設定，placeholder 跟模式變。
+
+## 美術整合（2026-10-06）
+- 原圖 `assets/raw/`（1280×720 JPG，不入 git，備份 tar 有包）→ `tools/art.py` 轉成 `assets/char_*.webp`（透明）、`face_*.webp`（頭像）、`bg_*.webp`。
+- 去背：rembg isnet-anime（venv `/home/box/venv-rembg`），白衣／銀甲／白裘／銀髮（蒙恬、扶蘇、玄夜）用對照圖逐張檢查冇被挖空；alpha<12 清零去殘影。
+- `ART.html` 背景圖加 object-position（`ART.BGPOS`）；立繪 img 加 `class="pimg"` 及 `--fx/--fy`（`ART.FACE`），CSS 用 translateX(-fx) 令臉置中；`ART.face` 優先 `face_<id>`。
+- 立繪：立繪區頂部對齊、高 80%（420×912 下臉中心約 y≈250，高過選項同對話框）。
+- 背景加暗角＋上下柔光（`#fx`）；標題 `.tbg:after` 柔光令 logo/按鈕易讀。
+- CG：未有 `cg_*` 時用 `ART.cgImg` 合成（模糊背景＋角色色調＋角色立繪＋女主角前景＋金框）；全部缺圖才退回 SVG。
+- 標題畫面後 1.2 秒預載全部圖檔（約 1.9MB），轉場唔會閃。
+- 截圖：`node t/art.js chromium|webkit` → `screenshots/art_<eng>_NN_*.png`。

@@ -2,5 +2,6 @@ const {chromium,webkit}=require('playwright');(async()=>{for(const [n,e] of [['c
 const r=await p.goto(process.argv[2]+'?t='+Date.now());await p.waitForTimeout(2500);
 await p.click('#tNew');await p.locator('#dlA .btn.pri').click();await p.waitForTimeout(300);
 const s=await p.evaluate(()=>[document.fonts&&[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family).filter((v,i,a)=>a.indexOf(v)===i).join(','),S&&S.p.name]);
+const im=await p.evaluate(async()=>{let bad=[];for(const f of ASSET_FILES){const x=await fetch('assets/'+f,{cache:'no-store'});if(x.status!==200)bad.push(f+':'+x.status);}const vis=[...document.images].filter(i=>i.src.indexOf('assets/')>=0);return {n:ASSET_FILES.length,bad:bad,shown:vis.length,broken:vis.filter(i=>i.complete&&!i.naturalWidth).length};});s.push(im);
 if(n==='chromium'){await p.goto(process.argv[2]+'?t=2');await p.waitForTimeout(2500);await p.screenshot({path:'/workspace/qinlove/screenshots/00_live_title.png'});}
 console.log(n,r.status(),JSON.stringify(s),errs.length?errs:'no errs');await b.close();}})();

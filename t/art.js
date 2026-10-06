@@ -1,0 +1,20 @@
+// 美術整合截圖：node t/art.js chromium|webkit
+const L=require('./lib');const eng=process.argv[2]||'chromium';
+(async()=>{const p=await L.open({eng:L[eng],settings:{typer:false}});const st=e=>p.evaluate(e);const P='art_'+eng+'_';
+const loaded=()=>p.waitForFunction(()=>[...document.images].filter(i=>i.offsetParent&&i.src).every(i=>i.complete&&i.naturalWidth>0),null,{timeout:8000}).catch(()=>p.errs.push('IMG timeout'));
+const shot=async n=>{await loaded();await L.shot(p,P+n);};
+await shot('01_title');
+await L.newGame(p,'');await L.flush(p);await shot('02_clinic_open');
+await L.pick(p,/走進咸陽/);await L.flush(p);await st(()=>UI.showLine(UI.sc.lines.length-1));await shot('03_heroine_speaks');
+await L.pick(p,/將軍別動/);await L.toMap(p);await st(()=>{S.per=2;});await L.goPl(p,'market');await L.talk(p,'mengtian');await shot('04_market_mengtian_menu');
+await L.click(p,/閒聊|💬/);await p.waitForTimeout(250);await shot('05_market_mengtian_line');
+await L.toMap(p);await st(()=>{S.ch=1;S.flags.palace_ok=1;CHAR_ORDER.forEach(id=>{if(id!=='xuanye')S.c[id].met=1;});S.per=1;UI.go('hub');});await L.flush(p);await shot('06_map');
+await st(()=>{S.place='palace';S.c.yingzheng.met=1;UI.go('talk',{id:'yingzheng'});});await L.flush(p);await shot('07_palace_yingzheng_menu');
+await L.click(p,/閒聊|💬/);await p.waitForTimeout(250);await shot('08_palace_yingzheng_line');
+await st(()=>{UI.go('hub');});await L.flush(p);await p.click('#tabs [data-t="gal"]');await p.waitForTimeout(300);await shot('09_gallery');
+await p.click('[data-gid="mengtian"]');await p.waitForTimeout(300);await shot('10_gallery_mengtian');
+await p.click('[data-gback]');await p.waitForTimeout(150);await st(()=>{Gal&&0;});
+await p.evaluate(()=>{document.querySelector('#sheet').className='sheet';UI.cgShow('mt1');});await p.waitForTimeout(200);await shot('11_cg_placeholder');
+await p.click('#cgv');await p.waitForTimeout(100);
+await p.click('#tabs [data-t="clinic"]');await p.waitForTimeout(300);await shot('12_clinic_tab');
+console.log(eng,'errs',JSON.stringify(p.errs));await p.browser_.close();})().catch(e=>{console.error(e);process.exit(1);});

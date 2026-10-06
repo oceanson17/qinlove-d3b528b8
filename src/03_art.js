@@ -200,22 +200,35 @@ var ART={cache:{}};
  /* 女主角 */
  window.HEROINE={n:'女主角',look:{hair:'#2a1c1c',hair2:'#5a3a3a',robe:'#f6e6e8',robe2:'#d8607a',trim:'#d4a84a',eye:'#7a4a3a',skin:'#fbe8de',style:'buns',len:'long'}};
  /* 取得圖：回傳 HTML（優先圖檔） */
+/* 背景圖焦點（直向畫面 object-fit:cover 只見約 26% 闊度；值為 object-position x%） */
+ /* 立繪臉部中心（圖寬%、圖高%）：用來令臉置中、圖鑑卡裁切 */
+ ART.FACE={yingzheng:[42,32],mengtian:[41,27],lisi:[44,29],fusu:[42,31],hanfei:[44,29],jingke:[44,29],xuanye:[37,27],heroine:[52,29]};
+ ART.BGPOS={clinic:66,palace:50,plum:43,market:43,camp:66,night:39,study:57,tavern:74,title:77};
  ART.html=function(kind,id,expr){
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));
   var f=ART.file(key)||(kind==='char'?ART.file('char_'+id):'');
-  if(f)return '<img src="'+f+'" alt="" draggable="false">';
+  if(f)return '<img src="'+f+'" alt="" draggable="false"'+(kind==='bg'?' style="object-position:'+(ART.BGPOS[id]!=null?ART.BGPOS[id]:50)+'% 50%"':(kind==='char'?' class="pimg" style="--fx:'+(ART.FACE[id]||[50])[0]+'%;--fy:'+(ART.FACE[id]||[0,30])[1]+'%"':''))+'>';
+  if(kind==='cg'){var hc=ART.cgImg(id);if(hc)return hc;}
   var svg=kind==='bg'?ART.bg(id):(kind==='cg'?ART.cg(id):ART.portrait(id,expr));
   return ART.uniq(svg);
  };
- /* 每次插入都把 SVG 內部 id 改成唯一，避免多個 inline SVG 同 id、而第一個位於隱藏畫面時漸層失效 */
- ART.face=function(id,expr){var f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
+ /* 頭像：優先 face_<id>（由立繪裁頭部），其次立繪頂部，最後 SVG */
+ ART.face=function(id,expr){var f=ART.file('face_'+id);if(f)return '<img src="'+f+'" alt="" draggable="false" style="width:100%;height:100%;object-fit:cover">';f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:45% 8%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
  ART.seq=0;ART.uniq=function(svg){var n=++ART.seq;return String(svg).replace(/id="([^"]+)"/g,'id="$1_'+n+'"').replace(/url\(#([^)]+)\)/g,'url(#$1_'+n+')');};
  /* CG：背景＋角色近景＋光暈花瓣＋金框 */
+ ART.cgInfo=function(cgid){
+  var who='',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
+  var nIdx=cgid.slice(-1)|0;if(!CHARS[who])return null;
+  var bgk={yingzheng:['night','palace','night'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','night','study'],jingke:['tavern','tavern','night'],xuanye:['night','night','plum']}[who][nIdx-1]||'plum';
+  return {who:who,bgk:bgk,ex:['normal','smile','blush'][nIdx-1]||'smile'};
+ };
+ /* 有正式背景＋立繪時，CG 佔位改用圖檔合成（仍屬佔位，正式 cg_*.webp 放入即取代） */
+ ART.cgImg=function(cgid){
+  var o=ART.cgInfo(cgid);if(!o)return '';var b=ART.file('bg_'+o.bgk),p=ART.file('char_'+o.who),h=ART.file('char_heroine');if(!b||!p||!h)return '';
+  return '<div class="cgc" style="--cgc:'+CHARS[o.who].col+'"><img class="cb" src="'+b+'" alt="" draggable="false" style="object-position:'+(ART.BGPOS[o.bgk]!=null?ART.BGPOS[o.bgk]:50)+'% 50%"><i class="ct"></i><img class="cp" src="'+p+'" alt="" draggable="false" style="--fx:'+(ART.FACE[o.who]||[50])[0]+'%"><img class="ch" src="'+h+'" alt="" draggable="false"><i class="cv"></i></div>';
+ };
  ART.cg=function(cgid){
-  var who='',bgk='plum',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
-  var nIdx=cgid.slice(-1)|0;var c=CHARS[who];if(!c)return '';
-  bgk={yingzheng:['night','palace','night'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','night','study'],jingke:['tavern','tavern','night'],xuanye:['night','night','plum']}[who][nIdx-1]||'plum';
-  var ex=['normal','smile','blush'][nIdx-1]||'smile';
+  var o=ART.cgInfo(cgid);if(!o)return '';var who=o.who,bgk=o.bgk,ex=o.ex,c=CHARS[who];
   var bgs=ART.bg(bgk).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
   var por=ART.portrait(who,ex).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
   var hp=ART.portrait('heroine','blush').replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');

@@ -33,7 +33,8 @@ input,textarea,select{font-family:inherit;}
 /* ---------- 標題 ---------- */
 #title{background:var(--paper);overflow:hidden;}
 .tbg{position:absolute;inset:0;}
-.tbg svg{width:100%;height:100%;display:block;}
+.tbg svg,.tbg img{width:100%;height:100%;display:block;object-fit:cover;}
+.tbg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,244,238,.35),rgba(251,244,238,0) 38%,rgba(251,244,238,0) 62%,rgba(251,244,238,.55));pointer-events:none;}
 .tpetals{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
 .tpetals i{position:absolute;top:-20px;width:10px;height:7px;border-radius:60% 0 60% 0;background:#f1a4b0;opacity:.85;animation:fall linear infinite;}
 @keyframes fall{to{transform:translate(-60px,105vh) rotate(540deg);}}
@@ -60,10 +61,12 @@ input,textarea,select{font-family:inherit;}
 #bg svg,#bg img{width:100%;height:100%;object-fit:cover;display:block;}
 #bg{transition:opacity .45s;}
 #bg.fade{opacity:.2;}
-#fx{pointer-events:none;background:linear-gradient(180deg,rgba(251,244,238,.25),rgba(251,244,238,0) 24%,rgba(251,244,238,0) 60%,rgba(60,30,30,.25));}
+#fx{pointer-events:none;background:radial-gradient(ellipse 120% 85% at 50% 38%,rgba(40,20,20,0) 55%,rgba(40,20,20,.32)),linear-gradient(180deg,rgba(251,244,238,.28),rgba(251,244,238,0) 22%,rgba(251,244,238,0) 58%,rgba(60,30,30,.3));}
+#bg img{filter:saturate(.95) brightness(1.02);}
 #char{position:absolute;left:-6%;right:-6%;top:calc(var(--sat) + 54px);bottom:calc(var(--tabh) + var(--boxh) * .45);pointer-events:none;}
 #char .cw{position:absolute;inset:0;transition:opacity .35s,transform .35s;}
 #char .cw svg,#char .cw img{width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block;filter:drop-shadow(0 6px 18px rgba(60,20,30,.25));}
+#char .cw img.pimg{position:absolute;left:50%;top:4%;bottom:auto;height:80%;width:auto;max-width:none;transform:translateX(calc(var(--fx,50%) * -1));object-fit:fill;}
 #char.hide .cw{opacity:0;transform:translateY(16px);}
 #char.dim .cw{filter:saturate(.75) brightness(.9);}
 #char .cw.in{animation:charIn .45s ease-out;}
@@ -185,6 +188,7 @@ input,textarea,select{font-family:inherit;}
 .gcard .gp{height:150px;border-radius:80px 80px 6px 6px;overflow:hidden;position:relative;}
 .gcard .gp svg,.gcard .gp img{position:absolute;left:-30%;width:160%;top:-8%;height:auto;}
 .gcard .gp img{left:0;width:100%;height:100%;top:0;object-fit:cover;object-position:50% 10%;}
+.gcard .gp img.pimg{left:50%;width:165%;height:auto;top:-3%;object-fit:fill;transform:translateX(calc(var(--fx,50%) * -1));}
 .gcard .gn{margin-top:6px;font-size:18px;letter-spacing:.2em;font-weight:600;}
 .gcard .gt{font-size:11px;color:var(--ink2);letter-spacing:.1em;}
 .gcard .gf{display:inline-block;margin-top:4px;padding:0 8px;border-radius:9px;font-size:11px;color:#fff;background:var(--rose);}
@@ -198,6 +202,7 @@ input,textarea,select{font-family:inherit;}
 .gcard.unk .gn{color:#998;}
 .gdet .dtop{position:relative;height:calc(var(--vh) * 40);border-radius:14px;overflow:hidden;border:1px solid var(--gold);}
 .gdet .dtop svg,.gdet .dtop img{position:absolute;left:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;}
+.gdet .dtop img.pimg{left:50%;bottom:0;top:auto;width:auto;height:96%;max-width:none;object-fit:fill;transform:translateX(calc(var(--fx,50%) * -1));}
 .gdet .dname{position:absolute;right:12px;top:12px;writing-mode:vertical-rl;font-size:28px;letter-spacing:.3em;font-weight:700;color:var(--ink);text-shadow:0 0 6px #fff,0 0 12px #fff;}
 .gdet .dname small{font-size:13px;letter-spacing:.2em;color:var(--ver);margin-top:8px;}
 .bars{margin:12px 0;display:grid;grid-template-columns:48px 1fr 34px;gap:6px 8px;align-items:center;font-size:13px;}
@@ -274,7 +279,7 @@ input,textarea,select{font-family:inherit;}
 /* CG 檢視 */
 #cgv{position:absolute;inset:0;z-index:60;background:#1a1012;display:none;}
 #cgv.on{display:block;animation:sheetIn .4s;}
-#cgimg,#cgimg svg,#cgimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+#cgimg,#cgimg>svg,#cgimg>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 #cgcap{position:absolute;left:14px;right:14px;bottom:calc(var(--sab) + 18px);padding:12px 16px;background:rgba(251,244,238,.9);border:1px solid var(--gold);border-radius:10px;font-size:15px;line-height:1.7;text-align:center;}
 #cgcap b{display:block;color:var(--ver);letter-spacing:.3em;font-size:17px;}
 /* 章節橫幅 */
@@ -312,6 +317,16 @@ body.kbopen #app{pointer-events:none;}
 /* 矮畫面 */
 @media (max-height:700px){#txt{min-height:calc(var(--fs) * 1.8 * 2);max-height:calc(var(--fs) * 1.8 * 3.2);}.tlogo h1{font-size:50px}.tbtn{height:50px}}
 @media (min-width:561px){#app{border-left:1px solid var(--gold);border-right:1px solid var(--gold);}}
+
+/* CG 佔位：正式背景＋立繪合成 */
+.cgc{position:absolute;inset:0;overflow:hidden;background:#2b2321;}
+.cgc img{position:absolute;display:block;max-width:none;}
+.cgc .cb{inset:0;width:100%;height:100%;object-fit:cover;filter:blur(1.2px) brightness(.9);}
+.cgc .ct{position:absolute;inset:0;background:var(--cgc);opacity:.2;mix-blend-mode:soft-light;}
+.cgc .ch{left:-24%;bottom:6%;height:46%;width:auto;filter:drop-shadow(0 4px 12px rgba(40,10,20,.3));}
+.cgc .cp{left:64%;top:22%;height:74%;width:auto;transform:translateX(calc(var(--fx,50%) * -1));filter:drop-shadow(0 6px 14px rgba(40,10,20,.35));}
+.cgc .cv{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(42,14,20,0) 52%,rgba(42,14,20,.55));}
+.cgc:after{content:"";position:absolute;inset:3%;border:2px solid #d4a84a;box-shadow:0 0 0 3px rgba(212,168,74,.35);pointer-events:none;}
 
 </style>
 </head>
@@ -387,7 +402,7 @@ body.kbopen #app{pointer-events:none;}
 <!-- 全屏輸入面板（沿用《秦風》M19 修正：觸控裝置點輸入框 → 覆蓋層 textarea 16px） -->
 <div id="kbp" aria-hidden="true"><div id="kbbox"><div id="kbhd"><span id="kbmode">💬說</span><span id="kbctx"></span></div><textarea id="kbta" maxlength="120" rows="4" placeholder="想說什麼、做什麼…（/設定 宣告劇情）" enterkeyhint="send"></textarea><div id="kbft"><span id="kbcnt">0/120</span><button id="kbcancel">收起</button><button id="kbsend">送出</button></div></div></div>
 <script>
-var ASSET_FILES=[];
+var ASSET_FILES=["bg_camp.webp","bg_clinic.webp","bg_market.webp","bg_night.webp","bg_palace.webp","bg_plum.webp","bg_study.webp","bg_tavern.webp","bg_title.webp","char_fusu.webp","char_hanfei.webp","char_heroine.webp","char_jingke.webp","char_lisi.webp","char_mengtian.webp","char_xuanye.webp","char_yingzheng.webp","face_fusu.webp","face_hanfei.webp","face_heroine.webp","face_jingke.webp","face_lisi.webp","face_mengtian.webp","face_xuanye.webp","face_yingzheng.webp"];
 /* ---- 01_data.js ---- */
 /* ===== 青囊·秦心 · 資料：角色、地點、禮物、病例、章節、結局、CG ===== */
 var GAME_TITLE='青囊·秦心';
@@ -800,22 +815,35 @@ var ART={cache:{}};
  /* 女主角 */
  window.HEROINE={n:'女主角',look:{hair:'#2a1c1c',hair2:'#5a3a3a',robe:'#f6e6e8',robe2:'#d8607a',trim:'#d4a84a',eye:'#7a4a3a',skin:'#fbe8de',style:'buns',len:'long'}};
  /* 取得圖：回傳 HTML（優先圖檔） */
+/* 背景圖焦點（直向畫面 object-fit:cover 只見約 26% 闊度；值為 object-position x%） */
+ /* 立繪臉部中心（圖寬%、圖高%）：用來令臉置中、圖鑑卡裁切 */
+ ART.FACE={yingzheng:[42,32],mengtian:[41,27],lisi:[44,29],fusu:[42,31],hanfei:[44,29],jingke:[44,29],xuanye:[37,27],heroine:[52,29]};
+ ART.BGPOS={clinic:66,palace:50,plum:43,market:43,camp:66,night:39,study:57,tavern:74,title:77};
  ART.html=function(kind,id,expr){
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));
   var f=ART.file(key)||(kind==='char'?ART.file('char_'+id):'');
-  if(f)return '<img src="'+f+'" alt="" draggable="false">';
+  if(f)return '<img src="'+f+'" alt="" draggable="false"'+(kind==='bg'?' style="object-position:'+(ART.BGPOS[id]!=null?ART.BGPOS[id]:50)+'% 50%"':(kind==='char'?' class="pimg" style="--fx:'+(ART.FACE[id]||[50])[0]+'%;--fy:'+(ART.FACE[id]||[0,30])[1]+'%"':''))+'>';
+  if(kind==='cg'){var hc=ART.cgImg(id);if(hc)return hc;}
   var svg=kind==='bg'?ART.bg(id):(kind==='cg'?ART.cg(id):ART.portrait(id,expr));
   return ART.uniq(svg);
  };
- /* 每次插入都把 SVG 內部 id 改成唯一，避免多個 inline SVG 同 id、而第一個位於隱藏畫面時漸層失效 */
- ART.face=function(id,expr){var f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
+ /* 頭像：優先 face_<id>（由立繪裁頭部），其次立繪頂部，最後 SVG */
+ ART.face=function(id,expr){var f=ART.file('face_'+id);if(f)return '<img src="'+f+'" alt="" draggable="false" style="width:100%;height:100%;object-fit:cover">';f=ART.file('char_'+id);if(f)return '<img src="'+f+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:45% 8%">';return ART.uniq(ART.portrait(id,expr).replace('viewBox="0 0 600 900" preserveAspectRatio="xMidYMax meet"','viewBox="190 200 220 220" preserveAspectRatio="xMidYMid slice"'));};
  ART.seq=0;ART.uniq=function(svg){var n=++ART.seq;return String(svg).replace(/id="([^"]+)"/g,'id="$1_'+n+'"').replace(/url\(#([^)]+)\)/g,'url(#$1_'+n+')');};
  /* CG：背景＋角色近景＋光暈花瓣＋金框 */
+ ART.cgInfo=function(cgid){
+  var who='',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
+  var nIdx=cgid.slice(-1)|0;if(!CHARS[who])return null;
+  var bgk={yingzheng:['night','palace','night'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','night','study'],jingke:['tavern','tavern','night'],xuanye:['night','night','plum']}[who][nIdx-1]||'plum';
+  return {who:who,bgk:bgk,ex:['normal','smile','blush'][nIdx-1]||'smile'};
+ };
+ /* 有正式背景＋立繪時，CG 佔位改用圖檔合成（仍屬佔位，正式 cg_*.webp 放入即取代） */
+ ART.cgImg=function(cgid){
+  var o=ART.cgInfo(cgid);if(!o)return '';var b=ART.file('bg_'+o.bgk),p=ART.file('char_'+o.who),h=ART.file('char_heroine');if(!b||!p||!h)return '';
+  return '<div class="cgc" style="--cgc:'+CHARS[o.who].col+'"><img class="cb" src="'+b+'" alt="" draggable="false" style="object-position:'+(ART.BGPOS[o.bgk]!=null?ART.BGPOS[o.bgk]:50)+'% 50%"><i class="ct"></i><img class="cp" src="'+p+'" alt="" draggable="false" style="--fx:'+(ART.FACE[o.who]||[50])[0]+'%"><img class="ch" src="'+h+'" alt="" draggable="false"><i class="cv"></i></div>';
+ };
  ART.cg=function(cgid){
-  var who='',bgk='plum',i;for(var k in CGS){for(i=0;i<CGS[k].length;i++)if(CGS[k][i].id===cgid){who=k;}}
-  var nIdx=cgid.slice(-1)|0;var c=CHARS[who];if(!c)return '';
-  bgk={yingzheng:['night','palace','night'],mengtian:['market','camp','plum'],lisi:['plum','study','plum'],fusu:['study','study','plum'],hanfei:['study','night','study'],jingke:['tavern','tavern','night'],xuanye:['night','night','plum']}[who][nIdx-1]||'plum';
-  var ex=['normal','smile','blush'][nIdx-1]||'smile';
+  var o=ART.cgInfo(cgid);if(!o)return '';var who=o.who,bgk=o.bgk,ex=o.ex,c=CHARS[who];
   var bgs=ART.bg(bgk).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
   var por=ART.portrait(who,ex).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
   var hp=ART.portrait('heroine','blush').replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
@@ -1625,7 +1653,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   [['改用離線',function(){cancel();}],['送出','pri',function(){ok($('mpA').value);}]]);
   setTimeout(function(){var c=$('mpCopy');if(c)c.onclick=function(){try{navigator.clipboard.writeText(prompt);toast('已複製');}catch(e){$('mpP').select();document.execCommand('copy');}};},0);};
  /* ---------- 標題 ---------- */
- UI.titleInit=function(){if(!$('tbg').innerHTML)$('tbg').innerHTML=ART.html('bg','title');var pe=document.querySelector('.tpetals');if(pe&&!pe.innerHTML){var h='';for(var i=0;i<14;i++)h+='<i style="left:'+(i*7.3%100)+'%;animation-duration:'+(7+i%5*1.7)+'s;animation-delay:'+(-i*1.1)+'s"></i>';pe.innerHTML=h;}
+ UI.titleInit=function(){if(!$('tbg').innerHTML)$('tbg').innerHTML=ART.html('bg','title');if(!UI.pre&&typeof ASSET_FILES!=='undefined'){UI.pre=[];setTimeout(function(){ASSET_FILES.forEach(function(f){var im=new Image();im.src='assets/'+f;UI.pre.push(im);});},1200);}var pe=document.querySelector('.tpetals');if(pe&&!pe.innerHTML){var h='';for(var i=0;i<14;i++)h+='<i style="left:'+(i*7.3%100)+'%;animation-duration:'+(7+i%5*1.7)+'s;animation-delay:'+(-i*1.1)+'s"></i>';pe.innerHTML=h;}
   var has=['auto',1,2,3].some(function(s){return slotInfo(s);});$('tCont').classList.toggle('dis',!has);};
  UI.newGame=function(){UI.askName(function(nm){S=newState(nm);Meta.get();UI.stop();UI.bgk='';UI.go('start');saveSlot('auto',true);});};
  UI.loadGame=function(slot){if(!loadSlot(slot)){toast('讀檔失敗');return;}if(S.pend)S.pend.shown=0;Sh.close();UI.bgk='';UI.stop();toast('📂 已讀取（'+slotName(slot)+'）');UI.go('hub');};

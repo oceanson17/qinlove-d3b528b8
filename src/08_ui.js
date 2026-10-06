@@ -211,7 +211,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   [['改用離線',function(){cancel();}],['送出','pri',function(){ok($('mpA').value);}]]);
   setTimeout(function(){var c=$('mpCopy');if(c)c.onclick=function(){try{navigator.clipboard.writeText(prompt);toast('已複製');}catch(e){$('mpP').select();document.execCommand('copy');}};},0);};
  /* ---------- 標題 ---------- */
- UI.titleInit=function(){if(!$('tbg').innerHTML)$('tbg').innerHTML=ART.html('bg','title');var pe=document.querySelector('.tpetals');if(pe&&!pe.innerHTML){var h='';for(var i=0;i<14;i++)h+='<i style="left:'+(i*7.3%100)+'%;animation-duration:'+(7+i%5*1.7)+'s;animation-delay:'+(-i*1.1)+'s"></i>';pe.innerHTML=h;}
+ UI.titleInit=function(){if(!$('tbg').innerHTML)$('tbg').innerHTML=ART.html('bg','title');if(!UI.pre&&typeof ASSET_FILES!=='undefined'){UI.pre=[];setTimeout(function(){ASSET_FILES.forEach(function(f){var im=new Image();im.src='assets/'+f;UI.pre.push(im);});},1200);}var pe=document.querySelector('.tpetals');if(pe&&!pe.innerHTML){var h='';for(var i=0;i<14;i++)h+='<i style="left:'+(i*7.3%100)+'%;animation-duration:'+(7+i%5*1.7)+'s;animation-delay:'+(-i*1.1)+'s"></i>';pe.innerHTML=h;}
   var has=['auto',1,2,3].some(function(s){return slotInfo(s);});$('tCont').classList.toggle('dis',!has);};
  UI.newGame=function(){UI.askName(function(nm){S=newState(nm);Meta.get();UI.stop();UI.bgk='';UI.go('start');saveSlot('auto',true);});};
  UI.loadGame=function(slot){if(!loadSlot(slot)){toast('讀檔失敗');return;}if(S.pend)S.pend.shown=0;Sh.close();UI.bgk='';UI.stop();toast('📂 已讀取（'+slotName(slot)+'）');UI.go('hub');};

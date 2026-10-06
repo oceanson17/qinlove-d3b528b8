@@ -1,7 +1,24 @@
 # 美術資源清單（assets/）
 
-目前無圖像生成工具，遊戲內全部用高質素 SVG 佔位（立繪、背景、CG 都會自動畫出）。
-把下列檔案放入 `assets/`（PNG/WebP/JPG 均可，檔名不含副檔名要一致），執行 `node build.js` 重新建置，遊戲就會自動改用圖檔；缺少的仍用 SVG。
+## 目前狀態（2026-10-06）
+已整合正式美術（原圖在 `assets/raw/`，不入 git；由 `tools/art.py` 轉換）：
+
+| 類別 | 檔案 | 處理 |
+|---|---|---|
+| 半身立繪 ×8 | `char_<id>.webp` | rembg（isnet-anime）去背 → 裁到人物外框、頭頂留 4% → 透明 WebP q85（每張 46–104KB）|
+| 頭像 ×8 | `face_<id>.webp` | 由立繪裁頭部 192×192（地圖頭像、女主角小頭像、診治病人頭像）|
+| 背景 ×9 | `bg_<k>.webp` | 1280×720 → WebP q80；直向畫面用 `object-fit:cover`，焦點見下表 |
+| CG ×21 | （未有） | 暫用「正式背景＋角色立繪＋女主角立繪」合成佔位；放入 `cg_<id>.webp` 即自動取代 |
+
+背景焦點（`src/03_art.js` 的 `ART.BGPOS`，值為 object-position x%；直向 420×912 只見原圖約 26% 闊度）：
+clinic 66（藥櫃）、palace 50（正殿）、plum 43（梅徑）、market 43（街道）、camp 66（營帳軍旗）、night 39（月亮＋月洞門）、study 57（窗＋書案）、tavern 74（燈籠）、title 77（山＋梅枝）。
+對應規則：`courtyard` 共用 `bg_night`；開場（青囊谷）用 `bg_title`。
+
+立繪臉部中心（`ART.FACE`，圖寬%／圖高%）用嚟令立繪臉部置中、圖鑑卡裁切；更換立繪後要同步更新 `ART.FACE` 及 `tools/art.py` 的 `FACE`。
+立繪顯示：高度＝立繪區 80%（頂部對齊），臉在對話框及選項之上；左右闊過畫面時兩側衣袖會被裁。
+表情差分：`char_<id>_<expr>.webp`（smile/blush/sad/angry/shy）存在就用，否則用同一張。
+
+重新處理：`/home/box/venv-rembg/bin/python tools/art.py && node build.js`（build 會掃描 assets/ 頂層 png/webp/jpg，以外部檔案載入，唔會 base64 內嵌）。
 
 **規則**：全部為原創動漫角色，均為成年人；不得描繪或模仿任何真實人物或現有作品角色。參考圖只參考畫風（古風動漫乙女、半身、精緻線條），不可臨摹。
 
@@ -14,7 +31,7 @@ ancient Chinese otome game illustration, anime style, Warring States Qin era han
 photorealistic, 3d render, real person, celebrity likeness, child, loli, modern clothing, text, logo, watermark, extra fingers, deformed hands, nsfw
 ```
 
-## 1. 半身立繪（8 張，必要）
+## 1. 半身立繪（8 張，已完成；以下為原始提示詞）
 尺寸 **1200×1800**（2:3），**透明背景 PNG**，腰部以上半身、正面略側、頭頂留約 8% 空白，人物置中。可另加表情差分：`char_<id>_smile.png`、`_blush`、`_sad`、`_angry`、`_shy`（同尺寸同構圖）。
 
 | 檔名 | 角色 | 英文提示詞（接在 Style 後） |
@@ -28,7 +45,7 @@ photorealistic, 3d render, real person, celebrity likeness, child, loli, modern 
 | `char_xuanye.png` | 玄夜（影衛・隱藏） | half-body portrait, waist-up, facing viewer, a 25-year-old silent shadow guard, short silver hair, crimson eyes, black cloth mask covering the lower face, black close-fitting assassin robe with dark violet trim, moonlit mysterious atmosphere, transparent background |
 | `char_heroine.png` | 女主角（青囊谷女神醫） | half-body portrait, waist-up, facing viewer, a young adult female divine doctor just graduated from a mountain sect, dark brown hair in twin buns with a pink plum-blossom hairpin and dangling ornaments, gentle brown eyes, soft pink-white hanfu with rose collar, a wooden medicine box strap across her chest and a red herbal sachet at her waist, transparent background |
 
-## 2. 背景（9 張，必要）
+## 2. 背景（9 張，已完成；以下為原始提示詞）
 尺寸 **1080×1920**（9:16 直向），無人物，下方 35% 會被對話框蓋住，重點放在中上部。
 
 | 檔名 | 場景 | 英文提示詞（接在 Style 後，去掉 original character, adult） |
@@ -43,7 +60,7 @@ photorealistic, 3d render, real person, celebrity likeness, child, loli, modern 
 | `bg_tavern.png` | 市井酒肆 | background art, no people, vertical composition, a lively ancient tavern at evening, wine flag, wooden tables and wine jars, warm lantern glow |
 | `bg_title.png` | 標題畫面 | background art, no people, vertical composition, title screen landscape, misty layered mountains in ink-wash style, plum blossom branches in the foreground, falling petals, pastel pink sky, empty space in the upper center for a logo |
 
-## 3. 里程碑 CG（21 張，建議）
+## 3. 里程碑 CG（21 張，未做，建議）
 尺寸 **1080×1920**（9:16），角色與女主角同框（女主角參考 `char_heroine` 外觀），浪漫光影，下方 20% 會放字幕。
 
 | 檔名 | 角色 | 標題 | 英文提示詞（接在 Style 後） |
@@ -70,6 +87,7 @@ photorealistic, 3d render, real person, celebrity likeness, child, loli, modern 
 | `cg_xy2.png` | 玄夜 | 名字 | romantic event CG, vertical, moonlight, the shadow guard stunned as the heroine gives him a name, heroine with twin buns and pink hanfu |
 | `cg_xy3.png` | 玄夜 | 摘下面具 | romantic event CG, vertical, under plum blossoms the shadow guard removes his mask, revealing a pale gentle face, heroine with twin buns and pink hanfu |
 
-## 4. 其他（選用）
-- `bg_title.png` 若加入，標題畫面背景會換成圖檔（logo 文字仍由網頁繪製）。
-- 圖檔大小建議每張 < 400KB（WebP 品質 80），iPhone 載入較快。
+## 4. 其他
+- `bg_title` 已用於標題畫面（logo 文字由網頁繪製，上下加柔光）。
+- 圖檔大小建議每張 < 400KB（WebP 品質 80–85）。
+- 生成器只出 1280×720 橫向圖：立繪可照用（去背後裁切）；CG 若都係橫向，直向畫面會用 cover 裁走兩側，構圖請將兩人放中間 30% 闊度內。

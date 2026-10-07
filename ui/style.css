@@ -1,4 +1,4 @@
-/* ===== 青囊·秦心：古風乙女介面（宣紙・金線・雲紋・朱砂印） ===== */
+/* ===== 青囊·秦心：古風介面（宣紙・金線・雲紋・朱砂印） ===== */
 :root{--paper:#fbf4ee;--paper2:#f4e7dd;--paper3:#ead8c8;--ver:#b8323a;--ver2:#d2545c;--ink:#2b2321;--ink2:#5a4a44;--gold:#c9a35a;--gold2:#e6cf98;--dai:#4a6b6a;--pink:#f6d6d8;--rose:#e2838f;
  --fs:17px;--vh:1vh;--tabh:calc(58px + var(--sab));--sab:max(env(safe-area-inset-bottom),8px);--sat:env(safe-area-inset-top);--boxh:200px;
  --serif:"Noto Serif TC","Songti TC","Songti SC","STSong","Hiragino Mincho ProN","PMingLiU","MingLiU",serif;

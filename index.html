@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='10' fill='%23b8323a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23f6ebe4'/%3E%3Crect x='30' y='30' width='120' height='120' rx='18' fill='%23b8323a'/%3E%3Ctext x='90' y='120' font-size='80' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
 <style>
-/* ===== 青囊·秦心：古風乙女介面（宣紙・金線・雲紋・朱砂印） ===== */
+/* ===== 青囊·秦心：古風介面（宣紙・金線・雲紋・朱砂印） ===== */
 :root{--paper:#fbf4ee;--paper2:#f4e7dd;--paper3:#ead8c8;--ver:#b8323a;--ver2:#d2545c;--ink:#2b2321;--ink2:#5a4a44;--gold:#c9a35a;--gold2:#e6cf98;--dai:#4a6b6a;--pink:#f6d6d8;--rose:#e2838f;
  --fs:17px;--vh:1vh;--tabh:calc(58px + var(--sab));--sab:max(env(safe-area-inset-bottom),8px);--sat:env(safe-area-inset-top);--boxh:200px;
  --serif:"Noto Serif TC","Songti TC","Songti SC","STSong","Hiragino Mincho ProN","PMingLiU","MingLiU",serif;
@@ -337,7 +337,7 @@ body.kbopen #app{pointer-events:none;}
   <div class="tbg" id="tbg"></div>
   <div class="tpetals" aria-hidden="true"></div>
   <div class="tlogo">
-   <div class="tseal">乙女</div>
+   <div class="tseal">浮生</div>
    <h1><span>青囊</span><i>·</i><span>秦心</span></h1>
    <div class="tsub">一卷醫書　一顆秦心</div>
   </div>
@@ -895,7 +895,7 @@ AI.validate=function(j){if(!j||typeof j!=='object')throw {kind:'parse'};var t=j.
  return out;};
 /* ---- 提示 ---- */
 AI.worldRules=function(short){
- var t='背景：戰國末年秦國咸陽（秦王政在位）。這是乙女向古風戀愛遊戲《'+GAME_TITLE+'》。玩家「'+S.p.name+'」是剛學成下山的女神醫（師承青囊谷青囊子），可攻略角色皆為成年原創動漫化角色：'+CHAR_ORDER.filter(function(id){return !CHARS[id].hidden||S.c[id].met;}).map(function(id){return CHARS[id].n+'('+id+')';}).join('、')+'。嚴禁出現秦以後的事物（紙、茶、瓷器、科舉、佛寺）。';
+ var t='背景：戰國末年秦國咸陽（秦王政在位）。這是古風文字遊戲《'+GAME_TITLE+'》。玩家「'+S.p.name+'」是剛學成下山的女神醫（師承青囊谷青囊子），可攻略角色皆為成年原創動漫化角色：'+CHAR_ORDER.filter(function(id){return !CHARS[id].hidden||S.c[id].met;}).map(function(id){return CHARS[id].n+'('+id+')';}).join('、')+'。嚴禁出現秦以後的事物（紙、茶、瓷器、科舉、佛寺）。';
  t+=SET.adult?'可有含蓄的成年人曖昧，但不得露骨。':'情感描寫純愛含蓄：牽手、擁抱、眼神、心跳為主，不寫露骨內容。';
  if(short)return t+'【規則】已相識者不可當初見；角色只知道自己知道的事；〔指令〕必須執行；〔設定〕是作者宣告的事實必須成真；不可無前因拿人或大轉折。';
  t+='\n【知情防火牆】每位角色只知道【X所知】列出的事與親身經歷；不得說出或暗示自己不知道的秘密（尤其玩家的秘密）。';
@@ -903,7 +903,7 @@ AI.worldRules=function(short){
  t+='\n【輸入分流】〔對白〕是玩家說的話，只讓角色回應；〔指令・行動〕是玩家的動作，必須寫出結果；〔指令・命令〕是玩家以導演身分描述某角色下令，該角色必須真的執行；〔設定・劇情〕是玩家作者宣告的事實，必須直接成真，不可寫成念頭或用「莫非／荒唐／不可能」否定。';
  t+='\n【世界節制】不可無前因讓角色被捕、下獄、死亡或大轉折；重大事件須有罪證、動機與有權者下令；與玩家無關的大事一筆帶過。';
  return t;};
-AI.system=function(){return '你是乙女遊戲《'+GAME_TITLE+'》的劇本主持人。'+AI.worldRules()+'\n規則：\n1. 繁體中文，古風、細膩、有畫面感與心動感；每幕 120–240 字，以短句分行，對白用「」並以「角色名：」開頭便於分行顯示。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要角色 id 或空字串","expr":"normal|smile|blush|sad|angry|shy","bg":"'+PLACE_ORDER.join('|')+'","choices":[{"text":"選項(24字內)","fx":{}}],"fx":{"p":{"med":0,"cha":0,"wit":0,"fame":0,"mind":0,"gold":0},"c":{"角色id":{"aff":0,"trust":0,"heart":0,"jeal":0}},"mem":{"角色id":"該角色對此事的記憶短句"}},"facts":[],"recap":"一句概述"}\n3. 數值小幅：p 每項 ±3（gold ±50），c 每項 ±6。角色 id 只能用上列 id。\n4. choices 給 3 個各異選項（溫柔、試探、俏皮或退讓），須按新局面重新生成，不可沿用舊選項。\n5. facts（可空）：真正揭露或改變秘密／關係時才填，最多 2 項：{"text":"一句事實","subject":"p或角色id","knownBy":["角色id"]}。\n6. 不替玩家做決定；不讓角色死亡；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
+AI.system=function(){return '你是文字遊戲《'+GAME_TITLE+'》的劇本主持人。'+AI.worldRules()+'\n規則：\n1. 繁體中文，古風、細膩、有畫面感與心動感；每幕 120–240 字，以短句分行，對白用「」並以「角色名：」開頭便於分行顯示。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要角色 id 或空字串","expr":"normal|smile|blush|sad|angry|shy","bg":"'+PLACE_ORDER.join('|')+'","choices":[{"text":"選項(24字內)","fx":{}}],"fx":{"p":{"med":0,"cha":0,"wit":0,"fame":0,"mind":0,"gold":0},"c":{"角色id":{"aff":0,"trust":0,"heart":0,"jeal":0}},"mem":{"角色id":"該角色對此事的記憶短句"}},"facts":[],"recap":"一句概述"}\n3. 數值小幅：p 每項 ±3（gold ±50），c 每項 ±6。角色 id 只能用上列 id。\n4. choices 給 3 個各異選項（溫柔、試探、俏皮或退讓），須按新局面重新生成，不可沿用舊選項。\n5. facts（可空）：真正揭露或改變秘密／關係時才填，最多 2 項：{"text":"一句事實","subject":"p或角色id","knownBy":["角色id"]}。\n6. 不替玩家做決定；不讓角色死亡；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
 AI.charLine=function(id){var c=CHARS[id],r=S.c[id];var mem=(S.mem[id]||[]).slice(-4).map(function(m){return m.t;}).join('／');
  var kn=FW.knows(id).map(function(f){return f.t;}).slice(0,4).join('；');
  return c.n+'('+id+'｜'+c.c+(r.met?'｜已識':'｜未識')+')：好感'+r.aff+' 信任'+r.trust+' 心動'+r.heart+' 醋意'+r.jeal+' 健康'+r.hp+(r.cured?'(已醫治)':'('+c.ail+')')+'｜性格：'+c.pers+'｜心態：'+Mood.card(id)+(mem?'｜記憶：'+mem:'')+(kn?'｜所知：'+kn:'');};
@@ -1768,7 +1768,7 @@ var Med={cur:null};
 /* ---- 99_boot.js ---- */
 /* ===== 啟動 ===== */
 (function(){
- function boot(){loadSettings();try{if(location.protocol==='https:'&&navigator.onLine!==false){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Ma+Shan+Zheng&text='+encodeURIComponent('青囊秦心乙女');
+ function boot(){loadSettings();try{if(location.protocol==='https:'&&navigator.onLine!==false){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Ma+Shan+Zheng&text='+encodeURIComponent('青囊秦心浮生');
    var l2=document.createElement('link');l2.rel='stylesheet';l2.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap';document.head.appendChild(l2);
    var l3=document.createElement('link');l3.rel='stylesheet';l3.href='https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap&text='+encodeURIComponent('青囊秦心·');document.head.appendChild(l3);}}catch(e){}
   VV.init();UI.bind();Med.bind();Kb.init();applyLook();UI.screen('title');

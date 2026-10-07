@@ -38,7 +38,7 @@ AI.validate=function(j){if(!j||typeof j!=='object')throw {kind:'parse'};var t=j.
  return out;};
 /* ---- 提示 ---- */
 AI.worldRules=function(short){
- var t='背景：戰國末年秦國咸陽（秦王政在位）。這是乙女向古風戀愛遊戲《'+GAME_TITLE+'》。玩家「'+S.p.name+'」是剛學成下山的女神醫（師承青囊谷青囊子），可攻略角色皆為成年原創動漫化角色：'+CHAR_ORDER.filter(function(id){return !CHARS[id].hidden||S.c[id].met;}).map(function(id){return CHARS[id].n+'('+id+')';}).join('、')+'。嚴禁出現秦以後的事物（紙、茶、瓷器、科舉、佛寺）。';
+ var t='背景：戰國末年秦國咸陽（秦王政在位）。這是古風文字遊戲《'+GAME_TITLE+'》。玩家「'+S.p.name+'」是剛學成下山的女神醫（師承青囊谷青囊子），可攻略角色皆為成年原創動漫化角色：'+CHAR_ORDER.filter(function(id){return !CHARS[id].hidden||S.c[id].met;}).map(function(id){return CHARS[id].n+'('+id+')';}).join('、')+'。嚴禁出現秦以後的事物（紙、茶、瓷器、科舉、佛寺）。';
  t+=SET.adult?'可有含蓄的成年人曖昧，但不得露骨。':'情感描寫純愛含蓄：牽手、擁抱、眼神、心跳為主，不寫露骨內容。';
  if(short)return t+'【規則】已相識者不可當初見；角色只知道自己知道的事；〔指令〕必須執行；〔設定〕是作者宣告的事實必須成真；不可無前因拿人或大轉折。';
  t+='\n【知情防火牆】每位角色只知道【X所知】列出的事與親身經歷；不得說出或暗示自己不知道的秘密（尤其玩家的秘密）。';
@@ -46,7 +46,7 @@ AI.worldRules=function(short){
  t+='\n【輸入分流】〔對白〕是玩家說的話，只讓角色回應；〔指令・行動〕是玩家的動作，必須寫出結果；〔指令・命令〕是玩家以導演身分描述某角色下令，該角色必須真的執行；〔設定・劇情〕是玩家作者宣告的事實，必須直接成真，不可寫成念頭或用「莫非／荒唐／不可能」否定。';
  t+='\n【世界節制】不可無前因讓角色被捕、下獄、死亡或大轉折；重大事件須有罪證、動機與有權者下令；與玩家無關的大事一筆帶過。';
  return t;};
-AI.system=function(){return '你是乙女遊戲《'+GAME_TITLE+'》的劇本主持人。'+AI.worldRules()+'\n規則：\n1. 繁體中文，古風、細膩、有畫面感與心動感；每幕 120–240 字，以短句分行，對白用「」並以「角色名：」開頭便於分行顯示。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要角色 id 或空字串","expr":"normal|smile|blush|sad|angry|shy","bg":"'+PLACE_ORDER.join('|')+'","choices":[{"text":"選項(24字內)","fx":{}}],"fx":{"p":{"med":0,"cha":0,"wit":0,"fame":0,"mind":0,"gold":0},"c":{"角色id":{"aff":0,"trust":0,"heart":0,"jeal":0}},"mem":{"角色id":"該角色對此事的記憶短句"}},"facts":[],"recap":"一句概述"}\n3. 數值小幅：p 每項 ±3（gold ±50），c 每項 ±6。角色 id 只能用上列 id。\n4. choices 給 3 個各異選項（溫柔、試探、俏皮或退讓），須按新局面重新生成，不可沿用舊選項。\n5. facts（可空）：真正揭露或改變秘密／關係時才填，最多 2 項：{"text":"一句事實","subject":"p或角色id","knownBy":["角色id"]}。\n6. 不替玩家做決定；不讓角色死亡；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
+AI.system=function(){return '你是文字遊戲《'+GAME_TITLE+'》的劇本主持人。'+AI.worldRules()+'\n規則：\n1. 繁體中文，古風、細膩、有畫面感與心動感；每幕 120–240 字，以短句分行，對白用「」並以「角色名：」開頭便於分行顯示。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要角色 id 或空字串","expr":"normal|smile|blush|sad|angry|shy","bg":"'+PLACE_ORDER.join('|')+'","choices":[{"text":"選項(24字內)","fx":{}}],"fx":{"p":{"med":0,"cha":0,"wit":0,"fame":0,"mind":0,"gold":0},"c":{"角色id":{"aff":0,"trust":0,"heart":0,"jeal":0}},"mem":{"角色id":"該角色對此事的記憶短句"}},"facts":[],"recap":"一句概述"}\n3. 數值小幅：p 每項 ±3（gold ±50），c 每項 ±6。角色 id 只能用上列 id。\n4. choices 給 3 個各異選項（溫柔、試探、俏皮或退讓），須按新局面重新生成，不可沿用舊選項。\n5. facts（可空）：真正揭露或改變秘密／關係時才填，最多 2 項：{"text":"一句事實","subject":"p或角色id","knownBy":["角色id"]}。\n6. 不替玩家做決定；不讓角色死亡；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
 AI.charLine=function(id){var c=CHARS[id],r=S.c[id];var mem=(S.mem[id]||[]).slice(-4).map(function(m){return m.t;}).join('／');
  var kn=FW.knows(id).map(function(f){return f.t;}).slice(0,4).join('；');
  return c.n+'('+id+'｜'+c.c+(r.met?'｜已識':'｜未識')+')：好感'+r.aff+' 信任'+r.trust+' 心動'+r.heart+' 醋意'+r.jeal+' 健康'+r.hp+(r.cured?'(已醫治)':'('+c.ail+')')+'｜性格：'+c.pers+'｜心態：'+Mood.card(id)+(mem?'｜記憶：'+mem:'')+(kn?'｜所知：'+kn:'');};

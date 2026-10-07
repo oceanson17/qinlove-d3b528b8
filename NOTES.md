@@ -3,7 +3,7 @@
 - 線上：https://oceanson17.github.io/qinlove-d3b528b8/
 - 最新線上 md5：bff62dfce96f01dc34b043541b198668
 - Repo：https://github.com/oceanson17/qinlove-d3b528b8 （main 分支根目錄＝GitHub Pages）
-- 以《秦風》（/workspace/qinfeng）為基礎的**古風乙女 AI 文字戀愛遊戲**；《秦風》本身及其線上版未有改動。
+- 以《秦風》（/workspace/qinfeng）為基礎的**古風 AI 文字遊戲**；《秦風》本身及其線上版未有改動。
 - 單檔 ES5：`src/NN_*.js` + `ui/style.css` 由 `node build.js` 嵌入 `shell.html` → `index.html`；build 時掃描 `assets/` 產生 `ASSET_FILES`（有圖用圖，冇圖用 SVG）。
 - 備份：`bash bk.sh <label>` → /home/box/sanguo-backup/qinlove/（tgz＋index_<label>_TS.html＋md5）。
 - 推送：`git -c credential.helper='!gh auth git-credential' push`；唔好用廣泛 pkill node。
@@ -14,7 +14,7 @@
 | 01_data | 7 位可攻略角色（含隱藏玄夜）、8 地點、禮物/藥材、8 病例＋7 角色病況、5 章、21 CG、12 結局、4 節日、關係網 |
 | 02_state | 設定（localStorage `qlv_settings`）、PRESETS（DeepSeek/xAI/OpenAI/OpenRouter/Gemini/Groq/自訂）、新局、存檔（自動＋3 格 `qlv_save_*`）|
 | 03_art | 參數化 SVG 古風動漫半身立繪（6 種表情）、9 張 SVG 背景、CG 合成；`ART.html()` 優先用 assets 圖檔 |
-| 04_ai | OpenAI 相容 API（quirks 重試、json 格式、逾時）、手動貼上模式、驗證/清洗、乙女系統提示；知情防火牆 FW（M13）、反失憶 Nom（M21）、心態卡 Mood（M20）、AI.fail 封鎖/暫停 |
+| 04_ai | OpenAI 相容 API（quirks 重試、json 格式、逾時）、手動貼上模式、驗證/清洗、系統提示；知情防火牆 FW（M13）、反失憶 Nom（M21）、心態卡 Mood（M20）、AI.fail 封鎖/暫停 |
 | 05_engine | 時間（四時辰、四季）、數值與好感提示、里程碑（25/50/75＋心動/信任門檻）、章節推進、結局判定、Meta（跨存檔 CG/結局）、世界節制 WS（M26：限頻、須有起因、近期大事）|
 | 06_story | 開場、地點、初遇、閒聊/心願/心結、送禮、約會（地點偏好＋問答）、診治角色、坐診、製藥、採藥、市集、讀書、撫琴、21 段里程碑、主線事件（入宮→香中毒三線索→風雨（救韓非／追荊軻）→終章告白）、節日、修羅場、AI 接續、斷線接續（M15）|
 | 07_input | 書信（模板＋回信）、輸入分流：💬說／⚙指令（Act 動作、Ncmd 導演命令＋權限，M24/M25）／📜設定（Decl 宣告成真＋寬限調整，M27）、秘密得知（M22）|

@@ -20,11 +20,11 @@ clinic 66（藥櫃）、palace 50（正殿）、plum 43（梅徑）、market 43�
 
 重新處理：`/home/box/venv-rembg/bin/python tools/art.py && node build.js`（build 會掃描 assets/ 頂層 png/webp/jpg，以外部檔案載入，唔會 base64 內嵌）。
 
-**規則**：全部為原創動漫角色，均為成年人；不得描繪或模仿任何真實人物或現有作品角色。參考圖只參考畫風（古風動漫乙女、半身、精緻線條），不可臨摹。
+**規則**：全部為原創動漫角色，均為成年人；不得描繪或模仿任何真實人物或現有作品角色。參考圖只參考畫風（古風動漫、半身、精緻線條），不可臨摹。
 
 共用風格前綴（Style）：
 ```
-ancient Chinese otome game illustration, anime style, Warring States Qin era hanfu with cross collar, soft cel shading, delicate clean line art, pastel pink-white palette with vermilion and gold accents, original character, adult
+ancient Chinese historical game illustration, anime style, Warring States Qin era hanfu with cross collar, soft cel shading, delicate clean line art, pastel pink-white palette with vermilion and gold accents, original character, adult
 ```
 共用負面提示（Negative）：
 ```

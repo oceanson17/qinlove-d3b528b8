@@ -83,7 +83,7 @@ Rom.ARC={
    o:[['「歡迎回家。」',{love:10,trust:6},'這個從不流淚的人，把臉埋在你肩上，很久沒有抬頭。','她說歡迎回家','ok'],['「讓我想一想。」',{aff:2},'「我會等。影子最擅長等待。」','她要我等',''],['「對不起。」',{love:-6},'「……嗯。」他退後一步，又成了影子。','她拒絕了我','no']]}]
 };
 Rom.stage=function(id){var p=P(id);return p&&p.notes?(p.notes.rs||0):0;};
-Rom.why=function(id){var p=P(id),me=pc();if(!p||!p.alive)return '未相識';if(!p.met&&!(id==='xuanye'&&Rom.stage(id)===0&&S.per===5))return '未相識';if(id===S.pc)return 'self';if(p.spouse&&p.spouse!==S.pc)return '已有家室';if(p.spouse===S.pc)return '已成眷屬';if(ageOf(me)<16)return '年紀尚小';
+Rom.why=function(id){var p=P(id),me=pc();if(!p||!p.alive)return '未相識';if(!p.met&&!(id==='xuanye'&&Rom.stage(id)===0&&S.per===5))return '未相識';if(id===S.pc)return 'self';if(p.spouse&&p.spouse!==S.pc)return '已有家室';if(p.spouse===S.pc)return '已成眷屬';if(ageOf(me)<16)return '年紀尚小';if(ageOf(p)<16)return '對方年紀尚小';
  var A=Rom.ARC[id];if(!A)return 'none';var s=Rom.stage(id);if(s>=A.length)return '已互許';var n=A[s].need;for(var k in n){if((p[k]||0)<n[k])return ({aff:'好感',love:'情意',trust:'信任'})[k]+'需達'+n[k];}
  if(p.notes.rsd===S.day)return '今日已見';if(p.notes.rej&&S.day-p.notes.rej<10)return '尚在冷靜';return '';};
 Rom.ready=function(id){return Rom.why(id)==='';};

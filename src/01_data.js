@@ -168,10 +168,17 @@ var NAMED={
   bio:'齊地方士，言海上有仙山、長生藥。',gene:{con:12,wit:15,look:12,cha:16,dex:10},hid:[],at:['market','tavern','palace','palace','tavern','courtyard'],leave:219},
  zhaogao:{n:'趙高',g:'m',age:30,job:'中車府令',title:'中車府令',col:'#4a3a2a',sub:'陰鷙謙卑的宦者',pers:['狡猾','多疑'],like:['玉器'],auth:6,np:1,
   bio:'精通獄法，深得君心。',gene:{con:11,wit:16,look:9,cha:12,dex:11},hid:[],at:['palace','palace','palace','yamen','palace','palace'],die:207},
+ lvbuwei:{n:'呂不韋',g:'m',age:54,job:'相國',title:'相國',col:'#5a3a2a',sub:'錦袍沉穩的相國',pers:['精明','多疑'],like:['竹簡','玉器'],auth:9,np:1,
+  bio:'陽翟大賈，奇貨可居；扶立莊襄王，封文信侯，門下食客三千。',gene:{con:11,wit:18,look:12,cha:16,dex:10},hid:[],at:['yamen','yamen','palace','yamen','study','courtyard'],die:235},
+ zhaoji:{n:'趙姬',g:'f',age:43,job:'太后',title:'太后',col:'#8a3a5a',sub:'華服慵懶的太后',pers:['開朗','善妒'],like:['玉器','花草'],auth:8,np:1,
+  bio:'秦王之母，邯鄲舞姬出身，貌美多情。',gene:{con:11,wit:12,look:17,cha:16,dex:11},hid:[],at:['palace','palace','palace','palace','palace','palace'],die:228},
  gaojianli:{n:'高漸離',g:'m',age:27,job:'樂師',title:'樂師',col:'#7a6a5a',sub:'抱筑的樂師',pers:['沉默','仗義'],like:['琴譜','酒'],auth:1,np:1,
   bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218}
 };
-var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli'];
+var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji'];
+/* 開局時間：y10＝秦王政十年（前 237，預設）；y1＝秦王政元年（前 246） */
+var ERAS={y10:{bc:237,n:'秦王政十年（前237）',d:'秦王二十二歲，剛平定嫪毐之亂、罷免呂不韋，開始親政；李斯為客卿，長公子扶蘇已長成。'},y1:{bc:246,n:'秦王政元年（前246）',d:'十三歲的嬴政剛剛登基，未親政；相國呂不韋總攬朝政，趙姬為太后；李斯是呂不韋門下舍人。史上長公子扶蘇此時尚未出生——本局把扶蘇改為與秦王同族的「宗室公子」（18 歲）照常可結緣；嬴政、蒙恬年紀尚小，滿 16 歲前只會以朋友相待。'}};
+var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34}};
 var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
 var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];var DEF_NAMES_M=['白朮','蘇子衿','沈澤蘭','葉長卿','顧決明'];

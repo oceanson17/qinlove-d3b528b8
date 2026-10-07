@@ -55,7 +55,7 @@ var TALK={
  G:{開朗:['哈哈，今天心情真好！','走，一起去看熱鬧？'],沉默:['……嗯。','你說，我聽著。'],暴躁:['煩死了！','別惹我。'],溫和:['慢慢來，不急。','你也要照顧好自己。'],精明:['這事兒，得算計算計。','無利不起早嘛。'],狡猾:['嘿嘿，大夫好啊。','有什麼好處，記得分我一份。'],仗義:['有事儘管開口！','朋友有難，豈能不管。'],熱心:['吃過了嗎？我家剛蒸了餅。','有什麼要幫忙的？'],刻薄:['哼。','你也配？'],多疑:['你打聽這個做什麼？','人心隔肚皮。'],正直:['做人要問心無愧。','不義之財，不可取。'],膽小:['最近外頭不太平……','我、我什麼都沒看見。'],貪財:['有錢能使鬼推磨。','最近手頭緊啊。']}
 };
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
- var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push(NAMED[id].sub+'。'+NAMED[id].bio);}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
+ var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push((P(id).sub||NAMED[id].sub)+'。'+(P(id).bio||NAMED[id].bio));}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
  if(AI.ready()&&!a.off){return {async:{type:'talk',id:id,topic:a.topic||'閒聊'},fb:off};}return off();};
 NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(Rom.ARC[id]&&Rom.ready(id))c.unshift(ch('💞 '+Rom.title(id),'rom',{id:id}));if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl&&Med.caseOf(cl.cs)>=0)c.push(ch('🏠 應邀出診（'+CASES[Med.caseOf(cl.cs)].dx+'）','talkT',{id:id,k:'call'}));
  if(Object.keys(S.inv).some(function(k){return ITEMS[k]&&(ITEMS[k].gift||ITEMS[k].k==='food')&&S.inv[k]>0&&!ITEMS[k].hide;}))c.push(ch('🎁 送禮','gift',{id:id}));
@@ -92,7 +92,7 @@ NODES.poisonAll=function(){Eng.pass(1);var ors=Inv.has('ors');Eng.house().forEac
 NODES.disgExpose=function(a){var p=P(a.id);return Eng.L([[a.id,'「你……'+(pc().g==='f'?'你是女子？':'你是男子？')+'」'],p.n+'盯著你的喉頭和手腕，眼神從疑惑變成了震驚。'],a.id,S.place,[ch('求'+ta(p)+'替我保密','dxDo',{id:a.id,k:'beg'}),ch('索性承認，不再隱瞞','dxDo',{id:a.id,k:'admit'}),ch('威脅'+ta(p)+'閉嘴','dxDo',{id:a.id,k:'threat'})]);};
 NODES.dxDo=function(a){var p=P(a.id);if(a.k==='beg'){Gender.tell(a.id);People.rel(a.id,{trust:4});return Eng.L([[a.id,'「……我什麼也沒看見。」']],a.id,S.place,[ch('繼續','place')]);}if(a.k==='admit'){Gender.expose(a.id);return Eng.L(['消息傳開了。有人驚嘆，有人非議'+(S.world==='male'&&pc().g==='f'?'：「女人也敢……」':'。')],a.id,S.place,[ch('繼續','place')]);}
  Gender.tell(a.id);People.rel(a.id,{aff:-10,trust:-8});Bond.apply(a.id,{e:{怨恨:8,戒備:10}});return Eng.L([p.n+'臉色發白，點了點頭。但你知道，這根刺埋下了。'],a.id,S.place,[ch('繼續','place')]);};
-NODES.paceMeet=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);var L=[(p.kind==='named'?NAMED[a.id].sub:People.label(a.id))+'朝你走了過來。'];if(p.kind==='named')L.push(NAMED[a.id].bio);return Eng.L(L,a.id,S.place,[ch('💬 上前搭話','talk',{id:a.id}),ch('↩ 不理會','place')]);};
+NODES.paceMeet=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);var L=[(p.kind==='named'?(P(a.id).sub||NAMED[a.id].sub):People.label(a.id))+'朝你走了過來。'];if(p.kind==='named')L.push((P(a.id).bio||NAMED[a.id].bio));return Eng.L(L,a.id,S.place,[ch('💬 上前搭話','talk',{id:a.id}),ch('↩ 不理會','place')]);};
 NODES.visit=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);Pace.mark(a.id);var L=[p.n+'來找你了。'];var c=[];
  if(p.love>=60&&!p.confessed&&p.spouse!==S.pc&&!pc().spouse){p.confessed=1;p.lover=1;L.push([a.id,'「有些話憋了很久……我喜歡你。」']);People.note(a.id,'向'+pc().n+'表白','crit');var sc=Eng.L(L,a.id,S.place,[ch('💗 我也是','visitAns',{id:a.id,ok:1}),ch('對不起','visitAns',{id:a.id,ok:0})]);return sc;}
  if(p.aff>=50&&rand()<0.5){var it=pick(['cake','fruit','honey','wine','cloth','osm']);Inv.add(it,1);L.push([a.id,'「路過'+(PLACES[p.loc&&p.loc.pl]||{n:'集上'}).n+'，順手給你帶了'+ITEMS[it].n+'。」']);}
@@ -136,6 +136,9 @@ History.doy=function(){return (S.day-1)%DPY;};
 History.at=function(yb,doy){return Eng.yb()===yb&&History.doy()>=doy;};
 History.once=function(k){if(S.hist.done[k])return false;S.hist.done[k]=S.day;return true;};
 History.tick=function(){var y=Eng.yb(),H=S.hist;
+ if(y<=238&&History.once('laoai')&&S.startBC>238)WS.log('長信侯嫪毐作亂，被秦王平定','起因：嫪毐私通太后、謀立私子','史');
+ if(y<=237&&History.once('lvOut')&&S.startBC>237){var lv=P('lvbuwei');if(lv&&lv.alive){lv.title='文信侯';lv.office=0;}var zj=P('zhaoji');if(zj)zj.away=1;WS.log('秦王親政，罷免相國呂不韋；太后遷居雍城','起因：嫪毐之亂牽連','史');}
+ if(y<=235&&History.once('lvDie')){var lv2=P('lvbuwei');if(lv2&&lv2.alive&&!(S.mis&&S.mis.saved)){People.die('lvbuwei','飲鴆自盡');WS.log('呂不韋飲鴆而死','起因：秦王遷其蜀地','史');}}
  if(y<=233&&History.once('hanfeiIn')){var h=P('hanfei');h.away=0;WS.log('韓國公子韓非出使入秦','起因：秦攻韓，韓王遣使','史');}
  if(History.at(233,22)&&History.once('hanfeiDie')){var hf=P('hanfei');if(H.hanfeiSaved){WS.log('韓非出獄，留秦著書','起因：有人為他奔走','你所為');}else if(hf.met&&hf.aff>=30&&S.region==='xianyang'){S.hist.done.hanfeiDie=0;if(History.once('hanfeiAsk'))S.queue.push({go:'histHanfei',stop:1});}else{People.die('hanfei','雲陽獄中飲毒');WS.log('韓非死於雲陽獄','起因：李斯、姚賈進讒','史');}}
  if(y<=230&&History.once('hanFall'))WS.log('秦滅韓','起因：秦王掃六合','史');

@@ -76,10 +76,10 @@ function baseState(o){var s={v:2,seed:Date.now()%100000,world:o.world||'equal',m
  fam:{sur:'',gen:1,fame:0,tier:0,tech:{},land:0,plots:[],house:0,clinic:{open:0,lv:0,apps:[],days:0},grudge:null,hist:[]},gold:0,inv:{},
  region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,wev:{maj:[]},hist:{done:{},alt:''},
  pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[]};return s;}
-function addNamed(){NAMED_ORDER.forEach(function(k){var N=NAMED[k];var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
+function addNamed(){S.startBC=START_BC;NAMED_ORDER.forEach(function(k){var N=NAMED[k];if(START_BC===246&&ERA1[k]){var E=ERA1[k],M={};for(var q in N)M[q]=N[q];for(var q2 in E)M[q2]=E[q2];N=M;}var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
   genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
   aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:0),medoff:k==='xiawuju'?3:0,mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:''};
-  for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.arrive&&START_BC>N.arrive)p.away=1;});
+  for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.sub)p.sub=N.sub;if(N.bio)p.bio=N.bio;if(N.at)p.sched=N.at.slice();if(N.arrive&&START_BC>N.arrive)p.away=1;});if(START_BC<238&&S.ppl.zhaoji){S.ppl.zhaoji.away=1;S.ppl.lvbuwei.title='文信侯';}
  S.ppl.hanfei.away=1;S.ppl.xuanye.hidden=1;}
 function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||'').length>=2?o.name.slice(0,1):'白';
  var g0=o.g==='m'?'m':'f';var p=genPerson({id:'pc1',g:g0,age:o.age||19,sur:sur,kind:'pc',job:'doctor',hh:1,met:1,pers:['正直','熱心'],at:{con:12,wit:15,look:15,cha:12,dex:16},sk:{med:42,farm:5,craft:10,trade:5,mart:5,lit:25},genes:['hand']});
@@ -127,7 +127,7 @@ function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:pc
 function slotName(s){return s==='auto'?'自動':'檔位 '+s;}
 function slotInfo(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o)return null;return {t:o.t,name:o.name,day:o.day,gen:o.gen||1};}catch(e){return null;}}
 function loadSlot(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o||!o.s||o.s.v!==2)return false;S=o.s;migrate();return true;}catch(e){return false;}}
-function migrate(){if(typeof S.world!=='string')S.world='equal';var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
+function migrate(){START_BC=S.startBC||237;if(typeof S.world!=='string')S.world='equal';var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
  for(var id in S.ppl){var p=S.ppl[id];if(!p.mem)p.mem=[];if(!p.ill)p.ill=[];if(!p.sk)p.sk={med:0,farm:0,craft:0,trade:0,mart:0,lit:0};}if(typeof Nom!=='undefined')Nom.migrate();}
 function addLog(t,tag){if(!S)return;S.log.push({d:S.day,t:String(t).slice(0,160),g:tag||''});if(S.log.length>300)S.log.shift();}
 /* ---- 跨存檔：結局冊、家族史 ---- */

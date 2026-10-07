@@ -649,10 +649,17 @@ var NAMED={
   bio:'齊地方士，言海上有仙山、長生藥。',gene:{con:12,wit:15,look:12,cha:16,dex:10},hid:[],at:['market','tavern','palace','palace','tavern','courtyard'],leave:219},
  zhaogao:{n:'趙高',g:'m',age:30,job:'中車府令',title:'中車府令',col:'#4a3a2a',sub:'陰鷙謙卑的宦者',pers:['狡猾','多疑'],like:['玉器'],auth:6,np:1,
   bio:'精通獄法，深得君心。',gene:{con:11,wit:16,look:9,cha:12,dex:11},hid:[],at:['palace','palace','palace','yamen','palace','palace'],die:207},
+ lvbuwei:{n:'呂不韋',g:'m',age:54,job:'相國',title:'相國',col:'#5a3a2a',sub:'錦袍沉穩的相國',pers:['精明','多疑'],like:['竹簡','玉器'],auth:9,np:1,
+  bio:'陽翟大賈，奇貨可居；扶立莊襄王，封文信侯，門下食客三千。',gene:{con:11,wit:18,look:12,cha:16,dex:10},hid:[],at:['yamen','yamen','palace','yamen','study','courtyard'],die:235},
+ zhaoji:{n:'趙姬',g:'f',age:43,job:'太后',title:'太后',col:'#8a3a5a',sub:'華服慵懶的太后',pers:['開朗','善妒'],like:['玉器','花草'],auth:8,np:1,
+  bio:'秦王之母，邯鄲舞姬出身，貌美多情。',gene:{con:11,wit:12,look:17,cha:16,dex:11},hid:[],at:['palace','palace','palace','palace','palace','palace'],die:228},
  gaojianli:{n:'高漸離',g:'m',age:27,job:'樂師',title:'樂師',col:'#7a6a5a',sub:'抱筑的樂師',pers:['沉默','仗義'],like:['琴譜','酒'],auth:1,np:1,
   bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218}
 };
-var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli'];
+var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji'];
+/* 開局時間：y10＝秦王政十年（前 237，預設）；y1＝秦王政元年（前 246） */
+var ERAS={y10:{bc:237,n:'秦王政十年（前237）',d:'秦王二十二歲，剛平定嫪毐之亂、罷免呂不韋，開始親政；李斯為客卿，長公子扶蘇已長成。'},y1:{bc:246,n:'秦王政元年（前246）',d:'十三歲的嬴政剛剛登基，未親政；相國呂不韋總攬朝政，趙姬為太后；李斯是呂不韋門下舍人。史上長公子扶蘇此時尚未出生——本局把扶蘇改為與秦王同族的「宗室公子」（18 歲）照常可結緣；嬴政、蒙恬年紀尚小，滿 16 歲前只會以朋友相待。'}};
+var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34}};
 var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
 var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];var DEF_NAMES_M=['白朮','蘇子衿','沈澤蘭','葉長卿','顧決明'];
@@ -746,10 +753,10 @@ function baseState(o){var s={v:2,seed:Date.now()%100000,world:o.world||'equal',m
  fam:{sur:'',gen:1,fame:0,tier:0,tech:{},land:0,plots:[],house:0,clinic:{open:0,lv:0,apps:[],days:0},grudge:null,hist:[]},gold:0,inv:{},
  region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,wev:{maj:[]},hist:{done:{},alt:''},
  pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[]};return s;}
-function addNamed(){NAMED_ORDER.forEach(function(k){var N=NAMED[k];var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
+function addNamed(){S.startBC=START_BC;NAMED_ORDER.forEach(function(k){var N=NAMED[k];if(START_BC===246&&ERA1[k]){var E=ERA1[k],M={};for(var q in N)M[q]=N[q];for(var q2 in E)M[q2]=E[q2];N=M;}var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
   genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
   aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:0),medoff:k==='xiawuju'?3:0,mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:''};
-  for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.arrive&&START_BC>N.arrive)p.away=1;});
+  for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.sub)p.sub=N.sub;if(N.bio)p.bio=N.bio;if(N.at)p.sched=N.at.slice();if(N.arrive&&START_BC>N.arrive)p.away=1;});if(START_BC<238&&S.ppl.zhaoji){S.ppl.zhaoji.away=1;S.ppl.lvbuwei.title='文信侯';}
  S.ppl.hanfei.away=1;S.ppl.xuanye.hidden=1;}
 function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||'').length>=2?o.name.slice(0,1):'白';
  var g0=o.g==='m'?'m':'f';var p=genPerson({id:'pc1',g:g0,age:o.age||19,sur:sur,kind:'pc',job:'doctor',hh:1,met:1,pers:['正直','熱心'],at:{con:12,wit:15,look:15,cha:12,dex:16},sk:{med:42,farm:5,craft:10,trade:5,mart:5,lit:25},genes:['hand']});
@@ -797,7 +804,7 @@ function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:pc
 function slotName(s){return s==='auto'?'自動':'檔位 '+s;}
 function slotInfo(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o)return null;return {t:o.t,name:o.name,day:o.day,gen:o.gen||1};}catch(e){return null;}}
 function loadSlot(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o||!o.s||o.s.v!==2)return false;S=o.s;migrate();return true;}catch(e){return false;}}
-function migrate(){if(typeof S.world!=='string')S.world='equal';var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
+function migrate(){START_BC=S.startBC||237;if(typeof S.world!=='string')S.world='equal';var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
  for(var id in S.ppl){var p=S.ppl[id];if(!p.mem)p.mem=[];if(!p.ill)p.ill=[];if(!p.sk)p.sk={med:0,farm:0,craft:0,trade:0,mart:0,lit:0};}if(typeof Nom!=='undefined')Nom.migrate();}
 function addLog(t,tag){if(!S)return;S.log.push({d:S.day,t:String(t).slice(0,160),g:tag||''});if(S.log.length>300)S.log.shift();}
 /* ---- 跨存檔：結局冊、家族史 ---- */
@@ -1189,7 +1196,7 @@ var People={};
   if(p.here&&p.here.d===S.day&&(p.here.r||S.region)===S.region)return p.here.pl;
   if(S.focusAt&&S.focusAt.id===id&&Eng.now()-S.focusAt.t<=2&&S.focusAt.r===S.region)return S.focusAt.pl;
   if(p.hh){if(S.region==='road')return 'road';if(S.home&&S.home.r===S.region)return S.home.pl;return '';}
-  if(p.kind==='named'){if(S.region!=='xianyang')return '';if(p.hidden&&!S.flags.xy_open)return '';var N=NAMED[id];var pl=N.at[S.per]||'';if(p.spouse===S.pc&&S.per===5&&S.home&&S.home.r==='xianyang')return S.home.pl;return pl;}
+  if(p.kind==='named'){if(S.region!=='xianyang')return '';if(p.hidden&&!S.flags.xy_open)return '';var N=NAMED[id];var pl=(p.sched||N.at)[S.per]||'';if(p.spouse===S.pc&&S.per===5&&S.home&&S.home.r==='xianyang')return S.home.pl;return pl;}
   if(p.loc&&p.loc.r===S.region)return p.loc.pl;return '';};
  Eng.now=function(){return S.day*6+S.per;};
  Eng.keep=function(id){if(id&&P(id))S.focusAt={id:id,pl:S.place,r:S.region,t:Eng.now()};};
@@ -1497,7 +1504,7 @@ AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
 AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
 AI.pline=function(id){var p=P(id);var b=SET.bondd!==false?Bond.card(id):'';var mem=Nom.brief(id);var a=ageOf(p);
  return p.n+'('+id+'｜'+(p.g==='f'?'女':'男')+a+'歲｜'+(p.title||JOBS[p.job]||'')+'｜'+People.relTo(id)+(p.met?'｜已識':'｜未識')+')：好感'+p.aff+' 信任'+p.trust+' 情意'+(p.love||0)+' 健康'+Math.round(p.hp)+(p.ill.length?'('+Ill.str(p)+')':'')+'｜性格：'+p.pers.join('、')+'｜喜好：'+p.like.join('、')+(b?'｜心態卡：'+b:'')+(mem?'｜持久記憶：'+mem:'');};
-AI.summary=function(){var me=pc(),L=[];
+AI.summary=function(){var me=pc(),L=[];var EK=S.startBC===246?'y1':'y10';L.push('【時代】'+Eng.era()+'（開局：'+ERAS[EK].n+'）'+(Eng.yb()>237?'：秦王嬴政'+ageOf(P('yingzheng'))+'歲、未親政，相國呂不韋與太后趙姬主政；李斯為呂不韋舍人；扶蘇為宗室公子（非秦王之子）。':''));
  L.push('【時間地點】'+Eng.dateStr()+'，'+Weather.str()+'；'+(REGIONS[S.region]||{n:''}).n+'·'+(PLACES[S.place]||{n:''}).n+(S.road?'（流放第'+S.road.day+'/'+S.road.total+'日，往'+S.road.dn+'）':''));
  L.push('【主角】'+me.n+'（'+(me.g==='f'?'女':'男')+(Gender.on()?'，易裝為'+(S.disg.as==='m'?'男':'女')+'子':'')+'，'+ageOf(me)+'歲，'+(me.title||JOBS[me.job]||'')+(me.office?'，'+OFFICE[me.office]:'')+(me.medoff?'，'+MEDOFF[me.medoff]:'')+(me.rank?'，爵'+RANKS[me.rank]:'')+'）：飽食'+Math.round(me.food)+' 體力'+Math.round(me.sta)+' 健康'+Math.round(me.hp)+' 體溫'+me.temp.toFixed(1)+' 心情'+Math.round(me.mood)+' 銀'+S.gold+'；醫'+me.sk.med+' 農'+me.sk.farm+' 工'+me.sk.craft+' 商'+me.sk.trade+' 武'+me.sk.mart+' 文'+me.sk.lit+'；疾病：'+Ill.str(me)+(me.preg?'；有孕':'')+'；行囊：'+Inv.str().slice(0,160));
  L.push('【家族】'+Fam.name()+'，第'+S.fam.gen+'代，名聲'+S.fam.fame+(S.fam.grudge&&!S.fam.grudge.done?'，背負冤案：'+S.fam.grudge.crime:'')+'；住所：'+Eng.HOUSE_N[S.fam.house||0]+(S.fam.clinic.open?'；醫館已開':''));
@@ -1840,6 +1847,7 @@ NODES.intro=function(){var me=pc();var k=S.flags.intro;var L=[];
  else if(k==='exile'){var fa=People.byRel('父');L=[['','抄家的差役是在一個雨夜來的。'],['',S.fam.grudge.crime+'——一紙判書，'+Fam.name()+'上下全數流放'+S.road.dn+'。'],['',S.road.dn+'在'+S.road.total+'日路程之外。'+cn(S.road.guards[0])+'把鐵鏈一抖：「走！誤了期限，你們全家都得死！」']];if(fa)L.push([fa,'（心聲）'+People.thought(P(fa))]);L.push(['p','（腳下的草鞋已經破了。得省著吃、護好腳、照看好家人……活著走到'+S.road.dn+'。）']);}
  else if(S.flags.babyStart){L=[['','你出生在'+Eng.ybStr(Eng.yb())+'的'+Eng.dateStr()+'。'],['',Fam.name()+'添了一口人。'+BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0].d+'。'],['','往後的每一年，都由你來選擇怎麼長大。']];}
  else{var B=BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0];L=[['','你是'+me.n+'，'+ageOf(me)+'歲，生在'+B.n+'——'+B.d+'。'],['','這一生沒有寫好的劇本。窮困、疾病、機緣，都會改變你的命運。']];}
+ if(S.startBC===246)L.splice(1,0,['','這一年，十三歲的嬴政剛剛即位為秦王。國事由相國呂不韋與太后趙姬把持，咸陽城裡人人都在猜：這位少年君王，能坐穩那張王座嗎？']);
  if(S.origin&&S.origin.lines)S.origin.lines.forEach(function(l){L.push(['',l]);});
  return Eng.L(L,k==='std'?'':'',S.place,[ch(S.flags.babyStart?'開始長大':'踏出第一步',S.flags.babyStart?'childYear':'place')]);};
 /* ---------- 地點中樞 ---------- */
@@ -2082,7 +2090,7 @@ var TALK={
  G:{開朗:['哈哈，今天心情真好！','走，一起去看熱鬧？'],沉默:['……嗯。','你說，我聽著。'],暴躁:['煩死了！','別惹我。'],溫和:['慢慢來，不急。','你也要照顧好自己。'],精明:['這事兒，得算計算計。','無利不起早嘛。'],狡猾:['嘿嘿，大夫好啊。','有什麼好處，記得分我一份。'],仗義:['有事儘管開口！','朋友有難，豈能不管。'],熱心:['吃過了嗎？我家剛蒸了餅。','有什麼要幫忙的？'],刻薄:['哼。','你也配？'],多疑:['你打聽這個做什麼？','人心隔肚皮。'],正直:['做人要問心無愧。','不義之財，不可取。'],膽小:['最近外頭不太平……','我、我什麼都沒看見。'],貪財:['有錢能使鬼推磨。','最近手頭緊啊。']}
 };
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
- var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push(NAMED[id].sub+'。'+NAMED[id].bio);}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
+ var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push((P(id).sub||NAMED[id].sub)+'。'+(P(id).bio||NAMED[id].bio));}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
  if(AI.ready()&&!a.off){return {async:{type:'talk',id:id,topic:a.topic||'閒聊'},fb:off};}return off();};
 NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(Rom.ARC[id]&&Rom.ready(id))c.unshift(ch('💞 '+Rom.title(id),'rom',{id:id}));if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl&&Med.caseOf(cl.cs)>=0)c.push(ch('🏠 應邀出診（'+CASES[Med.caseOf(cl.cs)].dx+'）','talkT',{id:id,k:'call'}));
  if(Object.keys(S.inv).some(function(k){return ITEMS[k]&&(ITEMS[k].gift||ITEMS[k].k==='food')&&S.inv[k]>0&&!ITEMS[k].hide;}))c.push(ch('🎁 送禮','gift',{id:id}));
@@ -2119,7 +2127,7 @@ NODES.poisonAll=function(){Eng.pass(1);var ors=Inv.has('ors');Eng.house().forEac
 NODES.disgExpose=function(a){var p=P(a.id);return Eng.L([[a.id,'「你……'+(pc().g==='f'?'你是女子？':'你是男子？')+'」'],p.n+'盯著你的喉頭和手腕，眼神從疑惑變成了震驚。'],a.id,S.place,[ch('求'+ta(p)+'替我保密','dxDo',{id:a.id,k:'beg'}),ch('索性承認，不再隱瞞','dxDo',{id:a.id,k:'admit'}),ch('威脅'+ta(p)+'閉嘴','dxDo',{id:a.id,k:'threat'})]);};
 NODES.dxDo=function(a){var p=P(a.id);if(a.k==='beg'){Gender.tell(a.id);People.rel(a.id,{trust:4});return Eng.L([[a.id,'「……我什麼也沒看見。」']],a.id,S.place,[ch('繼續','place')]);}if(a.k==='admit'){Gender.expose(a.id);return Eng.L(['消息傳開了。有人驚嘆，有人非議'+(S.world==='male'&&pc().g==='f'?'：「女人也敢……」':'。')],a.id,S.place,[ch('繼續','place')]);}
  Gender.tell(a.id);People.rel(a.id,{aff:-10,trust:-8});Bond.apply(a.id,{e:{怨恨:8,戒備:10}});return Eng.L([p.n+'臉色發白，點了點頭。但你知道，這根刺埋下了。'],a.id,S.place,[ch('繼續','place')]);};
-NODES.paceMeet=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);var L=[(p.kind==='named'?NAMED[a.id].sub:People.label(a.id))+'朝你走了過來。'];if(p.kind==='named')L.push(NAMED[a.id].bio);return Eng.L(L,a.id,S.place,[ch('💬 上前搭話','talk',{id:a.id}),ch('↩ 不理會','place')]);};
+NODES.paceMeet=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);var L=[(p.kind==='named'?(P(a.id).sub||NAMED[a.id].sub):People.label(a.id))+'朝你走了過來。'];if(p.kind==='named')L.push((P(a.id).bio||NAMED[a.id].bio));return Eng.L(L,a.id,S.place,[ch('💬 上前搭話','talk',{id:a.id}),ch('↩ 不理會','place')]);};
 NODES.visit=function(a){var p=P(a.id);if(!p||!p.alive)return NODES.place();p.here={d:S.day,per:S.per,pl:S.place};Eng.keep(a.id);Pace.mark(a.id);var L=[p.n+'來找你了。'];var c=[];
  if(p.love>=60&&!p.confessed&&p.spouse!==S.pc&&!pc().spouse){p.confessed=1;p.lover=1;L.push([a.id,'「有些話憋了很久……我喜歡你。」']);People.note(a.id,'向'+pc().n+'表白','crit');var sc=Eng.L(L,a.id,S.place,[ch('💗 我也是','visitAns',{id:a.id,ok:1}),ch('對不起','visitAns',{id:a.id,ok:0})]);return sc;}
  if(p.aff>=50&&rand()<0.5){var it=pick(['cake','fruit','honey','wine','cloth','osm']);Inv.add(it,1);L.push([a.id,'「路過'+(PLACES[p.loc&&p.loc.pl]||{n:'集上'}).n+'，順手給你帶了'+ITEMS[it].n+'。」']);}
@@ -2163,6 +2171,9 @@ History.doy=function(){return (S.day-1)%DPY;};
 History.at=function(yb,doy){return Eng.yb()===yb&&History.doy()>=doy;};
 History.once=function(k){if(S.hist.done[k])return false;S.hist.done[k]=S.day;return true;};
 History.tick=function(){var y=Eng.yb(),H=S.hist;
+ if(y<=238&&History.once('laoai')&&S.startBC>238)WS.log('長信侯嫪毐作亂，被秦王平定','起因：嫪毐私通太后、謀立私子','史');
+ if(y<=237&&History.once('lvOut')&&S.startBC>237){var lv=P('lvbuwei');if(lv&&lv.alive){lv.title='文信侯';lv.office=0;}var zj=P('zhaoji');if(zj)zj.away=1;WS.log('秦王親政，罷免相國呂不韋；太后遷居雍城','起因：嫪毐之亂牽連','史');}
+ if(y<=235&&History.once('lvDie')){var lv2=P('lvbuwei');if(lv2&&lv2.alive&&!(S.mis&&S.mis.saved)){People.die('lvbuwei','飲鴆自盡');WS.log('呂不韋飲鴆而死','起因：秦王遷其蜀地','史');}}
  if(y<=233&&History.once('hanfeiIn')){var h=P('hanfei');h.away=0;WS.log('韓國公子韓非出使入秦','起因：秦攻韓，韓王遣使','史');}
  if(History.at(233,22)&&History.once('hanfeiDie')){var hf=P('hanfei');if(H.hanfeiSaved){WS.log('韓非出獄，留秦著書','起因：有人為他奔走','你所為');}else if(hf.met&&hf.aff>=30&&S.region==='xianyang'){S.hist.done.hanfeiDie=0;if(History.once('hanfeiAsk'))S.queue.push({go:'histHanfei',stop:1});}else{People.die('hanfei','雲陽獄中飲毒');WS.log('韓非死於雲陽獄','起因：李斯、姚賈進讒','史');}}
  if(y<=230&&History.once('hanFall'))WS.log('秦滅韓','起因：秦王掃六合','史');
@@ -2308,7 +2319,7 @@ Rom.ARC={
    o:[['「歡迎回家。」',{love:10,trust:6},'這個從不流淚的人，把臉埋在你肩上，很久沒有抬頭。','她說歡迎回家','ok'],['「讓我想一想。」',{aff:2},'「我會等。影子最擅長等待。」','她要我等',''],['「對不起。」',{love:-6},'「……嗯。」他退後一步，又成了影子。','她拒絕了我','no']]}]
 };
 Rom.stage=function(id){var p=P(id);return p&&p.notes?(p.notes.rs||0):0;};
-Rom.why=function(id){var p=P(id),me=pc();if(!p||!p.alive)return '未相識';if(!p.met&&!(id==='xuanye'&&Rom.stage(id)===0&&S.per===5))return '未相識';if(id===S.pc)return 'self';if(p.spouse&&p.spouse!==S.pc)return '已有家室';if(p.spouse===S.pc)return '已成眷屬';if(ageOf(me)<16)return '年紀尚小';
+Rom.why=function(id){var p=P(id),me=pc();if(!p||!p.alive)return '未相識';if(!p.met&&!(id==='xuanye'&&Rom.stage(id)===0&&S.per===5))return '未相識';if(id===S.pc)return 'self';if(p.spouse&&p.spouse!==S.pc)return '已有家室';if(p.spouse===S.pc)return '已成眷屬';if(ageOf(me)<16)return '年紀尚小';if(ageOf(p)<16)return '對方年紀尚小';
  var A=Rom.ARC[id];if(!A)return 'none';var s=Rom.stage(id);if(s>=A.length)return '已互許';var n=A[s].need;for(var k in n){if((p[k]||0)<n[k])return ({aff:'好感',love:'情意',trust:'信任'})[k]+'需達'+n[k];}
  if(p.notes.rsd===S.day)return '今日已見';if(p.notes.rej&&S.day-p.notes.rej<10)return '尚在冷靜';return '';};
 Rom.ready=function(id){return Rom.why(id)==='';};
@@ -2647,6 +2658,7 @@ Panels.su=null;
 Panels.setup=function(){Panels.su={mode:'std',world:'equal',g:'f',era:'y10',name:DEF_NAMES[0],r:rollBirth({g:'f'}),baby:false,birth:'',ctext:'',parsed:null};Sh.open('新的一生',[],Panels.suRender);};
 Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div class="seg">'+[['std','標準開局'],['rand','全隨機'],['custom','自設身世']].map(function(o){return '<button data-act="suMode" data-v="'+o[0]+'" class="'+(u.mode===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';
  h+='<h4>世界設定</h4><div class="seg">'+Object.keys(WORLDS).map(function(k){return '<button data-act="suWorld" data-v="'+k+'" class="'+(u.world===k?'on':'')+'">'+WORLDS[k].n+'</button>';}).join('')+'</div><p class="note">'+esc(WORLDS[u.world].d)+'</p>';
+ h+='<h4>開局時間</h4><div class="seg">'+Object.keys(ERAS).map(function(k){return '<button data-act="suEra" data-v="'+k+'" class="'+(u.era===k?'on':'')+'">'+ERAS[k].n+'</button>';}).join('')+'</div><p class="note">'+esc(ERAS[u.era].d)+'</p>';
  h+='<h4>主角性別</h4><div class="seg">'+[['f','女'],['m','男']].map(function(o){return '<button data-act="suG" data-v="'+o[0]+'" class="'+(u.g===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div><p class="note">'+(u.g==='m'?'男主角：稱呼、婚嫁（娶／入贅按世界設定）、心動角色反應、易裝（男扮女裝）都會跟著變；七位核心人物照樣可以結緣。':'女主角（標準開局預設）。')+'</p>';
  if(u.mode==='std'){h+='<h4>'+(u.g==='m'?'西醫':'女西醫')+'</h4><p class="note">'+(u.g==='m'?'他':'她')+'在隱世山谷隨師父青囊子學了十二年西方醫術——解剖、縫合、消毒、退燒、接骨、藥理、聽診——今日學成下山，來到咸陽。</p><label class="field">姓名（2–4 字）<input id="suName" maxlength="6" value="'+esc(u.name)+'" autocomplete="off"></label><div class="row">'+(u.g==='m'?DEF_NAMES_M:DEF_NAMES).map(function(n){return '<button class="btn" data-act="suNm" data-v="'+esc(n)+'">'+esc(n)+'</button>';}).join('')+'</div>';}
  else if(u.mode==='rand'){var r=u.r;var B=BIRTHS.filter(function(b){return b.k===r.birth;})[0];h+='<h4>隨機身世</h4><div class="rcard"><div class="rav">'+ART.sil({id:'pv',n:r.sur+r.gn,gn:r.gn,g:r.g,born:S?0:0,look:{hair:'#2a2020'},kind:'pc',alive:1,_age:r.age})+'</div><div><b>'+esc(r.sur+r.gn)+'</b>（'+(r.g==='f'?'女':'男')+'，'+(r.baby?'初生嬰兒':r.age+'歲')+'）<br>'+esc(B.n)+'——'+esc(B.d)+'<br>天賦：'+r.tal.map(function(t){return {med:'醫',mart:'武',lit:'文',trade:'商',farm:'農',craft:'工'}[t];}).join('、')+'；體'+r.at.con+' 智'+r.at.wit+' 貌'+r.at.look+'<br>'+(r.genes.length?'隱約有「'+r.genes.map(function(g){return GENES[g].n;}).join('、')+'」之相':'未見特殊稟賦')+(r.birth==='exile'?'<br>罪名：'+esc(r.crime)+'；流放'+esc(EXILE_DEST.filter(function(d){return d.k===r.dest;})[0].n):'')+'<br>兄弟姊妹 '+r.sibs+' 人'+(r.grand?'、祖母同住':'')+'</div></div>';
@@ -2656,12 +2668,13 @@ Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div clas
  h+='<div class="row" style="margin-top:14px"><button class="btn pri big" data-act="suGo">踏入此生</button></div>';return h;};
 Panels.act.suMode=function(v){Panels.su.mode=v;Sh.draw();};Panels.act.suWorld=function(v){Panels.su.world=v;Sh.redraw();};
 Panels.act.suG=function(v){var u=Panels.su;if(u.g===v)return;u.g=v;var A=v==='m'?DEF_NAMES_M:DEF_NAMES,B=v==='m'?DEF_NAMES:DEF_NAMES_M;var i=B.indexOf(u.name);if(i>=0||!u.name)u.name=A[Math.max(0,i)];u.r=rollBirth({birth:u.r.birth,g:v,baby:u.baby});Sh.redraw();};
+Panels.act.suEra=function(v){Panels.su.era=v;Sh.redraw();};
 Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
 Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
 Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.g,baby:u.baby});Sh.redraw();};
 Panels.act.suParse=function(){var u=Panels.su;u.ctext=$('suText').value;u.parsed=Origin.parse(u.ctext);Sh.redraw();};
 Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);toast('AI 解析失敗，改用離線解析');u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
-Panels.act.suGo=function(){var u=Panels.su;var first;
+Panels.act.suGo=function(){var u=Panels.su;var first;START_BC=(ERAS[u.era]||ERAS.y10).bc;
  if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}
  else{u.ctext=($('suText')||{}).value||u.ctext;if(!u.parsed||u.parsed.raw!==u.ctext.trim().slice(0,400))u.parsed=Origin.parse(u.ctext);var o=u.parsed;var r=rollBirth({birth:o.birth||'',g:u.g,baby:false});if(o.age!=null&&o.age>=14)r.age=o.age;first=Start.rand(r,{world:u.world,origin:o});}
@@ -2731,7 +2744,7 @@ Panels.romR=function(){var h='<p class="note">七段羈絆沒有固定路線：�
  Rom.CORE.forEach(function(id){var p=P(id);var N=NAMED[id];if(!p)return;var pr=Rom.progress(id);var met=p.met;var dots='';for(var i=0;i<pr.n;i++)dots+=i<pr.s?'●':'○';
   var at=[];N.at.forEach(function(x,k){if(x&&PLACES[x]&&at.indexOf(PLACES[x].n+'（'+PER_S[k]+'）')<0&&at.length<3)at.push(PLACES[x].n+'（'+PER_S[k]+'）');});
   var st=!p.alive?'已故':(p.spouse===S.pc?'💍 已成眷屬':(p.lover?'💗 互許心意':(pr.why===''?'💞 下一章「'+pr.next+'」已可觸發':(met?(pr.next?'下一章「'+pr.next+'」：'+pr.why:pr.why):'未相識'))));
-  h+='<button class="pcard'+(p.alive?'':' dead')+'" data-act="'+(met?'pOpen':'noop')+'" data-v="'+id+'"><span class="fav">'+(met?ART.avatar(p):ART.sil({g:p.g,_age:ageOf(p),n:'？',alive:p.alive}))+'</span><span class="pi"><b>'+(met?esc(p.n):'？？？')+'</b> <small>'+esc(N.sub)+'</small><span class="hb">'+dots+'　情'+(p.love||0)+' 好'+p.aff+' 信'+p.trust+'</span><small>'+esc(st)+'</small>'+(p.alive&&!p.hh?'<small>常在：'+esc(at.join('、')||'行蹤不定')+'</small>':'')+'</span></button>';});
+  h+='<button class="pcard'+(p.alive?'':' dead')+'" data-act="'+(met?'pOpen':'noop')+'" data-v="'+id+'"><span class="fav">'+(met?ART.avatar(p):ART.sil({g:p.g,_age:ageOf(p),n:'？',alive:p.alive}))+'</span><span class="pi"><b>'+(met?esc(p.n):'？？？')+'</b> <small>'+esc((p.sub||N.sub))+'</small><span class="hb">'+dots+'　情'+(p.love||0)+' 好'+p.aff+' 信'+p.trust+'</span><small>'+esc(st)+'</small>'+(p.alive&&!p.hh?'<small>常在：'+esc(at.join('、')||'行蹤不定')+'</small>':'')+'</span></button>';});
  return h+'</div>';};
 Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();var kn=FW.knows(id).filter(function(f){return !f.pub;}).slice(-5);var ru=FW.rumors(id).slice(-3);
  return '<button class="btn" data-act="pBack">↩ 返回</button><div class="gdet" style="margin-top:8px"><div class="dtop">'+(ART.hasChar(p)?ART.html('char',p.portrait):'<div class="bigav">'+ART.avatar(p)+'</div>')+'<div class="dname">'+esc(p.n)+'<small>'+esc((p.title||JOBS[p.job]||'')+'・'+People.relTo(id))+'</small></div></div>'
@@ -2740,7 +2753,7 @@ Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();v
   +'<div class="kv"><b>心態卡（M20）</b>'+esc(Bond.card(id))+'</div>'
   +'<div class="kv"><b>記憶（M21）</b><div class="mem">'+(mem.map(function(m){return (m.k!=='n'?'◆':'・')+esc(m.t);}).join('<br>')||'尚無')+'</div></div>'
   +'<div class="kv"><b>所知（M13）</b><div class="mem">'+(kn.map(function(f){return '・'+esc(f.t);}).concat(ru.map(function(f){return '・（傳聞）'+esc(f.t);})).join('<br>')||'——')+'</div></div>'
-  +(p.kind==='named'?'<div class="kv"><b>簡介</b>'+esc(NAMED[id].bio)+'</div>':'')+'</div>';};
+  +(p.kind==='named'?'<div class="kv"><b>簡介</b>'+esc((P(id).bio||NAMED[id].bio))+'</div>':'')+'</div>';};
 Panels.letter=function(i){var l=S.letters[i];if(!l)return '';l.read=1;UI.badge();var parts=l.t.split('——');var h='<button class="btn" data-act="letBack">↩ 返回信匣</button><div class="jian">'+esc(parts[0])+(parts[1]?'<div class="from">——'+esc(parts[1])+'</div>':'')+'</div>';
  if(l.rep)h+='<p class="note" style="text-align:center">已回信：'+esc(l.rt||{warm:'溫柔',tease:'俏皮',polite:'得體',decline:'婉拒',free:''}[l.rep])+'</p>';
  else h+='<div class="reply"><button class="cbtn" data-act="rep" data-v="'+i+'|warm">💌 溫柔地回信'+(l.k==='invite'?'（赴約）':'')+'</button><button class="cbtn" data-act="rep" data-v="'+i+'|tease">😊 俏皮地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|polite">📜 得體地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|decline">🙅 婉拒</button><button class="cbtn ai" data-act="rep" data-v="'+i+'|free">✍️ 親筆回信</button></div>';

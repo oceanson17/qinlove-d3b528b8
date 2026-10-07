@@ -1,5 +1,6 @@
 /* ===== 女扮男裝（v4）：開局／遊戲中換裝、識破機率與事件（診症、受傷、沐浴、親近）、主動坦白、心動反應、立繪切換 ===== */
 (function(){
+ if(ART.FACE&&ART.FACE.heroine&&!ART.FACE.heroine_m)ART.FACE.heroine_m=ART.FACE.heroine;
  Gender.syncArt=function(){var me=pc();if(!me||me.portrait.indexOf('heroine')!==0)return;var m=Gender.on()&&S.disg.as==='m';me.portrait=m&&ART.file('char_heroine_m')?'heroine_m':'heroine';};
  var os=Gender.start;Gender.start=function(as){if(S.disg&&S.disg.fid&&FW.byId(S.disg.fid)){S.disg.on=1;S.disg.as=as;S.disg.since=S.day;}else os(as);S.disg.kit=1;Gender.syncArt();};
  /* 換裝：w＝要穿的性別衣裳 */

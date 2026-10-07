@@ -120,3 +120,13 @@ photorealistic, 3d render, real person, celebrity likeness, child, loli, modern 
 對應規則：場景先找 `bg_<地點id>`（如 `bg_farm`、`bg_road`），冇就用地點的背景鍵 `bg_<bg>`，再冇就用 SVG。`bg_surgery` 預留給醫館手術室（現暫用 `bg_clinic`）；`char_heroine_doc`、`char_baby/child/elder` 及四位配角立繪需要接駁程式（見 NOTES 已知限制）。
 
 尺寸：立繪 1024×1536（透明 PNG/WebP），背景 1280×720。放入 `assets/` 後 `node build.js` 會自動偵測並取代 SVG。
+
+## 6. v4 女主角新造型（未生成；程式已接駁）
+用戶提供嘅參考圖只作造型參考，**唔可以直接放入遊戲**。生成後用 `tools/art.py`（rembg isnet-anime）去背轉 webp，放入 `assets/` 再 `node build.js`：
+- `char_heroine.webp`／`face_heroine.webp`（女裝，取代現有）
+- `char_heroine_m.webp`／`face_heroine_m.webp`（女扮男裝；`Gender.syncArt` 喺易裝時自動切換，冇呢兩個檔就沿用女裝立繪）
+
+共通提示詞：`original anime-style half-body character art, ancient Chinese setting, soft cel shading, ink-wash muted palette, clean lineart, plain light background for easy cutout, no text, no watermark`
+- 女裝：`a slender young woman physician around 19, very long straight black hair partly tied back with a small silver hairpin and loose strands, calm gentle grey-brown eyes, pale skin, layered dark charcoal-black hanfu with a light grey inner collar, deep red waist sash with a gold ornament, delicate silver chain accessory on the shoulder, wide flowing sleeves, holding a small leather medicine satchel, serene expression`
+- 男裝（女扮男裝）：`the same young woman disguised as a young scholar-gentleman: long black hair gathered into a high topknot with a plain dark hair crown and a few loose strands, chest bound flat, dark charcoal round-collar men's robe with a black leather belt, narrower sleeves bound with cloth straps, medicine box on her back, slightly androgynous refined face, composed confident look`
+- 頭像：由立繪裁臉（`tools/art.py` 會一併輸出 face_*）。

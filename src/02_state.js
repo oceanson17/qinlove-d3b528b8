@@ -1,12 +1,12 @@
 /* ===== 狀態、設定、工具、人物生成、存檔、跨存檔 Meta ===== */
 var S=null;
-var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-chat',temp:0.85,maxTok:1800,aiTimeout:60,preset:'deepseek',hdr:'',aiSrc:'api',aiBlock:'',
+var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-chat',temp:0.85,maxTok:2600,aiTimeout:60,preset:'deepseek',hdr:'',aiSrc:'api',aiBlock:'',
  typer:true,speed:2,auto:1.6,font:17,diff:'normal',pace:'slow',visitf:'mid',wdens:'mid',inmode:'say',sfx:true,adult:false,
  firewall:true,wsane:true,decld:true,ncmd:true,actd:true,seald:true,bondd:true,memd:'high',afx:true,aflauto:false,autoEat:true,aiEnd:true};
 var SET={};
 var PRESETS={
  deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。建議用 deepseek-chat。'},
- xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-latest',models:['grok-latest','grok-4.3','grok-3-mini'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
+ xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-4.7',models:['grok-4.7','grok-4.6','grok-4.3','grok-4.20-0309-non-reasoning','grok-latest'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
  openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform.openai.com 建立 API Key。'},
  openrouter:{n:'OpenRouter',base:'https://openrouter.ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter.ai 建立 Key；模型名寫成「廠商/模型」。'},
  gemini:{n:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',models:['gemini-2.5-flash','gemini-2.5-pro'],key:'到 aistudio.google.com 取得 API Key。'},

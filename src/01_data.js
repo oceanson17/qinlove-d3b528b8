@@ -1,155 +1,187 @@
-/* ===== 青囊·秦心 · 資料：角色、地點、禮物、病例、章節、結局、CG ===== */
+/* ===== 青囊·秦心 v2 · 資料：時間、地點、物品、病例、人物、職業、遺傳 ===== */
 var GAME_TITLE='青囊·秦心';
-/* 可攻略角色（全部為原創動漫化角色，均為成年人） */
-var CHARS={
- yingzheng:{n:'嬴政',c:'秦王',age:24,col:'#7a1f2b',sub:'玄袍金冠的少年君王',
-  bio:'秦國之主，冷峻寡言，喜怒不形於色。案上竹簡堆積如山，卻總在深夜獨自醒來。',
-  pers:'霸道冷峻、極度自律、多疑；對認定之人極護短，卻不善表達。',
-  goal:'一統天下，終結亂世',secret:'幼年質於邯鄲，夜夜夢魘，從未對人言說',
-  ail:'頭風',ailD:'積年頭風，夜不能寐',likes:['兵書竹簡','安神香囊','墨玉棋子'],hates:['憐憫','欺瞞','諂媚'],
-  look:{hair:'#141018',hair2:'#3a2a3a',robe:'#1c1418',robe2:'#7a1f2b',trim:'#d4a84a',eye:'#7a2a2a',skin:'#f6e2d6',style:'crown',len:'long'},
-  at:{晨:'palace',午:'palace',夕:'study',夜:'courtyard'},lock:1},
- mengtian:{n:'蒙恬',c:'少年將軍',age:23,col:'#3d5a7a',sub:'銀甲白袍的少年將軍',
-  bio:'蒙氏將門之後，戰場上銳不可當，私下卻愛笑、愛熱鬧，常偷溜去市集買糖人。',
-  pers:'爽朗熱血、坦率忠義、有點笨拙的溫柔；吃醋時會悶悶不樂地練槍。',
-  goal:'鎮守北疆，讓百姓不再受胡騎侵擾',secret:'曾違抗軍令回救一村百姓，至今被父親責罰',
-  ail:'舊箭傷',ailD:'左肩舊箭傷，陰雨天隱隱作痛',likes:['糖人','磨劍石','烈酒'],hates:['臨陣退縮','欺凌弱小'],
-  look:{hair:'#d8dce6',hair2:'#9aa4b8',robe:'#e8ecf2',robe2:'#3d5a7a',trim:'#c0c8d8',eye:'#3a6aa0',skin:'#f6e2d6',style:'ponytail',len:'long',armor:1},
-  at:{晨:'camp',午:'camp',夕:'market',夜:'camp'},lock:0},
- lisi:{n:'李斯',c:'客卿',age:27,col:'#2f6b5f',sub:'梅下青衣、笑意不達眼底的謀士',
-  bio:'上蔡布衣出身，入秦為客卿。笑容溫和，言辭如春風，算計卻深不見底。',
-  pers:'腹黑溫雅、野心勃勃、極會說話；只有在你面前偶爾露出疲憊。',
-  goal:'位極人臣，再不受貧賤之辱',secret:'少時為上蔡小吏，曾目睹廁鼠與倉鼠之別，發誓永不為廁中鼠',
-  ail:'胃疾',ailD:'勞心過度，胃疾時發',likes:['名家字帖','梅花','新茶般的清露'],hates:['被看輕','空談仁義'],
-  look:{hair:'#2a2420',hair2:'#4a3a30',robe:'#2f5f58',robe2:'#a8323a',trim:'#d0b070',eye:'#5a4630',skin:'#f4e0d2',style:'half',len:'long'},
-  at:{晨:'palace',午:'plum',夕:'study',夜:'study'},lock:0},
- fusu:{n:'扶蘇',c:'長公子',age:22,col:'#8a7a5a',sub:'白裘溫潤的長公子',
-  bio:'秦王長子，溫文爾雅，愛書愛民。體弱畏寒，冬日總裹著一襲白狐裘。',
-  pers:'溫柔仁厚、謙和有禮、外柔內剛；認真起來誰也勸不動。',
-  goal:'以仁政安天下，讓父王看見另一條路',secret:'與父王治國理念不合，常在書房獨自寫下不敢呈上的諫書',
-  ail:'寒症',ailD:'先天寒症，手足冰涼，易咳',likes:['古琴譜','暖手爐','民間話本'],hates:['苛政','傷及無辜'],
-  look:{hair:'#3a2c24',hair2:'#5a4636',robe:'#eef0e6',robe2:'#5a8a6a',trim:'#c8b080',eye:'#5a4a3a',skin:'#f8e8de',style:'guan',len:'long',fur:1},
-  at:{晨:'study',午:'study',夕:'plum',夜:'study'},lock:1},
- hanfei:{n:'韓非',c:'韓國公子',age:28,col:'#4a4a6a',sub:'墨香裡寡言的天才公子',
-  bio:'韓國公子，著書十餘萬言，秦王讀之嘆曰「得見此人，死不恨矣」。說話時有口吃，筆下卻鋒利如刀。',
-  pers:'孤高清冷、內斂深情、口拙筆利；害羞時會更結巴。',
-  goal:'保全故國韓，讓法術勢之學行於天下',secret:'身負韓王密令入秦，心知此行九死一生',
-  ail:'心悸',ailD:'憂思成疾，心悸氣短，言語滯澀',likes:['竹簡','墨錠','安靜的雨夜'],hates:['被嘲笑口吃','背信'],
-  look:{hair:'#1c1c26',hair2:'#3a3a52',robe:'#3a3a52',robe2:'#b8b8c8',trim:'#a0a0b8',eye:'#3a3a5a',skin:'#f2e0d6',style:'loose',len:'long'},
-  at:{晨:'study',午:'plum',夕:'courtyard',夜:'study'},lock:1},
- jingke:{n:'荊軻',c:'遊俠',age:26,col:'#9a3a2a',sub:'醉臥酒肆的落拓劍客',
-  bio:'衛人，好讀書擊劍，嗜酒，常與狗屠、樂師高歌於市。笑起來沒心沒肺，眼底卻藏著一場易水的風。',
-  pers:'灑脫不羈、豪爽重諾、嘴上輕佻心裡認真；一諾千金。',
-  goal:'士為知己者死——完成一樁足以留名的承諾',secret:'受燕太子丹之託，終有一日要入秦行刺',
-  ail:'舊毒',ailD:'體內殘留舊毒，酒後胸悶',likes:['好酒','筑曲','好劍'],hates:['背叛朋友','畏首畏尾'],
-  look:{hair:'#241a16',hair2:'#4a3226',robe:'#3a2220',robe2:'#9a3a2a',trim:'#b08850',eye:'#6a3a20',skin:'#ecd2c0',style:'messy',len:'mid'},
-  at:{晨:'market',午:'market',夕:'tavern',夜:'tavern'},lock:0},
- xuanye:{n:'玄夜',c:'影衛',age:25,col:'#3a3a48',sub:'銀髮覆面的無名影衛',hidden:1,
-  bio:'相邦府的影子，無名無姓，「玄夜」是你替他取的名字。總在你遇險時出現，又在你回頭時消失。',
-  pers:'沉默寡言、冷靜克制、對你有近乎固執的守護；不懂如何被溫柔對待。',
-  goal:'為自己活一次',secret:'奉相邦之命監視你——卻一次次違令護你',
-  ail:'刀傷',ailD:'身上舊傷累累，從不讓人醫治',likes:['桂花糖','安靜','被叫名字'],hates:['被同情','火光'],
-  look:{hair:'#e6e6ee',hair2:'#a8a8c0',robe:'#22222c',robe2:'#5a5a78',trim:'#8a8aa8',eye:'#8a3a4a',skin:'#f0dcd0',style:'short',len:'mid',mask:1},
-  at:{晨:'',午:'',夕:'',夜:'courtyard'},lock:2}
-};
-var CHAR_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
-/* 角色之間關係網 */
-var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['xuanye','lisi','暗中監視'],['jingke','mengtian','惺惺相惜']];
-/* 地點（背景 key） */
-var PLACES={
- clinic:{s:'醫',n:'青囊醫館',d:'你在咸陽城南賃下的小醫館，藥香盈室。',bg:'clinic',x:22,y:70},
- market:{s:'市',n:'咸陽市集',d:'人聲鼎沸，糖人、藥材、竹簡應有盡有。',bg:'market',x:52,y:62},
- palace:{s:'宮',n:'咸陽宮',d:'高台層闕，玄色旌旗獵獵。',bg:'palace',x:54,y:22,need:1},
- plum:{s:'梅',n:'梅林',d:'城西梅林，花開如雪。',bg:'plum',x:20,y:36},
- camp:{s:'營',n:'城北軍營',d:'鼓角聲聲，甲士操練。',bg:'camp',x:82,y:30},
- study:{s:'蘭',n:'蘭台書房',d:'宮中藏書之所，墨香沉靜。',bg:'study',x:38,y:44,need:1},
- tavern:{s:'酒',n:'市井酒肆',d:'酒旗招展，筑聲悠揚。',bg:'tavern',x:76,y:72},
- courtyard:{s:'庭',n:'夜色庭院',d:'月下庭院，竹影搖曳。只在夜裡前往。',bg:'night',x:62,y:44,night:1}
-};
-var PLACE_ORDER=['clinic','market','plum','camp','tavern','palace','study','courtyard'];
-var PERIODS=['晨','午','夕','夜'];
+var DPS=10,DPY=40;                       /* 每季 10 日、每年 40 日（壓縮曆法） */
+var START_BC=237;                         /* 開局：秦王政十年 */
+var PERIODS=['清晨','上午','正午','午後','黃昏','深夜'];
+var PER_S=['晨','巳','午','未','昏','夜'];
 var SEASONS=['春','夏','秋','冬'];
-/* 禮物／物品 */
+var CN_NUM=['〇','一','二','三','四','五','六','七','八','九','十'];
+function cnum(n){n=n|0;if(n<=10)return n===1?'元':CN_NUM[n];if(n<20)return '十'+(n%10?CN_NUM[n%10]:'');return CN_NUM[Math.floor(n/10)]+'十'+(n%10?CN_NUM[n%10]:'');}
+function cnum0(n){n=n|0;if(n<=10)return CN_NUM[n];if(n<20)return '十'+(n%10?CN_NUM[n%10]:'');return CN_NUM[Math.floor(n/10)]+'十'+(n%10?CN_NUM[n%10]:'');}
+/* 世界設定 */
+var WORLDS={male:{n:'男尊',d:'男子主外：入仕、從軍、承家多由男子；女子行醫被視為離經叛道。'},female:{n:'女尊',d:'女子主外：官吏、將帥、家主多為女子；男子守內、以嫁入為常。'},equal:{n:'平等',d:'男女皆可入學、入仕、從軍、承家；婚嫁由兩家商議。'}};
+/* 天氣 */
+var WX={
+ kinds:{晴:{i:'☀',dt:2,wet:0},多雲:{i:'⛅',dt:0,wet:0},陰:{i:'☁',dt:-1,wet:0},小雨:{i:'🌦',dt:-2,wet:1},大雨:{i:'🌧',dt:-4,wet:2},雷雨:{i:'⛈',dt:-3,wet:2},雪:{i:'🌨',dt:-3,wet:1},大雪:{i:'❄',dt:-6,wet:2},霧:{i:'🌫',dt:-1,wet:0},大風:{i:'🌬',dt:-4,wet:0},酷暑:{i:'🔥',dt:5,wet:0}},
+ season:[{t:[8,20],w:{晴:4,多雲:3,陰:2,小雨:3,大雨:1,霧:2,大風:1}},{t:[22,33],w:{晴:4,多雲:2,陰:1,小雨:1,大雨:2,雷雨:2,酷暑:2}},{t:[9,21],w:{晴:4,多雲:3,陰:2,小雨:2,霧:2,大風:2}},{t:[-8,5],w:{晴:3,陰:3,雪:3,大雪:1,大風:2,霧:1}}],
+ per:[-4,-1,3,2,-1,-5]
+};
+/* 地區與地點 */
+var REGIONS={xianyang:{n:'咸陽',title:'咸陽輿圖',dt:0},frontier:{n:'邊地',title:'邊地輿圖',dt:-3},road:{n:'流放途中',title:'流放路',dt:-1}};
+var PLACES={
+ lodge:{r:'xianyang',s:'舍',n:'城南客舍',d:'簡陋客舍，十錢一宿；有了宅子便是家。',bg:'tavern',x:24,y:80,home:1},
+ clinic:{r:'xianyang',s:'醫',n:'青囊醫館',d:'城南臨街的舖面。開館後便是你的醫館。',bg:'clinic',x:22,y:64},
+ market:{r:'xianyang',s:'市',n:'咸陽市集',d:'人聲鼎沸，糧米、布帛、藥材、器物應有盡有。',bg:'market',x:52,y:62},
+ plum:{r:'xianyang',s:'林',n:'城西梅林',d:'城西林地，可採野菜、柴薪與藥草。',bg:'plum',x:16,y:38,wild:1},
+ camp:{r:'xianyang',s:'營',n:'城北軍營',d:'鼓角聲聲，可投軍、做軍醫。',bg:'camp',x:82,y:30},
+ tavern:{r:'xianyang',s:'酒',n:'市井酒肆',d:'三教九流匯聚，打聽消息、結交遊俠之地。',bg:'tavern',x:78,y:72},
+ palace:{r:'xianyang',s:'宮',n:'咸陽宮',d:'高台層闕。需官職、召見或熟人引見。',bg:'palace',x:54,y:20,need:'palace'},
+ study:{r:'xianyang',s:'蘭',n:'蘭台書房',d:'宮中藏書之所。需官職或熟人引見。',bg:'study',x:38,y:40,need:'palace'},
+ yamen:{r:'xianyang',s:'府',n:'內史官署',d:'京畿政務所在：應吏試、遞狀紙、辦戶籍。',bg:'palace',x:66,y:44},
+ school:{r:'xianyang',s:'學',n:'學室',d:'官府學室，教子弟識字、律令與算術。',bg:'study',x:40,y:54},
+ farm:{r:'xianyang',s:'田',n:'城郊田舍',d:'渭水邊的田地，置產後可耕作。',bg:'field',x:84,y:52},
+ courtyard:{r:'xianyang',s:'庭',n:'夜色庭院',d:'月下庭院，只在入夜後前往。',bg:'night',x:62,y:30,night:1},
+ home:{r:'frontier',s:'家',n:'家',d:'你在邊地的安身之所。',bg:'hut',x:30,y:66,home:1},
+ field:{r:'frontier',s:'田',n:'荒地',d:'官府分下的荒地，開墾後可種。',bg:'field',x:58,y:74},
+ forest:{r:'frontier',s:'林',n:'後山林',d:'野菜、野果、柴薪、藥草；也有毒物與野獸。',bg:'forest',x:22,y:32,wild:1},
+ river:{r:'frontier',s:'河',n:'河灘',d:'可取水、捕魚、洗衣。',bg:'river',x:74,y:44,wild:1},
+ village:{r:'frontier',s:'里',n:'里中',d:'流人與土著雜居的里巷。',bg:'village',x:46,y:50},
+ fair:{r:'frontier',s:'集',n:'縣集',d:'五日一集，買賣糧布農具。',bg:'market',x:80,y:76},
+ yamen2:{r:'frontier',s:'衙',n:'縣衙',d:'縣令與獄掾所在，流人須按時點卯。',bg:'palace',x:62,y:22},
+ mountain:{r:'frontier',s:'山',n:'深山',d:'雲霧深處，傳說住著奇人。',bg:'title',x:14,y:14,wild:1},
+ road:{r:'road',s:'途',n:'驛道營地',d:'押解的隊伍在此歇腳。',bg:'camp',x:50,y:50}
+};
+var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','palace','study','yamen','school','farm','courtyard'],frontier:['home','field','forest','river','village','fair','yamen2','mountain'],road:['road']};
+var EXILE_DEST=[{k:'shu',n:'蜀郡',d:'巴山蜀水，潮濕多瘴',dt:2,days:14},{k:'shang',n:'上郡',d:'黃土高坡，風沙苦寒',dt:-5,days:12},{k:'longxi',n:'隴西',d:'隴山之西，羌戎雜處',dt:-3,days:16}];
+/* 物品 */
 var ITEMS={
- sachet:{n:'安神香囊',p:30,d:'親手調配的安神香',k:'gift'},
- candy:{n:'糖人',p:8,d:'市集買來的糖人',k:'gift'},
- wine:{n:'烈酒',p:25,d:'一罈好酒',k:'gift'},
- whet:{n:'磨劍石',p:20,d:'上好的磨劍石',k:'gift'},
- bamboo:{n:'竹簡',p:15,d:'空白竹簡一卷',k:'gift'},
- book:{n:'兵書竹簡',p:40,d:'孫子兵法抄本',k:'gift'},
- copybook:{n:'名家字帖',p:45,d:'名家手書字帖',k:'gift'},
- plumsp:{n:'梅花',p:0,d:'梅林折下的一枝梅',k:'gift'},
- qinpu:{n:'古琴譜',p:35,d:'失傳琴曲殘譜',k:'gift'},
- warmer:{n:'暖手爐',p:30,d:'小巧的銅暖手爐',k:'gift'},
- tale:{n:'民間話本',p:12,d:'市井流傳的話本',k:'gift'},
- ink:{n:'墨錠',p:20,d:'松煙墨錠',k:'gift'},
- osm:{n:'桂花糖',p:10,d:'一包桂花糖',k:'gift'},
- go:{n:'墨玉棋子',p:50,d:'一盒墨玉棋子',k:'gift'},
- sword:{n:'好劍',p:80,d:'一柄青銅好劍',k:'gift'},
- zhu:{n:'筑曲',p:30,d:'新譜的筑曲',k:'gift'},
- dew:{n:'新茶般的清露',p:18,d:'收集晨露煮成的清飲',k:'gift'},
- herb:{n:'草藥',p:5,d:'常用草藥，可製藥',k:'mat'},
- rare:{n:'珍稀藥材',p:40,d:'雪蓮、靈芝之屬',k:'mat'},
- salve:{n:'金創藥',p:20,d:'止血生肌',k:'med'},
- pill:{n:'清心丸',p:25,d:'寧神定悸',k:'med'}
+ grain:{n:'粟米',k:'food',p:6,food:22,d:'一升粟米，煮粥可飽一餐'},cake:{n:'麥餅',k:'food',p:5,food:18},gruel:{n:'稀粥',k:'food',p:2,food:10},
+ veg:{n:'野菜',k:'food',p:1,food:7},fruit:{n:'野果',k:'food',p:1,food:5},mush:{n:'菌菇',k:'food',p:2,food:8},
+ vegP:{n:'野菜',k:'food',p:1,food:7,poison:1,hide:1},fruitP:{n:'野果',k:'food',p:1,food:5,poison:1,hide:1},mushP:{n:'菌菇',k:'food',p:2,food:8,poison:2,hide:1},
+ jerky:{n:'乾肉',k:'food',p:14,food:25},fish:{n:'鮮魚',k:'food',p:6,food:15},egg:{n:'雞蛋',k:'food',p:2,food:6},
+ alcohol:{n:'酒精',k:'med',p:30,d:'蒸餾所得，消毒用'},bandage:{n:'繃帶',k:'med',p:6,d:'煮沸過的潔淨布條'},thread:{n:'縫合線',k:'med',p:10,d:'蠶絲浸酒製成'},
+ antipyr:{n:'退燒散',k:'med',p:18,d:'柳樹皮提煉，退熱止痛'},ors:{n:'補液包',k:'med',p:6,d:'鹽糖配比，沖水補液'},salve:{n:'金創藥',k:'med',p:12,d:'傳統止血藥膏'},
+ herb:{n:'草藥',k:'med',p:3},willow:{n:'柳樹皮',k:'mat',p:2},garlic:{n:'大蒜',k:'mat',p:2},garlicx:{n:'蒜汁',k:'med',p:10,d:'粗製抗菌汁液'},
+ soap:{n:'草木灰皂',k:'med',p:8,d:'洗手潔身，減少疫病'},antidote:{n:'解毒湯',k:'med',p:20},splint:{n:'夾板',k:'med',p:5},
+ wine:{n:'濁酒',k:'mat',p:8,gift:1},wood:{n:'柴薪',k:'mat',p:2},timber:{n:'木料',k:'mat',p:12},cloth:{n:'布',k:'mat',p:10},salt:{n:'鹽',k:'mat',p:5},honey:{n:'蜂蜜',k:'mat',p:12},
+ fat:{n:'油脂',k:'mat',p:6},silk:{n:'蠶絲',k:'mat',p:15},seed:{n:'種子',k:'mat',p:4},thatch:{n:'茅草',k:'mat',p:1},clay:{n:'陶土',k:'mat',p:2},
+ needle:{n:'針線包',k:'tool',p:12,d:'縫補衣物用'},axe:{n:'柴刀',k:'tool',p:30},hoe:{n:'鋤頭',k:'tool',p:35},still:{n:'陶甑蒸餾器',k:'tool',p:80,d:'蒸餾酒精必備'},
+ steth:{n:'聽診筒',k:'tool',p:0,d:'師父所製的木筒，貼胸可聽心肺'},scalpel:{n:'手術刀具',k:'tool',p:120,d:'師父傳下的柳葉刀、鉗、針'},
+ winterc:{n:'冬衣',k:'wear',p:60,d:'厚實棉麻冬衣，禦寒'},sandal:{n:'草鞋',k:'wear',p:3,d:'護腳，走長路少磨泡'},
+ candy:{n:'糖人',k:'gift',p:4,gift:1},bamboo:{n:'竹簡',k:'gift',p:10,gift:1},rouge:{n:'胭脂',k:'gift',p:25,gift:1},jade:{n:'玉佩',k:'gift',p:120,gift:1},sword:{n:'好劍',k:'gift',p:150,gift:1},
+ qinpu:{n:'古琴譜',k:'gift',p:35,gift:1},warmer:{n:'暖手爐',k:'gift',p:30,gift:1},ink:{n:'墨錠',k:'gift',p:15,gift:1},osm:{n:'桂花糖',k:'gift',p:6,gift:1},go:{n:'墨玉棋子',k:'gift',p:60,gift:1},
+ notes:{n:'師父手札',k:'book',p:0,d:'解剖圖、刀法、藥理，西方醫術的心血'},lawbook:{n:'秦律抄本',k:'book',p:40,d:'讀之長文墨，利於吏試'},
+ dose:{n:'緩解藥',k:'med',p:0,d:'壓制體內舊毒的藥（身世）'}
 };
-var SHOP=['candy','wine','whet','bamboo','book','copybook','qinpu','warmer','tale','ink','osm','go','sword','zhu','dew','herb','rare'];
-/* 製藥配方 */
-var RECIPES=[{id:'sachet',n:'安神香囊',need:{herb:2},med:3},{id:'salve',n:'金創藥',need:{herb:2},med:2},{id:'pill',n:'清心丸',need:{herb:1,rare:1},med:6},{id:'dew',n:'清露',need:{herb:1},med:1}];
-/* 問診病例：望聞問切 */
+var SHOPS={market:['grain','cake','jerky','egg','wine','wood','timber','cloth','salt','honey','fat','silk','seed','needle','axe','hoe','still','winterc','sandal','herb','garlic','candy','bamboo','rouge','jade','sword','qinpu','warmer','ink','osm','go','lawbook'],fair:['grain','cake','jerky','wine','wood','cloth','salt','fat','seed','needle','axe','hoe','sandal','herb','garlic','winterc','candy','bamboo']};
+/* 西醫技法 */
+var TECHS={
+ wash:{n:'煮沸洗手',d:'術前以皂與沸水洗手、煮器械'},alco:{n:'酒精消毒',d:'酒精擦拭傷口與器械',need:{alcohol:1}},debr:{n:'清創',d:'清除壞死組織與異物'},
+ suture:{n:'縫合',d:'以縫合線閉合傷口',need:{thread:1}},bandage:{n:'包紮',d:'潔淨繃帶包覆',need:{bandage:1}},drain:{n:'切開引流',d:'切開膿腫排膿'},
+ splint:{n:'夾板固定',d:'骨折復位後固定',need:{splint:1}},reduce:{n:'手法復位',d:'脫臼、骨折復位'},fever:{n:'退燒',d:'退燒散＋物理降溫',need:{antipyr:1}},
+ ors:{n:'補液',d:'鹽糖水小口頻服',need:{ors:1}},isolate:{n:'隔離',d:'病患分室、器物煮沸'},tourn:{n:'止血帶',d:'近心端紮緊止血'},
+ amput:{n:'截肢',d:'壞疽不可救時截去肢體以保命'},deliver:{n:'助產',d:'轉胎、側切、接生'},listen:{n:'聽診',d:'以聽診筒聽心肺',tool:'steth'},
+ garlic:{n:'蒜汁抗菌',d:'外敷內服蒜汁',need:{garlicx:1}},rest:{n:'臥床靜養',d:'囑咐休息飲食'},herbs:{n:'草藥湯',d:'傳統湯藥（輔助）'},
+ antid:{n:'解毒湯',d:'催吐後灌服解毒湯',need:{antidote:1}},incant:{n:'符水祝由',d:'方士之法（有害）'},bleed:{n:'放血',d:'古法放血（多半有害）'}
+};
+var TECH_ORDER=['wash','alco','debr','drain','suture','bandage','reduce','splint','tourn','amput','fever','ors','antid','garlic','isolate','deliver','listen','rest','herbs','incant','bleed'];
+var TECH_BASIC=['wash','alco','debr','suture','bandage','drain','reduce','splint','fever','ors','antid','isolate','listen','rest','herbs','tourn'];
+/* 西醫病例：vit 生命徵象、ex 檢查、dx 診斷、seq 理想步驟（依序）、bad 有害步驟 */
 var CASES=[
- {p:'咳嗽不止的老婦',sym:['久咳','痰白清稀','畏寒'],dx:'風寒束肺',wrong:['肺熱壅盛','肝火上炎'],rx:'麻黃杏仁湯',rxw:['白虎湯','龍膽瀉肝湯'],lv:1},
- {p:'面紅目赤的屠戶',sym:['頭痛','易怒','口苦'],dx:'肝火上炎',wrong:['風寒束肺','脾胃虛寒'],rx:'龍膽瀉肝湯',rxw:['理中湯','麻黃杏仁湯'],lv:1},
- {p:'腹痛喜按的書生',sym:['腹痛綿綿','喜溫喜按','食少'],dx:'脾胃虛寒',wrong:['食積停滯','肝火上炎'],rx:'理中湯',rxw:['保和丸','白虎湯'],lv:1},
- {p:'高熱口渴的役夫',sym:['壯熱','大汗','口渴喜冷飲'],dx:'陽明氣分熱盛',wrong:['風寒束肺','陰虛內熱'],rx:'白虎湯',rxw:['麻黃杏仁湯','六味地黃丸'],lv:2},
- {p:'失眠多夢的繡娘',sym:['心悸','失眠多夢','健忘'],dx:'心脾兩虛',wrong:['肝火上炎','痰熱擾心'],rx:'歸脾湯',rxw:['龍膽瀉肝湯','溫膽湯'],lv:2},
- {p:'噯腐吞酸的富商',sym:['脘腹脹滿','噯腐吞酸','厭食'],dx:'食積停滯',wrong:['脾胃虛寒','肝胃不和'],rx:'保和丸',rxw:['理中湯','逍遙散'],lv:1},
- {p:'潮熱盜汗的寡婦',sym:['午後潮熱','盜汗','五心煩熱'],dx:'陰虛內熱',wrong:['陽明氣分熱盛','心脾兩虛'],rx:'六味地黃丸',rxw:['白虎湯','歸脾湯'],lv:3},
- {p:'刀傷化膿的兵士',sym:['傷口紅腫','流膿','發熱'],dx:'金瘡熱毒',wrong:['風寒束肺','陰虛內熱'],rx:'仙方活命飲',rxw:['麻黃杏仁湯','六味地黃丸'],lv:2}
+ {k:'cut',p:'手臂被鐮刀割傷的農夫',c:'傷口長三寸，沾滿泥土',vit:{t:'37.2',pulse:'96 快',resp:'平穩',mind:'清醒'},ex:{look:'傷緣不齊、有泥沙',touch:'未傷及骨',listen:'心肺無異'},dx:'開放性割傷（污染）',wrong:['骨折','中暑'],seq:['wash','alco','debr','suture','bandage'],bad:['incant','bleed'],lv:1,fee:30},
+ {k:'abscess',p:'腿上腫了個大膿包的挑夫',c:'紅腫熱痛，按之波動',vit:{t:'38.4',pulse:'104',resp:'略促',mind:'清醒'},ex:{look:'腫塊頂端發白',touch:'按之有波動感',listen:'心肺無異'},dx:'膿腫',wrong:['毒蛇咬傷','骨折'],seq:['wash','alco','drain','bandage'],bad:['suture','bleed'],lv:1,fee:30},
+ {k:'fracture',p:'從屋頂摔下的工匠',c:'小腿變形，痛不可觸',vit:{t:'36.9',pulse:'110',resp:'急促',mind:'清醒、劇痛'},ex:{look:'小腿成角畸形',touch:'骨擦音，皮膚未破',listen:'心肺無異'},dx:'閉合性脛骨骨折',wrong:['扭傷','膿腫'],seq:['reduce','splint','rest'],bad:['bleed','drain'],lv:2,fee:50},
+ {k:'disloc',p:'摔跤時肩膀脫臼的少年',c:'肩頭塌陷，手臂抬不起',vit:{t:'36.8',pulse:'100',resp:'平穩',mind:'清醒'},ex:{look:'肩峰突出、方肩',touch:'肱骨頭不在原位',listen:'心肺無異'},dx:'肩關節脫臼',wrong:['骨折','中風'],seq:['reduce','bandage','rest'],bad:['amput','bleed'],lv:1,fee:25},
+ {k:'fever',p:'高燒三日的孩童',c:'渾身滾燙、昏昏欲睡',vit:{t:'40.1',pulse:'140 快',resp:'急促',mind:'嗜睡'},ex:{look:'口唇乾裂',touch:'皮膚滾燙、頸項柔軟',listen:'肺音清'},dx:'高熱脫水',wrong:['中邪','風寒輕症'],seq:['fever','ors','rest'],bad:['incant','bleed'],lv:1,fee:20},
+ {k:'diarrhea',p:'上吐下瀉的一家人',c:'井邊數戶同時發病',vit:{t:'37.8',pulse:'120 弱',resp:'略促',mind:'虛弱'},ex:{look:'眼窩凹陷、皮膚皺',touch:'腹軟無壓痛',listen:'腸鳴亢進'},dx:'腹瀉脫水（井水不潔）',wrong:['食積','中毒'],seq:['ors','isolate','wash'],bad:['bleed','incant'],lv:2,fee:35,pub:1},
+ {k:'arrow',p:'中了箭的兵士',c:'箭頭仍在大腿肉裡',vit:{t:'37.4',pulse:'118',resp:'急促',mind:'清醒'},ex:{look:'箭桿外露，滲血',touch:'箭頭有倒鉤',listen:'心肺無異'},dx:'箭傷（異物存留）',wrong:['骨折','膿腫'],seq:['tourn','wash','alco','debr','suture','bandage'],bad:['bleed','incant'],lv:2,fee:50},
+ {k:'burn',p:'被滾油燙傷的廚娘',c:'手臂大片起泡',vit:{t:'37.0',pulse:'108',resp:'平穩',mind:'清醒、劇痛'},ex:{look:'水泡、部分破皮',touch:'疼痛明顯（淺二度）',listen:'心肺無異'},dx:'燙傷（淺二度）',wrong:['膿腫','疥瘡'],seq:['wash','bandage','ors'],bad:['debr','bleed'],lv:1,fee:25},
+ {k:'gangrene',p:'腳趾發黑的老兵',c:'傷口潰爛發臭，黑色上延至踝',vit:{t:'39.2',pulse:'124',resp:'急促',mind:'時有譫語'},ex:{look:'足部發黑、捻髮音',touch:'冰冷無知覺',listen:'心音急'},dx:'壞疽（危及性命）',wrong:['凍瘡','痛風'],seq:['tourn','wash','alco','amput','bandage'],bad:['incant','herbs'],lv:3,fee:80,amp:1},
+ {k:'append',p:'右下腹劇痛的書生',c:'痛從臍周轉到右下腹',vit:{t:'38.3',pulse:'110',resp:'淺快',mind:'清醒'},ex:{look:'屈膝蜷臥',touch:'右下腹壓痛、反跳痛',listen:'腸鳴減弱'},dx:'腸癰（闌尾發炎）',wrong:['食積','月事痛'],seq:['wash','alco','drain','suture','bandage'],bad:['bleed','herbs'],lv:3,fee:90,risky:1},
+ {k:'birth',p:'難產一日一夜的婦人',c:'胎位不正，力竭',vit:{t:'37.6',pulse:'120',resp:'急促',mind:'力竭'},ex:{look:'宮縮無力',touch:'胎位橫臥',listen:'胎心尚在'},dx:'難產（胎位不正）',wrong:['腹瀉','中暑'],seq:['wash','deliver','ors'],bad:['incant','bleed'],lv:3,fee:70},
+ {k:'tetanus',p:'牙關緊閉的鐵匠',c:'半月前被鏽釘扎傷',vit:{t:'38.0',pulse:'112',resp:'艱難',mind:'清醒、抽搐'},ex:{look:'苦笑面容、角弓反張',touch:'肌肉強直',listen:'呼吸費力'},dx:'破傷風',wrong:['中邪','中風'],seq:['wash','debr','isolate','rest'],bad:['incant','bleed'],lv:3,fee:60},
+ {k:'lung',p:'咳嗽胸痛的老婦',c:'高燒咳黃痰，胸口刺痛',vit:{t:'39.0',pulse:'108',resp:'急促',mind:'清醒'},ex:{look:'口唇微紺',touch:'胸壁無傷',listen:'右下肺水泡音'},dx:'肺炎',wrong:['肺癆','心痛'],seq:['listen','fever','garlic','rest'],bad:['bleed','incant'],lv:2,fee:40},
+ {k:'poison',p:'誤食毒菇腹痛如絞的漢子',c:'吃了山裡採的白菌，吐瀉不止',vit:{t:'37.3',pulse:'124',resp:'急促',mind:'煩躁'},ex:{look:'面色青灰、冷汗',touch:'腹痛拒按',listen:'腸鳴亢進'},dx:'誤食毒菌中毒',wrong:['腸癰','中邪'],seq:['antid','ors','rest'],bad:['bleed','incant'],lv:2,fee:35},
+ {k:'snake',p:'被毒蛇咬了腳踝的樵夫',c:'兩個牙印，腫脹上延',vit:{t:'37.5',pulse:'116',resp:'略促',mind:'驚恐'},ex:{look:'牙印、瘀斑',touch:'腫脹至小腿',listen:'心肺無異'},dx:'毒蛇咬傷',wrong:['膿腫','扭傷'],seq:['rest','wash','bandage'],bad:['tourn','bleed'],lv:2,fee:40}
 ];
-/* 角色病況治療（神醫專屬）：每人一套診斷 */
-var CURE={
- yingzheng:{sym:['頭痛如裂','夜不能寐','脈弦而細'],dx:'肝陽上亢、心神不寧',wrong:['風寒頭痛','食積'],rx:'天麻鉤藤飲加安神香',rxw:['麻黃湯','保和丸']},
- mengtian:{sym:['肩痛遇寒加重','活動受限','舊傷處硬結'],dx:'瘀血阻絡',wrong:['風熱犯表','脾虛'],rx:'活血化瘀膏配針灸',rxw:['白虎湯','歸脾湯']},
- lisi:{sym:['胃脘隱痛','飢時加重','神疲'],dx:'肝胃不和、勞倦傷脾',wrong:['陽明熱盛','風寒'],rx:'逍遙散合四君子湯',rxw:['白虎湯','麻黃湯']},
- fusu:{sym:['手足不溫','畏寒咳嗽','脈沉遲'],dx:'陽虛寒凝',wrong:['陰虛內熱','肝火'],rx:'當歸四逆湯',rxw:['白虎湯','龍膽瀉肝湯']},
- hanfei:{sym:['心悸怔忡','言語滯澀','夜多驚醒'],dx:'心氣不足、痰濁阻竅',wrong:['肝火上炎','食積'],rx:'溫膽湯加遠志菖蒲',rxw:['白虎湯','保和丸']},
- jingke:{sym:['酒後胸悶','唇色微紫','脈澀'],dx:'舊毒伏絡',wrong:['風寒束肺','心脾兩虛'],rx:'解毒化瘀湯，戒酒七日',rxw:['麻黃湯','歸脾湯']},
- xuanye:{sym:['舊傷未癒','失血後虛','面色蒼白'],dx:'氣血兩虛、金瘡未斂',wrong:['肝火','食積'],rx:'八珍湯合金創藥',rxw:['白虎湯','龍膽瀉肝湯']}
-};
-/* 章節主線 */
-var CHAPTERS=[
- {n:'第一章 · 下山',goal:'在咸陽開設醫館，打響名聲（名聲達 10）'},
- {n:'第二章 · 入宮',goal:'奉召入宮，為秦王診治頭風'},
- {n:'第三章 · 香中毒',goal:'查出安神香中的毒從何而來'},
- {n:'第四章 · 風雨欲來',goal:'在韓非之獄與荊軻之約間抉擇'},
- {n:'終章 · 心之所向',goal:'向心上人表明心意'}
+/* 製藥配方 */
+var RECIPES=[
+ {id:'alcohol',n:'蒸餾酒精',need:{wine:2,wood:1},tool:'still',out:1,sk:3,d:'濁酒入陶甑，取最先滴出的烈液'},
+ {id:'antipyr',n:'柳皮退燒散',need:{willow:2,wood:1},out:2,sk:2,d:'柳樹皮久煎濃縮、曬乾研末'},
+ {id:'bandage',n:'煮沸繃帶',need:{cloth:1,wood:1},out:3,sk:1,d:'布條沸煮晾乾'},
+ {id:'thread',n:'製縫合線',need:{silk:1,alcohol:1},out:3,sk:2,d:'蠶絲搓線、浸酒精'},
+ {id:'ors',n:'鹽糖補液',need:{salt:1,honey:1},out:3,sk:1,d:'鹽一撮、蜜一勺、沸水一碗'},
+ {id:'soap',n:'草木灰皂',need:{fat:1,wood:1},out:2,sk:1,d:'草木灰水與油脂熬製'},
+ {id:'garlicx',n:'蒜汁',need:{garlic:2},out:1,sk:1,d:'搗爛取汁，即製即用'},
+ {id:'antidote',n:'解毒湯',need:{herb:2},out:1,sk:1,d:'甘草綠豆之屬'},
+ {id:'splint',n:'削製夾板',need:{timber:1},out:3,sk:1,d:'削木為板'}
 ];
-/* 好感里程碑＝CG */
-var CGS={
- yingzheng:[{id:'yz1',n:'夜半診脈',d:'燭火下，他第一次讓人觸碰他的手腕。'},{id:'yz2',n:'玄袍覆肩',d:'寒夜裡，他把外袍披在你肩上。'},{id:'yz3',n:'章台月下',d:'「留下來。寡人……我，需要你。」'}],
- mengtian:[{id:'mt1',n:'糖人與少年',d:'他把唯一的糖人塞進你手裡。'},{id:'mt2',n:'策馬北原',d:'他帶你策馬，風從耳邊呼嘯而過。'},{id:'mt3',n:'銀甲下的心跳',d:'「等我從北疆回來，娶你。」'}],
- lisi:[{id:'ls1',n:'梅下對弈',d:'他執黑，你執白，梅花落在棋盤上。'},{id:'ls2',n:'卸下笑容',d:'深夜書房，他終於不再微笑。'},{id:'ls3',n:'一枝梅',d:'「這天下我都要算計，唯獨你，我認輸。」'}],
- fusu:[{id:'fs1',n:'暖爐與白裘',d:'他把暖手爐遞給你，自己的手卻冰涼。'},{id:'fs2',n:'琴聲',d:'他為你彈了一首未完成的曲子。'},{id:'fs3',n:'雪中誓言',d:'「若有來日，我想與你看太平盛世。」'}],
- hanfei:[{id:'hf1',n:'墨痕',d:'他寫給你的第一個字，是你的名字。'},{id:'hf2',n:'雨夜長談',d:'那一夜，他一個字也沒有結巴。'},{id:'hf3',n:'不再孤筆',d:'「我、我想……與你同著一部書。」'}],
- jingke:[{id:'jk1',n:'酒肆初逢',d:'他笑著把酒碗推到你面前。'},{id:'jk2',n:'筑聲',d:'高漸離擊筑，他為你而歌。'},{id:'jk3',n:'易水寒',d:'「這一次，我想為自己活下去。」'}],
- xuanye:[{id:'xy1',n:'影中人',d:'他從暗處接住了跌落的你。'},{id:'xy2',n:'名字',d:'你叫他「玄夜」，他愣了很久。'},{id:'xy3',n:'摘下面具',d:'「我不是影子了。我是你的人。」'}]
+/* 野外採集：可辨識（hint 與 poison 外觀相似） */
+var FORAGE=[
+ {k:'veg',n:'一叢薺菜',t:'葉緣羽狀分裂，揉之有清香',safe:1},
+ {k:'vegP',n:'一叢「野芹」',t:'莖有紫斑，揉之有鼠尿般怪味',safe:0,real:'毒芹'},
+ {k:'mush',n:'幾朵褐色菌菇',t:'菌蓋灰褐，菌柄無環，斷面不變色',safe:1},
+ {k:'mushP',n:'幾朵白色菌菇',t:'通體雪白，菌柄有環、基部有菌托',safe:0,real:'白毒傘'},
+ {k:'fruit',n:'一串紅色漿果',t:'鳥雀啄食過，味酸甜',safe:1},
+ {k:'fruitP',n:'一串黑亮漿果',t:'無鳥啄痕，汁液發苦',safe:0,real:'龍葵生果'},
+ {k:'herb',n:'一把車前草',t:'葉基生，穗狀花序',safe:1},
+ {k:'willow',n:'柳樹皮',t:'河邊垂柳，剝下內皮',safe:1,always:1},
+ {k:'wood',n:'一捆柴薪',t:'枯枝乾燥易燃',safe:1,always:1},
+ {k:'thatch',n:'一捆茅草',t:'可蓋屋頂',safe:1,always:1}
+];
+/* 官秩與爵位 */
+var OFFICE=['','佐史','斗食吏','百石卒史','二百石縣丞','六百石縣令','千石郡丞','二千石郡守','中二千石九卿','上卿','丞相'];
+var OFFICE_PAY=[0,40,60,100,180,320,480,700,1000,1400,2000];
+var MEDOFF=['','縣醫','郡醫','侍醫','太醫丞','太醫令'];
+var MEDOFF_PAY=[0,60,120,260,420,700];
+var RANKS=['','公士','上造','簪裊','不更','大夫','官大夫','公大夫','公乘','五大夫','左庶長','右庶長','左更','中更','右更','少上造','大上造','駟車庶長','大庶長','關內侯','徹侯'];
+var TIERS=[{n:'寒門',v:0},{n:'富戶',v:40},{n:'士族',v:120},{n:'望族',v:260}];
+/* 人物生成 */
+var SURNAMES='王李張趙陳劉孫周吳鄭馮白蘇沈葉顧韓魏楊黃林何高羅宋唐許鄧蕭曹程范田方石姜夏呂任江陸莊嚴秦衛燕齊屈景昭項樊酈'.split('');
+var GN_M=['安','平','武','信','忠','義','禮','智','恆','遠','峻','朗','昭','承','澈','衡','禹','稷','嘉','勝','騫','煥','昱','臻','翊','修','暉','岳','柏','歧'];
+var GN_F=['芷','蘅','黛','茵','葵','荷','蘭','瑤','瑾','嫣','姝','婉','妍','嬿','芊','蓁','苓','萱','蕙','蘊','窈','綰','綺','素','青','雲','鳶','霜','晞','棠'];
+var GN_2=['之','子','伯','仲','叔','季','元','長','少','小'];
+var MILK=['阿蠻','阿福','狗兒','石頭','豆豆','團團','小滿','阿圓','喜兒','栓子','丫丫','平安'];
+var TRAITS={溫和:{gos:2,sym:3},暴躁:{sym:-2,fight:3},精明:{trade:2},憨厚:{sym:2},貪財:{bribe:3,steal:1},仗義:{sym:3,help:3},膽小:{fight:-3},傲慢:{sym:-2},多疑:{trust:-2},熱心:{help:3,gos:2},
+ 刻薄:{sym:-3,gos:3},開朗:{gos:2},沉默:{gos:-3},好色:{lust:3},孝順:{fam:3},懶散:{work:-3},勤快:{work:3},狡猾:{steal:2,bribe:1},正直:{bribe:-3,help:2},善妒:{jeal:3}};
+var TRAIT_LIST=Object.keys(TRAITS);
+var JOBS={doctor:'西醫',farmer:'農夫',hunter:'獵戶',trader:'商販',owner:'掌櫃',guard:'衙役',clerk:'縣吏',soldier:'兵士',smith:'鐵匠',weaver:'織工',tradoc:'醫者',wizard:'巫醫',fangshi:'方士',scholar:'儒生',xia:'遊俠',beggar:'乞丐',singer:'樂伎',boat:'船夫',carpenter:'木匠',none:'閒人',child:'孩童',exile:'流人',apprentice:'學徒'};
+var LIKES=['酒','糖','竹簡','布帛','胭脂','好劍','琴譜','肉','玉器','花草','糕點','兵書'];
+/* 遺傳：天賦（顯性機率 dom）與隱藏基因 */
+var GENES={
+ prodigy:{n:'神童',fx:{wit:4},dom:0.15,good:1},iron:{n:'百病不侵',fx:{con:4},dom:0.15,good:1},beauty:{n:'傾城',fx:{look:5},dom:0.2,good:1},
+ heart:{n:'先天心疾',fx:{con:-5},dom:0.05,bad:1},mute:{n:'口吃',fx:{cha:-3},dom:0.1,bad:1},memory:{n:'過目不忘',fx:{wit:3},dom:0.1,good:1},
+ strong:{n:'天生神力',fx:{con:3},dom:0.15,good:1},hand:{n:'醫者之手',fx:{dex:4},dom:0.1,good:1},silver:{n:'銀髮',fx:{},dom:0.05,look:'silver'},
+ migraine:{n:'頭風',fx:{con:-2},dom:0.25,bad:1},longev:{n:'長壽',fx:{con:2},dom:0.2,good:1,life:10},color:{n:'色盲',fx:{dex:-2},dom:0.05,bad:1}
 };
-/* 結局 */
-var ENDINGS={
- he_yingzheng:{n:'鳳棲章台',k:'HE',d:'你成了他唯一不設防的人。天下歸一那日，他執你之手登上高台。'},
- he_mengtian:{n:'北原長歌',k:'HE',d:'北疆安寧，少年將軍卸甲歸來，在梅樹下向你求親。'},
- he_lisi:{n:'梅骨',k:'HE',d:'權謀半生，他把最後一枚棋子放在你掌心：「我輸給你了。」'},
- he_fusu:{n:'仁者春風',k:'HE',d:'你治好了他的寒症，也陪他走出了另一條路。'},
- he_hanfei:{n:'同著一書',k:'HE',d:'他沒有死在雲陽獄中。你們隱於山林，共著一部醫法之書。'},
- he_jingke:{n:'易水不寒',k:'HE',d:'他沒有走向易水。你們策馬天涯，筑聲與酒香相伴。'},
- he_xuanye:{n:'影歸',k:'隱藏',d:'影子有了名字，也有了歸處。你們消失在世人眼中，從此只為彼此而活。'},
- be_yingzheng:{n:'深宮鎖',k:'BE',d:'他愛你，卻更怕失去你。宮門深鎖，你再也見不到青山。'},
- be_hanfei:{n:'雲陽獄',k:'BE',d:'你來遲了一步。獄中只留下一卷寫著你名字的竹簡。'},
- be_jingke:{n:'風蕭蕭',k:'BE',d:'易水之畔，他回頭對你笑了一下，便再也沒有回來。'},
- normal:{n:'懸壺濟世',k:'NE',d:'你沒有選擇任何人，而是成了咸陽人人敬重的女神醫。'},
- hidden_doctor:{n:'天下名醫',k:'隱藏',d:'眾人皆為你傾心，你卻一笑，帶著藥箱走遍天下。'}
+var HAIR=['#1a1414','#2a1c18','#3a2a20','#4a3626','#6a4a30'];
+var SKIN=['#f8e6da','#f2dccc','#e6c6ae','#d4ae90'];
+/* 有立繪的歷史人物（原創動漫化，均為成年人）＋無立繪歷史人物 */
+var NAMED={
+ yingzheng:{n:'嬴政',g:'m',age:24,job:'秦王',title:'秦王',col:'#7a1f2b',sub:'玄袍金冠的青年君王',pers:['多疑','精明'],like:['兵書','玉器'],auth:10,
+  bio:'秦國之主，冷峻寡言，夜不能寐。',gene:{con:12,wit:17,look:15,cha:15,dex:10},hid:['migraine'],ail:'頭痛失眠',at:['palace','palace','palace','study','study','courtyard'],die:210},
+ mengtian:{n:'蒙恬',g:'m',age:23,job:'將軍',title:'將軍',col:'#3d5a7a',sub:'銀甲白袍的少年將軍',pers:['仗義','開朗'],like:['糖','好劍','酒'],auth:6,
+  bio:'蒙氏將門之後，愛笑、愛熱鬧，常溜去市集。',gene:{con:16,wit:12,look:15,cha:14,dex:12},hid:['silver','strong'],ail:'舊箭傷',at:['camp','camp','camp','market','market','camp'],die:210},
+ lisi:{n:'李斯',g:'m',age:27,job:'客卿',title:'客卿',col:'#2f6b5f',sub:'青衣含笑的謀士',pers:['精明','狡猾'],like:['竹簡','花草'],auth:6,
+  bio:'上蔡布衣，入秦為客卿；笑意不達眼底。',gene:{con:11,wit:17,look:13,cha:14,dex:11},hid:[],ail:'胃疾',at:['yamen','palace','plum','study','study','study'],die:208},
+ fusu:{n:'扶蘇',g:'m',age:22,job:'長公子',title:'長公子',col:'#8a7a5a',sub:'白裘溫潤的長公子',pers:['溫和','正直'],like:['琴譜','花草'],auth:5,
+  bio:'秦王長子，愛書愛民，體弱畏寒。',gene:{con:9,wit:14,look:15,cha:15,dex:11},hid:['heart'],ail:'寒症',at:['study','study','school','plum','study','study'],die:210},
+ hanfei:{n:'韓非',g:'m',age:28,job:'韓國公子',title:'公子',col:'#4a4a6a',sub:'寡言的天才公子',pers:['沉默','正直'],like:['竹簡','墨'],auth:2,
+  bio:'著書十餘萬言，口吃而筆利。',gene:{con:10,wit:18,look:13,cha:8,dex:12},hid:['mute','memory'],ail:'心悸',at:['study','study','plum','plum','courtyard','study'],arrive:233,die:233},
+ jingke:{n:'荊軻',g:'m',age:26,job:'遊俠',title:'遊俠',col:'#9a3a2a',sub:'醉臥酒肆的劍客',pers:['仗義','開朗'],like:['酒','好劍','琴譜'],auth:1,
+  bio:'衛人，好讀書擊劍，嗜酒，一諾千金。',gene:{con:15,wit:12,look:13,cha:14,dex:15},hid:['strong'],ail:'舊毒',at:['market','market','tavern','tavern','tavern','tavern'],die:227},
+ xuanye:{n:'玄夜',g:'m',age:25,job:'影衛',title:'影衛',col:'#3a3a48',sub:'銀髮覆面的影子',pers:['沉默','正直'],like:['糖','花草'],auth:1,hidden:1,
+  bio:'權臣府中的影子，無名無姓。',gene:{con:15,wit:13,look:16,cha:9,dex:16},hid:['silver'],ail:'刀傷',at:['','','','','','courtyard']},
+ xiawuju:{n:'夏無且',g:'m',age:40,job:'侍醫',title:'侍醫',col:'#6a5a3a',sub:'背著藥囊的宮中侍醫',pers:['刻薄','精明'],like:['竹簡','糕點'],auth:4,np:1,
+  bio:'秦王侍醫，精湯藥，對刀圭之術嗤之以鼻。',gene:{con:11,wit:14,look:9,cha:10,dex:12},hid:[],at:['palace','palace','market','clinic','yamen','']},
+ xufu:{n:'徐福',g:'m',age:35,job:'方士',title:'方士',col:'#5a4a7a',sub:'鶴氅羽扇的方士',pers:['狡猾','傲慢'],like:['玉器','酒'],auth:3,np:1,
+  bio:'齊地方士，言海上有仙山、長生藥。',gene:{con:12,wit:15,look:12,cha:16,dex:10},hid:[],at:['market','tavern','palace','palace','tavern','courtyard'],leave:219},
+ zhaogao:{n:'趙高',g:'m',age:30,job:'中車府令',title:'中車府令',col:'#4a3a2a',sub:'陰鷙謙卑的宦者',pers:['狡猾','多疑'],like:['玉器'],auth:6,np:1,
+  bio:'精通獄法，深得君心。',gene:{con:11,wit:16,look:9,cha:12,dex:11},hid:[],at:['palace','palace','palace','yamen','palace','palace'],die:207},
+ gaojianli:{n:'高漸離',g:'m',age:27,job:'樂師',title:'樂師',col:'#7a6a5a',sub:'抱筑的樂師',pers:['沉默','仗義'],like:['琴譜','酒'],auth:1,np:1,
+  bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218}
 };
-/* 節日 */
-var FESTIVALS=[{d:3,n:'上巳節',s:0,t:'水邊祓禊，男女相約踏青。'},{d:37,n:'夏祓',s:1,t:'驅疫祈福之日，市集燈火通明。'},{d:67,n:'乞巧',s:2,t:'女子穿針乞巧，月下許願。'},{d:97,n:'臘祭',s:3,t:'歲末大祭，宮中設宴。'}];
+var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli'];
+var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
+var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];
+/* 家世（全隨機） */
+var BIRTHS=[
+ {k:'exile',n:'流放罪臣之家',w:3,gold:20,tier:0,d:'父親獲罪，全家流放邊地'},
+ {k:'farm',n:'關中農家',w:3,gold:40,tier:0,d:'渭水邊世代耕作'},
+ {k:'merchant',n:'咸陽商賈',w:2,gold:300,tier:1,d:'市集經營布帛'},
+ {k:'gentry',n:'沒落士族',w:2,gold:120,tier:1,d:'祖上曾為大夫，家道中落'},
+ {k:'tradoc',n:'醫者世家',w:2,gold:150,tier:1,d:'祖傳湯藥醫術'},
+ {k:'orphan',n:'市井孤兒',w:1,gold:5,tier:0,d:'無父無母，在咸陽街頭討生活'}
+];
+var CRIMES=['父親直言進諫，觸怒權貴','父親被誣貪墨軍糧','祖父受嫪毐之亂牽連','父親替朋友作保，朋友叛逃','家中藏有禁書被告發'];

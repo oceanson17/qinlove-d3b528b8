@@ -25,15 +25,15 @@
   <div class="tlogo">
    <div class="tseal">浮生</div>
    <h1><span>青囊</span><i>·</i><span>秦心</span></h1>
-   <div class="tsub">一卷醫書　一顆秦心</div>
+   <div class="tsub">一把刀圭　一世浮生</div>
   </div>
   <div class="tmenu">
-   <button class="tbtn" id="tNew"><b>初入咸陽</b><small>新的故事</small></button>
-   <button class="tbtn" id="tCont"><b>續寫前緣</b><small>讀取存檔</small></button>
-   <button class="tbtn" id="tAlbum"><b>回憶畫卷</b><small>CG・結局</small></button>
+   <button class="tbtn" id="tNew"><b>新的一生</b><small>標準・隨機・自設</small></button>
+   <button class="tbtn" id="tCont"><b>續寫浮生</b><small>讀取存檔</small></button>
+   <button class="tbtn" id="tAlbum"><b>結局冊</b><small>跨存檔收藏</small></button>
    <button class="tbtn" id="tSet"><b>設定</b><small>AI・文字</small></button>
   </div>
-  <div class="tfoot">全部角色為原創動漫化人物・離線亦可遊玩</div>
+  <div class="tfoot">全部角色為原創動漫化人物・無 AI 亦可遊玩</div>
  </section>
  <!-- 遊戲 VN -->
  <section id="game" class="scr">
@@ -42,8 +42,9 @@
   <div id="char"><div class="cw" id="cw"></div></div>
   <header id="hud">
    <button id="hSeal" class="hseal" aria-label="狀態"><span id="hDay">春</span><small id="hPer">晨</small></button>
-   <div id="hInfo"><div id="hCh">第一章</div><div id="hPlace">青囊醫館</div></div>
+   <div id="hInfo"><div id="hCh"></div><div id="hPlace"></div></div>
    <div id="hStat"><span title="名聲">✿<b id="hFame">0</b></span><span title="銀兩">◎<b id="hGold">0</b></span></div>
+  <div id="meters"></div>
   </header>
   <div id="pops"></div>
   <div id="choices"></div>
@@ -63,15 +64,15 @@
   </div>
   <nav id="tabs">
    <button data-t="map"><i>◈</i><span>地圖</span></button>
-   <button data-t="clinic"><i>☤</i><span>醫館</span></button>
-   <button data-t="gal"><i>❀</i><span>圖鑑</span></button>
-   <button data-t="let"><i>✉</i><span>書信</span><em id="letBadge"></em></button>
+   <button data-t="bag"><i>☤</i><span>行囊</span></button>
+   <button data-t="fam"><i>❀</i><span>家族</span></button>
+   <button data-t="ppl"><i>✉</i><span>人脈</span><em id="letBadge"></em></button>
    <button data-t="menu"><i>☰</i><span>選單</span></button>
   </nav>
  </section>
  <!-- 地圖 -->
  <section id="map" class="scr">
-  <div class="mhead"><div class="mseal" id="mDate">春 · 第1日</div><div class="mtitle">咸陽輿圖</div><div class="mper" id="mPer">晨</div></div>
+  <div class="mhead"><div class="mseal" id="mDate">春 · 第1日</div><div class="mtitle" id="mTitle">咸陽輿圖</div><div class="mper" id="mPer">晨</div></div>
   <div id="mapbox"><div id="mapsvg"></div><div id="pins"></div></div>
   <div id="mapinfo"></div>
   <div class="mfoot"><button id="mWait">⏳ 靜待一個時辰</button><button id="mBack">↩ 回到場景</button></div>

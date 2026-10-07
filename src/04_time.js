@@ -65,7 +65,7 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
  /* ---- 歲月流轉：快速度過若干日（自動吃飯、睡覺、工作），途中遇大事或危險即停 ---- */
  Eng.skip=function(days){var out=[],d0=S.day,me=pc();Eng.skipping=1;S.skipLog=out;
   try{for(var i=0;i<days;i++){var hp0=me.hp;Eng.autoDay(out);Eng.pass(6);
-   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.flags.babyStart&&ageOf(me)<14)S.queue=S.queue.filter(function(q){return /^(birth|nameKid|funeral|poisoned|hungry|collapse|pcDeath|comeOfAge|poisonAll)$/.test(q.go);});if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
+   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.flags.babyStart&&ageOf(me)<14)S.queue=S.queue.filter(function(q){return /^(birth|nameKid|funeral|poisoned|collapse|pcDeath|comeOfAge|poisonAll)$/.test(q.go);});if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
   finally{Eng.skipping=0;}saveSlot('auto',true);return {lines:out,days:S.day-d0};};
  Eng.autoDay=function(out){var me=pc();var a=ageOf(me);
   if(S.region!=='road'){var units=Eng.foodKeys().reduce(function(t,k){return t+S.inv[k];},0);var need=Math.ceil(Eng.house().length*1.5)+1;if(units<need&&S.gold>=12){var n=Math.min(need-units+1,Math.floor((S.gold-6)/6));if(n>0){S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}}}

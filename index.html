@@ -1149,7 +1149,7 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
  /* ---- 歲月流轉：快速度過若干日（自動吃飯、睡覺、工作），途中遇大事或危險即停 ---- */
  Eng.skip=function(days){var out=[],d0=S.day,me=pc();Eng.skipping=1;S.skipLog=out;
   try{for(var i=0;i<days;i++){var hp0=me.hp;Eng.autoDay(out);Eng.pass(6);
-   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.flags.babyStart&&ageOf(me)<14)S.queue=S.queue.filter(function(q){return /^(birth|nameKid|funeral|poisoned|hungry|collapse|pcDeath|comeOfAge|poisonAll)$/.test(q.go);});if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
+   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.flags.babyStart&&ageOf(me)<14)S.queue=S.queue.filter(function(q){return /^(birth|nameKid|funeral|poisoned|collapse|pcDeath|comeOfAge|poisonAll)$/.test(q.go);});if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
   finally{Eng.skipping=0;}saveSlot('auto',true);return {lines:out,days:S.day-d0};};
  Eng.autoDay=function(out){var me=pc();var a=ageOf(me);
   if(S.region!=='road'){var units=Eng.foodKeys().reduce(function(t,k){return t+S.inv[k];},0);var need=Math.ceil(Eng.house().length*1.5)+1;if(units<need&&S.gold>=12){var n=Math.min(need-units+1,Math.floor((S.gold-6)/6));if(n>0){S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}}}
@@ -2396,7 +2396,7 @@ RECIPES.push({id:'dose',n:'緩解藥',need:{herb:2,alcohol:1},out:2,sk:3,d:'按�
 /* ===== 女扮男裝（v4）：開局／遊戲中換裝、識破機率與事件（診症、受傷、沐浴、親近）、主動坦白、心動反應、立繪切換 ===== */
 (function(){
  if(ART.FACE&&ART.FACE.heroine&&!ART.FACE.heroine_m)ART.FACE.heroine_m=ART.FACE.heroine;
- Gender.syncArt=function(){var me=pc();if(!me||me.portrait.indexOf('heroine')!==0)return;var m=Gender.on()&&S.disg.as==='m';me.portrait=m&&ART.file('char_heroine_m')?'heroine_m':'heroine';};
+ Gender.syncArt=function(){var me=pc();if(!me||String(me.portrait||'').indexOf('heroine')!==0)return;var m=Gender.on()&&S.disg.as==='m';me.portrait=m&&ART.file('char_heroine_m')?'heroine_m':'heroine';};
  var os=Gender.start;Gender.start=function(as){if(S.disg&&S.disg.fid&&FW.byId(S.disg.fid)){S.disg.on=1;S.disg.as=as;S.disg.since=S.day;}else os(as);S.disg.kit=1;Gender.syncArt();};
  /* 換裝：w＝要穿的性別衣裳 */
  Gender.wear=function(w){var me=pc();var L=[];if(w===me.g){if(!Gender.on())return '你本來就是這身打扮。';var f=FW.byId(S.disg.fid);var seen=People.present().filter(function(id){return P(id).met&&f&&f.kn.indexOf(id)<0&&!f.pub;});S.disg.on=0;Gender.syncArt();

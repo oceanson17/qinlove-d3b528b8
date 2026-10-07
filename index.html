@@ -477,7 +477,7 @@ body.kbopen #app{pointer-events:none;}
 <!-- 全屏輸入面板（沿用《秦風》M19 修正：觸控裝置點輸入框 → 覆蓋層 textarea 16px） -->
 <div id="kbp" aria-hidden="true"><div id="kbbox"><div id="kbhd"><span id="kbmode">💬說</span><span id="kbctx"></span></div><textarea id="kbta" maxlength="120" rows="4" placeholder="想說什麼、做什麼…（/設定 宣告劇情）" enterkeyhint="send"></textarea><div id="kbft"><span id="kbcnt">0/120</span><button id="kbcancel">收起</button><button id="kbsend">送出</button></div></div></div>
 <script>
-var ASSET_FILES=["bg_camp.webp","bg_clinic.webp","bg_market.webp","bg_night.webp","bg_palace.webp","bg_plum.webp","bg_study.webp","bg_tavern.webp","bg_title.webp","char_fusu.webp","char_hanfei.webp","char_heroine.webp","char_jingke.webp","char_lisi.webp","char_mengtian.webp","char_xuanye.webp","char_yingzheng.webp","face_fusu.webp","face_hanfei.webp","face_heroine.webp","face_jingke.webp","face_lisi.webp","face_mengtian.webp","face_xuanye.webp","face_yingzheng.webp"];
+var ASSET_FILES=["bg_camp.webp","bg_clinic.webp","bg_market.webp","bg_night.webp","bg_palace.webp","bg_plum.webp","bg_study.webp","bg_tavern.webp","bg_title.webp","char_fusu.webp","char_hanfei.webp","char_heroine.webp","char_heroine_m.webp","char_jingke.webp","char_lisi.webp","char_mengtian.webp","char_xuanye.webp","char_yingzheng.webp","face_fusu.webp","face_hanfei.webp","face_heroine.webp","face_heroine_m.webp","face_jingke.webp","face_lisi.webp","face_mengtian.webp","face_xuanye.webp","face_yingzheng.webp"];
 /* ---- 01_data.js ---- */
 /* ===== 青囊·秦心 v2 · 資料：時間、地點、物品、病例、人物、職業、遺傳 ===== */
 var GAME_TITLE='青囊·秦心';
@@ -1017,7 +1017,7 @@ var ART={cache:{}};
  /* 取得圖：回傳 HTML（優先圖檔） */
 /* 背景圖焦點（直向畫面 object-fit:cover 只見約 26% 闊度；值為 object-position x%） */
  /* 立繪臉部中心（圖寬%、圖高%）：用來令臉置中、圖鑑卡裁切 */
- ART.FACE={yingzheng:[42,32],mengtian:[41,27],lisi:[44,29],fusu:[42,31],hanfei:[44,29],jingke:[44,29],xuanye:[37,27],heroine:[52,29]};
+ ART.FACE={yingzheng:[42,32],mengtian:[41,27],lisi:[44,29],fusu:[42,31],hanfei:[44,29],jingke:[44,29],xuanye:[37,27],heroine:[66,20],heroine_m:[50,27]};
  ART.BGPOS={clinic:66,palace:50,plum:43,market:43,camp:66,night:39,study:57,tavern:74,title:77};
  ART.html=function(kind,id,expr){
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));

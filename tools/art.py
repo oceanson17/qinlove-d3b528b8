@@ -10,15 +10,22 @@ from PIL import Image
 from rembg import remove,new_session
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
 # 縮圖方框座標（與 src/03_art.js ART.FACE 同步維護；ART.FACE 用圖寬/圖高 %）
-FACE={'yingzheng':(.42,.32),'mengtian':(.41,.25),'lisi':(.44,.29),'fusu':(.42,.31),'hanfei':(.44,.29),'jingke':(.45,.29),'xuanye':(.40,.27),'heroine':(.52,.29)}
+# 全身圖只保留上半身（佔人物高度比例）
+HALF={'heroine':0.60,'heroine_m':0.60}
+ONLY=sys.argv[1:]
+FACE={'yingzheng':(.42,.32),'mengtian':(.41,.25),'lisi':(.44,.29),'fusu':(.42,.31),'hanfei':(.44,.29),'jingke':(.45,.29),'xuanye':(.40,.27),'heroine':(.63,.20),'heroine_m':(.50,.27)}
 sess=new_session('isnet-anime')
 for f in sorted(glob.glob('assets/raw/char_*.jpg')):
     cid=os.path.basename(f)[5:-4]
+    if ONLY and cid not in ONLY:continue
     im=remove(Image.open(f).convert('RGB'),session=sess).convert('RGBA')
     a=im.getchannel('A').point(lambda v:0 if v<12 else (255 if v>243 else v));im.putalpha(a)
     x0,y0,x1,y1=a.point(lambda v:255 if v>24 else 0).getbbox();pad=max(10,int((y1-y0)*.04))
+    if cid in HALF:
+        y1=y0+int((y1-y0)*HALF[cid]);x0,_,x1,_=a.crop((0,y0,im.width,y1)).point(lambda v:255 if v>24 else 0).getbbox()
     x0=max(0,x0-6);x1=min(im.width,x1+6);top=max(0,y0-pad)
     crop=im.crop((x0,top,x1,y1));c=Image.new('RGBA',(x1-x0,crop.height+pad-(y0-top)),(0,0,0,0));c.alpha_composite(crop,(0,c.height-crop.height))
+    if cid in HALF and c.height<900:c=c.resize((int(c.width*900/c.height),900),Image.LANCZOS)  # 原圖人物細，放大
     out='assets/char_%s.webp'%cid;q=85
     while True:
         c.save(out,'WEBP',quality=q,method=6)
@@ -31,6 +38,6 @@ for f in sorted(glob.glob('assets/raw/char_*.jpg')):
         b=(int(cx-side/2),int(cy-side/2),int(cx+side/2),int(cy+side/2))
         fc=Image.new('RGBA',(int(side),int(side)),(0,0,0,0));fc.alpha_composite(c.crop((max(0,b[0]),max(0,b[1]),b[2],b[3])),(max(0,-b[0]),max(0,-b[1])))
         fc.resize((192,192),Image.LANCZOS).save('assets/face_%s.webp'%cid,'WEBP',quality=85,method=6)
-for f in sorted(glob.glob('assets/raw/bg_*.jpg')):
+for f in ([] if ONLY else sorted(glob.glob('assets/raw/bg_*.jpg'))):
     k=os.path.basename(f)[:-4];Image.open(f).convert('RGB').save('assets/%s.webp'%k,'WEBP',quality=80,method=6)
     print('assets/%s.webp'%k,os.path.getsize('assets/%s.webp'%k)//1024,'KB')

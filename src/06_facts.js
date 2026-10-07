@@ -17,8 +17,9 @@ var FW={};
  /* 洩密檢查：秘密關鍵字出現在不知情者的台詞裡 → 刪句並註明 */
  FW.check=function(r){if(SET.firewall===false)return r;var leaks=[];var lines=r.scene.split('\n');var keep=[];
   lines.forEach(function(l){var m=l.match(/^([^：「]{1,8})[：:]/);var who=m?People.idByName(m[1]):'';var bad=false;
-   if(who&&who!==S.pc){S.facts.forEach(function(f){if(bad||f.pub||!f.secret||!f.kw||!f.kw.length)return;if(f.kn.indexOf(who)>=0)return;if(f.kw.some(function(w){return l.indexOf(w)>=0;}))bad=true;});}
-   if(bad)leaks.push(cn(who));else keep.push(l);});
+   if(!who||who===S.pc){S.facts.forEach(function(f){if(bad||!f.hidePc||f.pub||f.kn.indexOf(S.pc)>=0||!f.kw||!f.kw.length)return;if(f.kw.some(function(w){return l.indexOf(w)>=0;})){bad=true;who=who||'pcx';}});}
+   if(who&&who!==S.pc&&who!=='pcx'){S.facts.forEach(function(f){if(bad||f.pub||!f.secret||!f.kw||!f.kw.length)return;if(f.kn.indexOf(who)>=0)return;if(f.kw.some(function(w){return l.indexOf(w)>=0;}))bad=true;});}
+   if(bad)leaks.push(who==='pcx'||who===S.pc?'你':cn(who));else keep.push(l);});
   if(leaks.length){r.scene=keep.join('\n')+'\n（'+leaks.filter(function(v,i,a){return a.indexOf(v)===i;}).join('、')+'並不知道那件事，話題被輕輕帶過。）';FW.stat=(FW.stat||0)+1;}return r;};
  FW.aiLines=function(ids){return ids.map(function(id){var k=FW.knows(id).filter(function(f){return !f.pub;}).slice(-4).map(function(f){return f.t;});var r=FW.rumors(id).slice(-2).map(function(f){return '（傳聞）'+f.t;});return cn(id)+'所知：'+(k.concat(r).join('；')||'無特別');}).join('\n');};
  FW.secretsOf=function(){return S.facts.filter(function(f){return f.secret&&f.sub===S.pc;});};

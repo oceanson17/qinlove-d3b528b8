@@ -10,7 +10,7 @@ NODES.intro=function(){var me=pc();var k=S.flags.intro;var L=[];
  else if(S.flags.babyStart){L=[['','你出生在'+Eng.ybStr(Eng.yb())+'的'+Eng.dateStr()+'。'],['',Fam.name()+'添了一口人。'+BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0].d+'。'],['','往後的每一年，都由你來選擇怎麼長大。']];}
  else{var B=BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0];L=[['','你是'+me.n+'，'+ageOf(me)+'歲，生在'+B.n+'——'+B.d+'。'],['','這一生沒有寫好的劇本。窮困、疾病、機緣，都會改變你的命運。']];}
  if(S.startBC===246)L.splice(1,0,['','這一年，十三歲的嬴政剛剛即位為秦王。國事由相國呂不韋與太后趙姬把持，咸陽城裡人人都在猜：這位少年君王，能坐穩那張王座嗎？']);
- if(S.origin&&S.origin.lines)S.origin.lines.forEach(function(l){L.push(['',l]);});
+ if(S.origin&&S.origin.lines){var tail=k==='std'?L.pop():null;S.origin.lines.forEach(function(l){L.push(['',l]);});if(tail)L.push(tail);}
  return Eng.L(L,k==='std'?'':'',S.place,[ch(S.flags.babyStart?'開始長大':'踏出第一步',S.flags.babyStart?'childYear':'place')]);};
 /* ---------- 地點中樞 ---------- */
 var Place={};

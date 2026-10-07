@@ -1,0 +1,6 @@
+const L=require('./lib');const T='我本是齊國公主16年前跟呂不韋暗生情素下生下的女兒，當時懷上我的齊國公主被人陷害跌下山涯，卻像人救了還生下我。在有心人的利用下，齊國公主以為是呂不韋找人令她跟馬車跌下山涯。16年後，我被母親下了劇毒要我親手殺死呂不韋，但我不知呂不韋是我的親生父親。我被下劇毒，每個月也要服用解藥才行，不然會慢慢失去五感，最後變成痴傻。我被安排以女神醫之名下山去秦國。其他設定保留。';
+(async()=>{const p=await L.open({eng:L[process.argv[2]||'chromium']});
+const o=await p.evaluate(t=>{var o=Origin.parse(t);return {items:o.items,age:o.age,g:o.g,base:o.base,fate:o.fate};},T);console.log(JSON.stringify(o,null,1));
+await p.click('#tNew');await p.waitForTimeout(100);await p.click('[data-act="suMode"][data-v="custom"]');await p.waitForTimeout(100);await p.click('[data-act="suEra"][data-v="y1"]');await p.fill('#suText',T);await p.click('[data-act="suParse"]');await p.waitForTimeout(200);await L.shot(p,'v3_parse_preview');
+await p.click('[data-act="suGo"]');await p.waitForTimeout(300);await L.flush(p);
+const s=await p.evaluate(()=>({n:pc().n,age:ageOf(pc()),title:pc().title,med:pc().sk.med,mis:S.mis,anti:S.anti,fate:S.fate,lines:UI.sc.lines.map(l=>l.t),facts:S.facts.filter(f=>f.secret).map(f=>f.k+':'+f.t+' kn='+f.kn.map(cn).join(',')),par:pc().par.map(cn),acts:[...document.querySelectorAll('#choices .cbtn')].map(e=>e.textContent)}));console.log(JSON.stringify(s,null,1),p.errs);await p.browser_.close();})();

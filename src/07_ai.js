@@ -151,6 +151,6 @@ var Thread={
  quote:function(id){var c=S.thread;var p=P(id);if(!p)return '';if(S.day-((p.notes||{}).quote||-99)<8)return '';var L=Nom.list(id,12).filter(function(x){return x.k==='recent'&&x.t.indexOf('對我說')>=0;});if(!L.length)return '';p.notes.quote=S.day;var t=L[L.length-1].t.replace(/^.*對我說：/,'');return '「你上次說過'+t+'——我記著呢。」';}
 };
 function ch(t,go,a,o){var c={t:t,go:go,a:a||{}};if(o)for(var k in o)c[k]=o[k];return c;}
-Eng.L=function(arr,focus,bg,chs,o){var lines=arr.map(function(x){if(typeof x==='string')return {sp:'',t:x};return {sp:x[0],t:x[1],ex:x[2]};});var sc={lines:lines,focus:focus||'',bg:bg||S.place,ch:chs||[ch('繼續','place')]};if(o)for(var k in o)sc[k]=o[k];return sc;};
+Eng.L=function(arr,focus,bg,chs,o){var lines=arr.map(function(x){if(typeof x==='string')return {sp:'',t:Gender.pcText(x)};return {sp:x[0],t:Gender.pcText(x[1]),ex:x[2]};});var sc={lines:lines,focus:focus||'',bg:bg||S.place,ch:chs||[ch('繼續','place')]};if(o)for(var k in o)sc[k]=o[k];return sc;};
 Eng.textScene=function(text,sp,bg){var lines=[];String(text||'').split(/\n+/).forEach(function(l){l=l.trim();if(!l)return;var m=l.match(/^([^：「」\s]{1,8})[：:]\s*(.*)$/);var who=m?People.idByName(m[1]):'';
   if(m&&(who||m[1]==='你'||m[1]===pc().n))lines.push({sp:who&&who!==S.pc?who:'p',t:m[2]});else lines.push({sp:'',t:l});});return {lines:lines,focus:sp||'',bg:bg||S.place};};

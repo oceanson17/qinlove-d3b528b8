@@ -9,25 +9,27 @@ function seg(key,opts){return '<div class="seg">'+opts.map(function(o){return '<
 var Panels={act:{}};
 /* ---------- 開局設定 ---------- */
 Panels.su=null;
-Panels.setup=function(){Panels.su={mode:'std',world:'equal',name:DEF_NAMES[0],r:rollBirth({}),baby:false,birth:'',g:'',ctext:'',parsed:null};Sh.open('新的一生',[],Panels.suRender);};
+Panels.setup=function(){Panels.su={mode:'std',world:'equal',g:'f',era:'y10',name:DEF_NAMES[0],r:rollBirth({g:'f'}),baby:false,birth:'',ctext:'',parsed:null};Sh.open('新的一生',[],Panels.suRender);};
 Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div class="seg">'+[['std','標準開局'],['rand','全隨機'],['custom','自設身世']].map(function(o){return '<button data-act="suMode" data-v="'+o[0]+'" class="'+(u.mode===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';
  h+='<h4>世界設定</h4><div class="seg">'+Object.keys(WORLDS).map(function(k){return '<button data-act="suWorld" data-v="'+k+'" class="'+(u.world===k?'on':'')+'">'+WORLDS[k].n+'</button>';}).join('')+'</div><p class="note">'+esc(WORLDS[u.world].d)+'</p>';
- if(u.mode==='std'){h+='<h4>女西醫</h4><p class="note">她在隱世山谷隨師父青囊子學了十二年西方醫術——解剖、縫合、消毒、退燒、接骨、藥理、聽診——今日學成下山，來到咸陽。</p><label class="field">姓名（2–4 字）<input id="suName" maxlength="6" value="'+esc(u.name)+'" autocomplete="off"></label><div class="row">'+DEF_NAMES.map(function(n){return '<button class="btn" data-act="suNm" data-v="'+esc(n)+'">'+esc(n)+'</button>';}).join('')+'</div>';}
+ h+='<h4>主角性別</h4><div class="seg">'+[['f','女'],['m','男']].map(function(o){return '<button data-act="suG" data-v="'+o[0]+'" class="'+(u.g===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div><p class="note">'+(u.g==='m'?'男主角：稱呼、婚嫁（娶／入贅按世界設定）、心動角色反應、易裝（男扮女裝）都會跟著變；七位核心人物照樣可以結緣。':'女主角（標準開局預設）。')+'</p>';
+ if(u.mode==='std'){h+='<h4>'+(u.g==='m'?'西醫':'女西醫')+'</h4><p class="note">'+(u.g==='m'?'他':'她')+'在隱世山谷隨師父青囊子學了十二年西方醫術——解剖、縫合、消毒、退燒、接骨、藥理、聽診——今日學成下山，來到咸陽。</p><label class="field">姓名（2–4 字）<input id="suName" maxlength="6" value="'+esc(u.name)+'" autocomplete="off"></label><div class="row">'+(u.g==='m'?DEF_NAMES_M:DEF_NAMES).map(function(n){return '<button class="btn" data-act="suNm" data-v="'+esc(n)+'">'+esc(n)+'</button>';}).join('')+'</div>';}
  else if(u.mode==='rand'){var r=u.r;var B=BIRTHS.filter(function(b){return b.k===r.birth;})[0];h+='<h4>隨機身世</h4><div class="rcard"><div class="rav">'+ART.sil({id:'pv',n:r.sur+r.gn,gn:r.gn,g:r.g,born:S?0:0,look:{hair:'#2a2020'},kind:'pc',alive:1,_age:r.age})+'</div><div><b>'+esc(r.sur+r.gn)+'</b>（'+(r.g==='f'?'女':'男')+'，'+(r.baby?'初生嬰兒':r.age+'歲')+'）<br>'+esc(B.n)+'——'+esc(B.d)+'<br>天賦：'+r.tal.map(function(t){return {med:'醫',mart:'武',lit:'文',trade:'商',farm:'農',craft:'工'}[t];}).join('、')+'；體'+r.at.con+' 智'+r.at.wit+' 貌'+r.at.look+'<br>'+(r.genes.length?'隱約有「'+r.genes.map(function(g){return GENES[g].n;}).join('、')+'」之相':'未見特殊稟賦')+(r.birth==='exile'?'<br>罪名：'+esc(r.crime)+'；流放'+esc(EXILE_DEST.filter(function(d){return d.k===r.dest;})[0].n):'')+'<br>兄弟姊妹 '+r.sibs+' 人'+(r.grand?'、祖母同住':'')+'</div></div>';
   h+='<div class="row"><button class="btn pri" data-act="suRoll">🎲 重抽</button><button class="btn'+(u.baby?' on':'')+'" data-act="suBaby">'+(u.baby?'☑':'☐')+' 從嬰兒開始</button></div><label class="field">指定出身<select id="suBirth"><option value="">隨機</option>'+BIRTHS.map(function(b){return '<option value="'+b.k+'"'+(u.birth===b.k?' selected':'')+'>'+b.n+'</option>';}).join('')+'</select></label><p class="note">流放之家：要護著家人走完流放路、在邊地開荒搭屋，或許還會在深山遇見傳授西醫的奇人。</p>';}
  else{h+='<h4>自設身世（M14）</h4><label class="field">寫下你的身世（可含出身、年齡、秘密、仇人、舊毒、志向、專長、易裝…）<textarea id="suText" rows="5" maxlength="400" placeholder="例：我是罪臣之女，十七歲，女扮男裝；親生父親其實是李斯；身中寒毒；仇人是趙高；立志為家族翻案；擅長醫術。">'+esc(u.ctext)+'</textarea></label><div class="row"><button class="btn" data-act="suParse">🔍 解析預覽</button>'+(AI.ready()&&!AI.manual()?'<button class="btn" data-act="suRefine">✨ AI 精修解析</button>':'')+'</div>';
   if(u.parsed)h+='<div class="kv"><b>解析結果</b><div class="mem">'+esc(Origin.preview(u.parsed)).replace(/\n/g,'<br>')+'</div></div>';}
  h+='<div class="row" style="margin-top:14px"><button class="btn pri big" data-act="suGo">踏入此生</button></div>';return h;};
 Panels.act.suMode=function(v){Panels.su.mode=v;Sh.draw();};Panels.act.suWorld=function(v){Panels.su.world=v;Sh.redraw();};
+Panels.act.suG=function(v){var u=Panels.su;if(u.g===v)return;u.g=v;var A=v==='m'?DEF_NAMES_M:DEF_NAMES,B=v==='m'?DEF_NAMES:DEF_NAMES_M;var i=B.indexOf(u.name);if(i>=0||!u.name)u.name=A[Math.max(0,i)];u.r=rollBirth({birth:u.r.birth,g:v,baby:u.baby});Sh.redraw();};
 Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
-Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby});Sh.redraw();};
-Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.r.g,baby:u.baby});Sh.redraw();};
+Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
+Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.g,baby:u.baby});Sh.redraw();};
 Panels.act.suParse=function(){var u=Panels.su;u.ctext=$('suText').value;u.parsed=Origin.parse(u.ctext);Sh.redraw();};
 Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);toast('AI 解析失敗，改用離線解析');u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
 Panels.act.suGo=function(){var u=Panels.su;var first;
- if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world});}
+ if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}
- else{u.ctext=($('suText')||{}).value||u.ctext;if(!u.parsed||u.parsed.raw!==u.ctext.trim().slice(0,400))u.parsed=Origin.parse(u.ctext);var o=u.parsed;var r=rollBirth({birth:o.birth||'',g:o.g||'',baby:false});if(o.age!=null&&o.age>=14)r.age=o.age;first=Start.rand(r,{world:u.world,origin:o});}
+ else{u.ctext=($('suText')||{}).value||u.ctext;if(!u.parsed||u.parsed.raw!==u.ctext.trim().slice(0,400))u.parsed=Origin.parse(u.ctext);var o=u.parsed;var r=rollBirth({birth:o.birth||'',g:u.g,baby:false});if(o.age!=null&&o.age>=14)r.age=o.age;first=Start.rand(r,{world:u.world,origin:o});}
  UI.begin(first);};
 /* ---------- 行囊 ---------- */
 Panels.bag=function(tab){Sh.open('行囊',[['st','狀態'],['inv','物品'],['craft','製藥'],['tech','醫術']],Panels.bagR,tab||'st');};

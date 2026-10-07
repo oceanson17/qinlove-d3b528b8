@@ -5,7 +5,7 @@ Start.rand=function(r,o){randomState(r,o);S.flags.intro=r.birth;if(r.baby)S.flag
 function cny(n){return n>=0?'+'+n:''+n;}
 function hasAct(){return S.per<5;}
 NODES.intro=function(){var me=pc();var k=S.flags.intro;var L=[];
- if(k==='std'){L=[[ '','秦王政十年，春。咸陽城南的官道上，一個背著藥箱的年輕女子停下腳步。'],['','她叫'+me.n+'，在一處隱世山谷裡跟著師父青囊子學了十二年醫——不是望聞問切，而是解剖、刀圭、縫合、蒸餾酒精、以木筒聽人心肺。'],['master','「下山去吧。記住：先救人，再講道理。世人會怕你，會恨你——也會需要你。」'],['','師父說這些醫術來自極西之地，叫你萬萬不可對人說起。'],['p','（先找個落腳處，再想辦法開一間醫館。）']];}
+ if(k==='std'){L=[[ '',''+Eng.era()+'，春。咸陽城南的官道上，一個背著藥箱的年輕'+gw(me,'男子','女子')+'停下腳步。'],['',ta(me)+'叫'+me.n+'，在一處隱世山谷裡跟著師父青囊子學了十二年醫——不是望聞問切，而是解剖、刀圭、縫合、蒸餾酒精、以木筒聽人心肺。'],['master','「下山去吧。記住：先救人，再講道理。世人會怕你，會恨你——也會需要你。」'],['','師父說這些醫術來自極西之地，叫你萬萬不可對人說起。'],['p','（先找個落腳處，再想辦法開一間醫館。）']];}
  else if(k==='exile'){var fa=People.byRel('父');L=[['','抄家的差役是在一個雨夜來的。'],['',S.fam.grudge.crime+'——一紙判書，'+Fam.name()+'上下全數流放'+S.road.dn+'。'],['',S.road.dn+'在'+S.road.total+'日路程之外。'+cn(S.road.guards[0])+'把鐵鏈一抖：「走！誤了期限，你們全家都得死！」']];if(fa)L.push([fa,'（心聲）'+People.thought(P(fa))]);L.push(['p','（腳下的草鞋已經破了。得省著吃、護好腳、照看好家人……活著走到'+S.road.dn+'。）']);}
  else if(S.flags.babyStart){L=[['','你出生在'+Eng.ybStr(Eng.yb())+'的'+Eng.dateStr()+'。'],['',Fam.name()+'添了一口人。'+BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0].d+'。'],['','往後的每一年，都由你來選擇怎麼長大。']];}
  else{var B=BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0];L=[['','你是'+me.n+'，'+ageOf(me)+'歲，生在'+B.n+'——'+B.d+'。'],['','這一生沒有寫好的劇本。窮困、疾病、機緣，都會改變你的命運。']];}

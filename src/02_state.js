@@ -82,8 +82,8 @@ function addNamed(){NAMED_ORDER.forEach(function(k){var N=NAMED[k];var p={id:k,s
   for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.arrive&&START_BC>N.arrive)p.away=1;});
  S.ppl.hanfei.away=1;S.ppl.xuanye.hidden=1;}
 function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||'').length>=2?o.name.slice(0,1):'白';
- var p=genPerson({id:'pc1',g:'f',age:19,sur:sur,kind:'pc',job:'doctor',hh:1,met:1,pers:['正直','熱心'],at:{con:12,wit:15,look:15,cha:12,dex:16},sk:{med:42,farm:5,craft:10,trade:5,mart:5,lit:25},genes:['hand']});
- p.n=o.name||DEF_NAMES[0];p.sur=p.n.length>=2?p.n.slice(0,1):'白';p.gn=p.n.length>=2?p.n.slice(1):p.n;sur=p.sur;p.portrait='heroine';p.look={hair:'#2a1c18',skin:'#f8e6da',seed:3};
+ var g0=o.g==='m'?'m':'f';var p=genPerson({id:'pc1',g:g0,age:o.age||19,sur:sur,kind:'pc',job:'doctor',hh:1,met:1,pers:['正直','熱心'],at:{con:12,wit:15,look:15,cha:12,dex:16},sk:{med:42,farm:5,craft:10,trade:5,mart:5,lit:25},genes:['hand']});
+ p.n=o.name||(g0==='m'?DEF_NAMES_M:DEF_NAMES)[0];p.sur=p.n.length>=2?p.n.slice(0,1):'白';p.gn=p.n.length>=2?p.n.slice(1):p.n;sur=p.sur;p.portrait=g0==='f'?'heroine':'';p.look={hair:'#2a1c18',skin:'#f8e6da',seed:3};
  S.pc=p.id;S.fam.sur=p.sur;S.gold=160;S.inv={grain:3,cake:2,alcohol:3,bandage:6,thread:4,antipyr:2,ors:2,herb:4,soap:1,needle:1,steth:1,scalpel:1,notes:1,sandal:1};
  TECH_BASIC.forEach(function(t){S.fam.tech[t]=1;});S.region='xianyang';S.place='lodge';
  var m=genPerson({id:'master',g:'m',age:78,sur:'青囊',gn:'子',kind:'npc',job:'tradoc',met:1,aff:80,trust:80,pers:['溫和','正直'],loc:{r:'frontier',pl:'mountain'}});m.n='青囊子';m.title='師父';m.sk.med=95;

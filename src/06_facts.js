@@ -84,6 +84,9 @@ var Gender={
  expose:function(by){if(!Gender.on())return;var f=FW.byId(S.disg.fid);S.disg.on=0;if(f)FW.goPublic(f,'被'+cn(by)+'識破');addLog('〔易裝〕被'+cn(by)+'識破','秘');Fam.tierCalc();},
  observers:function(){return People.present().filter(function(id){var p=P(id);if(!p||!p.met||Gender.knows(id))return false;var sus=p.pers.indexOf('多疑')>=0?40:(p.pers.indexOf('精明')>=0?30:10);var obs=p.at.wit*3*0.6+sus*0.4;return obs>=22&&(sus>=30||p.aff+p.trust>=60);});},
  tick:function(){if(!Gender.on()||S.day-S.disg.since<3)return;var o=Gender.observers();if(!o.length)return;if(rand()<0.05+0.02*o.length)S.queue.push({go:'disgExpose',a:{id:pick(o)},stop:1});},
+ /* 男主角（或旁人眼中是男子）時，離線文本中對主角的女性稱呼改為男性 */
+ pcText:function(t){if(typeof t!=='string'||!S||!S.pc)return t;var me=pc();if(!me)return t;var g=Gender.on()?S.disg.as:me.g;if(g!=='m')return t;
+  return t.replace(/妳/g,'你').replace(/女神醫/g,'神醫').replace(/女大夫/g,'大夫').replace(/女醫者/g,'醫者').replace(/(.?)姑娘/g,function(w,a){return a==='小'||a==='老'?w:a+'公子';});},
  /* 不知情者口中的稱呼改回旁人眼中的性別 */
  fixText:function(text){if(!Gender.on())return text;var as=S.disg.as;var fix=0;var out=String(text).split('\n').map(function(l){var m=l.match(/^([^：「]{1,8})[：:]/);var who=m?People.idByName(m[1]):'';if(!who||who===S.pc||Gender.knows(who))return l;
    var l2=as==='m'?l.replace(/姑娘|小姐|娘子(?!軍)|女大夫|女醫/g,function(w){fix=1;return {姑娘:'公子',小姐:'公子',娘子:'公子',女大夫:'大夫',女醫:'醫者'}[w]||'公子';}):l.replace(/公子|郎君|小哥|兄台/g,function(){fix=1;return '姑娘';});return l2;}).join('\n');if(fix)Gender.stat=(Gender.stat||0)+1;return out;}

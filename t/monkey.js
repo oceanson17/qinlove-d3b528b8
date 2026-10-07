@@ -10,6 +10,7 @@ const L=require('./lib');
   if(r==='dlg'){const n=await p.$$eval('#dlA .btn',e=>e.length);await p.locator('#dlA .btn').nth(Math.floor(R()*n)).click();await p.waitForTimeout(30);continue;}
   if(r==='sheet'){if(R()<0.5){const bs=await p.$$('#shB button[data-act]');if(bs.length){try{await bs[Math.floor(R()*bs.length)].click({timeout:500});}catch(e){}}}await p.click('#shX').catch(()=>{});await p.waitForTimeout(30);continue;}
   if(r==='map'){const pins=await p.$$eval('.pin:not(.lock)',e=>e.map(x=>x.getAttribute('data-pl')));const pl=pins[Math.floor(R()*pins.length)];await p.evaluate(pl=>UI.go('go',{pl:pl}),pl);continue;}
+  const dd=await p.evaluate(()=>S&&!pc().alive&&!window.__dd?(window.__dd=1,S.log.slice(-6).map(function(l){return l.t;}).join(' / ')+' | day '+S.day+' food '+Math.round(pc().food)+' hp '+Math.round(pc().hp)):'');if(dd)bad.push('DEATH:'+dd);
   if(await p.$eval('#title',e=>e.className.indexOf('on')>=0)){bad.push('title@'+i);await L.newStd(p,'再生','equal');continue;}
   if(r===false){stuck++;if(stuck>3){bad.push('stuck@'+i+':'+(await p.evaluate(()=>JSON.stringify({sc:document.querySelector('.scr.on')&&document.querySelector('.scr.on').id,t:document.getElementById('txt').textContent.slice(0,60),busy:document.getElementById('busy').className,q:UI.q&&UI.q.length}))));await p.evaluate(()=>UI.go('place'));stuck=0;}continue;}
   const bs=await L.btns(p);if(!bs.length)continue;

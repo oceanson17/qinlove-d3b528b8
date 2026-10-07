@@ -92,7 +92,7 @@ Rom.progress=function(id){var A=Rom.ARC[id]||[];return {s:Rom.stage(id),n:A.leng
 /* 抵達地點時：在場核心人物若有新篇章，有機會主動觸發 */
 Rom.auto=function(){if(!S||S.region==='road'||S.flags.held)return null;var xy=P('xuanye');if(xy&&xy.alive&&!xy.met&&S.per===5&&S.day>=6&&ageOf(pc())>=16&&(Eng.atHome()||S.place==='courtyard'||S.place==='lodge')&&S.region==='xianyang'&&S.flags.xyTry!==S.day){S.flags.xyTry=S.day;if(rand()<({slow:0.15,mid:0.25,fast:0.4}[SET.pace]||0.25))return 'xuanye';}var here=People.present().filter(function(id){return Rom.CORE.indexOf(id)>=0&&Rom.ready(id);});if(!here.length)return null;
  var mul={slow:0.35,mid:0.55,fast:0.8}[SET.pace]||0.55;if(S.flags.romAuto===S.day||rand()>mul)return null;S.flags.romAuto=S.day;return here[0];};
-NODES.rom=function(a){var id=a.id,p=P(id);if(!Rom.ready(id))return NODES.talk({id:id});var st=Rom.ARC[id][Rom.stage(id)];p.notes.rsd=S.day;People.meet(id);Eng.keep(id);S.focus=id;p.here={d:S.day,per:S.per,pl:S.place};
+NODES.rom=function(a){var id=a.id,p=P(id);if(!Rom.ready(id))return NODES.talk({id:id});var st=Rom.ARC[id][Rom.stage(id)];p.notes.rsd=S.day;if(id==='xuanye')S.flags.xy_open=1;People.meet(id);Eng.keep(id);S.focus=id;p.here={d:S.day,per:S.per,pl:S.place};
  var L=['【'+st.t+'】'].concat(st.L(id,Rom.call(id)));var c=st.o.map(function(o,i){return ch(o[0],'romDo',{id:id,k:i});});
  if(AI.ready()&&SET.ai!=='off')c.push(ch('✍ 自由回應（輸入）','romFree',{id:id},{sys:1}));return Eng.L(L,id,S.place,c);};
 NODES.romFree=function(a){var p=P(a.id);S.focus=a.id;S.flags.romCtx={id:a.id,t:Rom.title(a.id),d:S.day};return Eng.L(['（'+p.n+'在等你的回應。在下方輸入框寫下你想說或想做的事。）'],a.id,S.place,[ch('↩ 還是不說了','talk',{id:a.id})]);};

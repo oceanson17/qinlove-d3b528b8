@@ -74,7 +74,7 @@ var Gene={
 /* ---- 新遊戲 ---- */
 function baseState(o){var s={v:2,seed:Date.now()%100000,world:o.world||'equal',mode:o.mode||'std',day:1,per:0,seq:0,ppl:{},pc:'',
  fam:{sur:'',gen:1,fame:0,tier:0,tech:{},land:0,plots:[],house:0,clinic:{open:0,lv:0,apps:[],days:0},grudge:null,hist:[]},gold:0,inv:{},
- region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,world:{maj:[]},hist:{done:{},alt:''},
+ region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,wev:{maj:[]},hist:{done:{},alt:''},
  pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[]};return s;}
 function addNamed(){NAMED_ORDER.forEach(function(k){var N=NAMED[k];var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
   genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
@@ -127,7 +127,7 @@ function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:pc
 function slotName(s){return s==='auto'?'自動':'檔位 '+s;}
 function slotInfo(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o)return null;return {t:o.t,name:o.name,day:o.day,gen:o.gen||1};}catch(e){return null;}}
 function loadSlot(slot){try{var o=JSON.parse(localStorage.getItem(SAVE_KEY+slot)||'null');if(!o||!o.s||o.s.v!==2)return false;S=o.s;migrate();return true;}catch(e){return false;}}
-function migrate(){var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
+function migrate(){if(typeof S.world!=='string')S.world='equal';var b=baseState({});for(var k in b)if(S[k]===undefined)S[k]=b[k];if(S.thread&&S.thread.cur&&S.thread.cur.inflight){S.thread.cur.inflight=0;S.thread.cur.status='paused';}
  for(var id in S.ppl){var p=S.ppl[id];if(!p.mem)p.mem=[];if(!p.ill)p.ill=[];if(!p.sk)p.sk={med:0,farm:0,craft:0,trade:0,mart:0,lit:0};}if(typeof Nom!=='undefined')Nom.migrate();}
 function addLog(t,tag){if(!S)return;S.log.push({d:S.day,t:String(t).slice(0,160),g:tag||''});if(S.log.length>300)S.log.shift();}
 /* ---- 跨存檔：結局冊、家族史 ---- */

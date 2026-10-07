@@ -23,7 +23,7 @@ End.life=function(ctx){var me=pc(),L=[];var sp=P(me.spouse);var kids=me.kids.map
  var rel=Object.keys(S.ppl).filter(function(id){var p=S.ppl[id];return id!==S.pc&&p.met&&(Math.abs(p.aff)>=30||p.love>=30);}).sort(function(a,b){return (P(b).aff+P(b).love)-(P(a).aff+P(a).love);}).slice(0,6);
  L.push('重要的人：'+rel.map(function(id){var p=P(id);return p.n+'('+id+'｜好感'+p.aff+' 情意'+(p.love||0)+(p.alive?'':'｜已故')+'｜記憶：'+Nom.brief(id).slice(0,80)+')';}).join('；'));
  L.push('人生大事：'+S.log.filter(function(l){return /〔(婚|家|醫館|身分|喪|師|身世)〕/.test(l.t);}).slice(-10).map(function(l){return l.t;}).join('；'));
- L.push('天下大事：'+S.world.maj.slice(-8).map(function(m){return m.t;}).join('；'));
+ L.push('天下大事：'+S.wev.maj.slice(-8).map(function(m){return m.t;}).join('；'));
  var sec=FW.secretsOf().map(function(f){return f.t+'（知情者：'+(f.kn.filter(function(x){return x!==S.pc;}).map(cn).join('、')||'無')+'）';});if(sec.length)L.push('秘密：'+sec.join('；'));
  if(S.origin&&S.origin.goal)L.push('心願：'+S.origin.goal);return L.join('\n');};
 /* 模板結局 */
@@ -34,10 +34,10 @@ End.tpl=function(kind,ctx){var me=pc();var sp=P(me.spouse);var kids=me.kids.map(
  var p1=me.n+'，'+(S.flags.intro==='std'?'自隱世山谷學成西醫下山':'生於'+((BIRTHS.filter(function(b){return b.k===S.flags.birth;})[0]||{n:'尋常人家'}).n))+'，'+(kind==='death'?'享年'+ageOf(me)+'。':'這一年'+ageOf(me)+'歲。');
  var p2=S.stats.pat?'一生看診'+S.stats.pat+'人，救回'+S.stats.cure+'條性命'+(S.stats.dead?'，也送走了'+S.stats.dead+'個沒能留住的人':'')+'。':'這一生沒怎麼行醫，日子卻也一天天過了下來。';
  var p3=t?(kind==='confessNo'?'那天，'+t.n+'沒有接住那句話。':(kind==='marry'?'與'+t.n+'成婚那天，'+(S.region==='frontier'?'邊地的風':'咸陽的雪')+'都溫柔了。':'那天，'+t.n+'終於說出了同樣的話。')):(sp?'身邊有'+sp.n+'。':'');
- var hist=S.world.maj.filter(function(m){return m.tag==='史'||m.tag==='你所為';}).slice(-2).map(function(m){return m.t;});var p4=hist.length?'那些年，'+hist.join('；')+'。':'';
+ var hist=S.wev.maj.filter(function(m){return m.tag==='史'||m.tag==='你所為';}).slice(-2).map(function(m){return m.t;});var p4=hist.length?'那些年，'+hist.join('；')+'。':'';
  var epi=kind==='lineEnd'?Fam.name()+'的家譜，在這一頁停住了。':(kids.length?kids[0].n+'後來'+(kids[0].sk.med>=20?'接過了醫箱':(kids[0].sk.lit>=20?'讀書入仕':'守著家業'))+'，'+Fam.name()+'仍是'+TIERS[Fam.tier()].n+'。':(S.fam.clinic.open?'醫館的木牌，後來由學徒接著掛了下去。':'很多年後，還有人提起'+me.n+'這個名字。'));
- var mw=t||sp||(kids[0])||P(Object.keys(S.ppl).filter(function(id){return id!==S.pc&&S.ppl[id].met&&S.ppl[id].alive;}).sort(function(a,b){return P(b).aff-P(a).aff;})[0]);
- var mt='';if(mw){var mem=Nom.list(mw.id,20).filter(function(x){return x.k!=='secret';});var m1=mem.length?mem[mem.length-1].t:'';mt=kind==='confessNo'?'「我不是不在乎你……只是，有些話我給不起。」':(m1?'「我一直記得——'+m1.replace(/^我曾說：|^.*對我說：/,'').slice(0,40)+'。」':'「能遇見你，真好。」');}
+ var memOk=function(id){return Nom.list(id,30).some(function(x){return x.k!=='secret'&&x.k!=='recent'&&!/^我曾說/.test(x.t);});};var cand=Object.keys(S.ppl).filter(function(id){return id!==S.pc&&S.ppl[id].met&&S.ppl[id].alive;}).sort(function(a,b){return (P(b).aff+(P(b).love||0)*2)-(P(a).aff+(P(a).love||0)*2);});var mw=t||sp||(kids[0])||P(cand.filter(memOk)[0]||cand[0]);
+ var mt='';if(mw){var mem=Nom.list(mw.id,30).filter(function(x){return x.k!=='secret'&&x.k!=='recent'&&!/^我曾說/.test(x.t);});var m1=mem.length?mem[mem.length-1].t:'';m1=m1.replace(/^.*對我說：/,'').replace(/[「」]/g,'').replace(new RegExp('^'+me.n),'你').slice(0,40);mt=kind==='confessNo'?'「我不是不在乎你……只是，有些話我給不起。」':(m1?'「我一直記得——'+m1+'。'+(kind==='death'?'你走了，這些我替你記著。':'往後，也會一直記得。')+'」':'「能遇見你，真好。」');}
  return {title:title,type:type,text:[p1,p2,p3,p4].filter(Boolean).join(''),epi:epi,mono:mw?{who:mw.id,text:mt}:null,fixed:F&&kind!=='confessNo'?fx[0]:'',source:'tpl'};};
 /* AI 結局 */
 End.ai=function(kind,ctx){var msgs=[{role:'system',content:'你是《'+GAME_TITLE+'》的結局作者。'+AI.worldRules(true)+'\n根據主角的一生寫一個獨特結局。規則：\n1. 只能使用【人生】中已發生的事實，不得讓已故者復活，不得虛構未發生的大事；\n2. 角色獨白者只能提及自己知道的事（【知情】列出各人所知），不得說出不知道的秘密；\n3. 繁體中文，古風細膩；text 180–320 字，epilogue 60–140 字，獨白 30–80 字；\n4. 只輸出 JSON：{"title":"結局名(2-8字)","type":"HE|BE|NE|隱藏","text":"敘述","epilogue":"後日談","mono":{"who":"人物id","text":"獨白"}}'},
@@ -47,6 +47,7 @@ End.ai=function(kind,ctx){var msgs=[{role:'system',content:'你是《'+GAME_TITL
 End.check=function(e,kind,ctx){var fixes=0;
  if(e.mono){var who=e.mono.who;S.facts.forEach(function(f){if(f.pub||!f.secret||f.kn.indexOf(who)>=0||!f.kw||!f.kw.length)return;if(f.kw.some(function(w){return e.mono.text.indexOf(w)>=0;})){e.mono.text='「……有些事，我一直沒問。你不說，我便不問。」';fixes++;}});var wp=P(who);if(!wp.met){e.mono=null;fixes++;}}
  for(var id in S.ppl){var p=S.ppl[id];if(p.alive||!p.met)continue;var re=new RegExp(p.n+'[^。]{0,8}(至今|如今|依然|仍然)(健在|活著|安好)');if(re.test(e.text)||re.test(e.epi)){e.text=e.text.replace(re,p.n+'早已不在');e.epi=e.epi.replace(re,p.n+'早已不在');fixes++;}}
+ NAMED_ORDER.forEach(function(id){var p=P(id);if(!p||p.met)return;['text','epi'].forEach(function(k){if(e[k]&&e[k].indexOf(p.n)>=0){e[k]=e[k].split(/(?<=[。！？])/).filter(function(x){return x.indexOf(p.n)<0;}).join('')||e[k].replace(new RegExp(p.n,'g'),'某人');fixes++;}});if(e.mono&&e.mono.text.indexOf(p.n)>=0){e.mono.text=e.mono.text.replace(new RegExp(p.n,'g'),'那人');fixes++;}});
  if(kind==='death'&&/(仍然活著|大難不死|起死回生)/.test(e.text)){e.text=e.text.replace(/仍然活著|大難不死|起死回生/g,'終究走了');fixes++;}
  e.fixes=fixes;return e;};
 End.make=function(kind,ctx){var base={kind:kind,kn:End.KN[kind],gen:S.fam.gen,name:pc().n,fam:Fam.name(),year:Eng.ybStr(Eng.yb()),era:Eng.era(),d:Date.now(),id:'e'+Date.now().toString(36)+rnd(999)};

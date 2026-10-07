@@ -20,7 +20,7 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
  /* ---- 天氣 ---- */
  window.Weather={roll:function(){var se=WX.season[Eng.season()];var k=wpick(se.w);var R=REGIONS[S.region]||REGIONS.xianyang;var dt=(R.dt||0)+(S.region==='road'&&S.road?S.road.dt*0.5:0)+(S.region==='frontier'&&S.fam.dest?(EXILE_DEST.filter(function(x){return x.k===S.fam.dest;})[0]||{dt:0}).dt:0);
   if(k==='雪'||k==='大雪'){if(se.t[0]>2)k='小雨';}var b=se.t[0]+rand()*(se.t[1]-se.t[0])+WX.kinds[k].dt+dt;S.wx={k:k,b:Math.round(b),t:Math.round(b+WX.per[S.per])};},
-  upd:function(){if(!S.wx)Weather.roll();S.wx.t=Math.round(S.wx.b+WX.per[S.per]);if(rand()<0.12){var se=WX.season[Eng.season()];var k=wpick(se.w);if((k==='雪'||k==='大雪')&&se.t[0]>2)k='陰';S.wx.k=k;}},
+  upd:function(){if(!S.wx)Weather.roll();S.wx.t=Math.round(S.wx.b+WX.per[S.per]);if(S.wx.lock!==S.day&&rand()<0.12){var se=WX.season[Eng.season()];var k=wpick(se.w);if((k==='雪'||k==='大雪')&&se.t[0]>2)k='陰';S.wx.k=k;}},
   str:function(){var w=S.wx||{k:'晴',t:15};return (WX.kinds[w.k]||{i:''}).i+w.k+' '+w.t+'°C';},
   wet:function(){return (WX.kinds[S.wx.k]||{}).wet||0;}};
  /* ---- 住所與保暖 ---- */

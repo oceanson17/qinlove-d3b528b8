@@ -155,6 +155,9 @@ var Npc={tick:function(){if(S.region==='road')return;for(var id in S.ppl){var p=
  if(S.queue.length)return;var c=Object.keys(S.ppl).filter(function(id){var p=S.ppl[id];return p.alive&&p.met&&!p.hh&&id!==S.pc&&!p.jailed&&!p.away&&p.loc&&p.loc.r===S.region&&(p.aff>=35||p.love>=50)&&Pace.allow(id,'visit');});if(c.length&&rand()<0.35)S.queue.push({go:'visit',a:{id:pick(c)}});}};
 /* ===== 每日／每年鉤子 ===== */
 Eng.on('day',function(){var me=pc();if(!me)return;
+ if(me.alive&&S.region!=='held'){var hung=Eng.house().filter(function(p){return p.food<=8;});if(hung.length&&!Eng.foodKeys().length&&S.gold<8&&S.day-(S.flags.hungry||-9)>=2){S.flags.hungry=S.day;S.queue.push({go:'hungry',a:{},stop:1});}
+  if(S.flags.debt&&S.gold>=S.flags.debt+40){Inv.gold(-S.flags.debt);addLog('〔家〕還清鄰里借糧 '+S.flags.debt+' 兩','家');S.flags.debt=0;}
+  if(me.hp<25&&me.hp>0&&S.day-(S.flags.collapse||-99)>=8){S.flags.collapse=S.day;S.queue.push({go:'collapse',a:{},stop:1});}}
  Eng.house().forEach(function(p){if(p.preg&&S.day>=p.preg.due){var ks=People.birth(p);S.queue.push({go:'birth',a:{ids:ks.map(function(k){return k.id;}),mo:p.id},stop:1});}});
  if(me.spouse&&alive(me.spouse))People.tryConceive();
  var earners=Eng.house().filter(function(p){var a=ageOf(p);return p.id!==S.pc&&a>=16&&a<62&&p.hp>40&&!Ill.has(p,'old');});if(earners.length&&S.region!=='road')S.gold+=earners.length*(S.region==='frontier'?2:3);
@@ -165,3 +168,16 @@ Eng.on('year',function(){People.yearTick();Eng.house().forEach(function(p){if(p.
  Eng.house().forEach(function(p){if(p.school&&S.gold>=20)S.gold-=20;});});
 NODES.eduPick=function(){var ks=Eng.house().filter(function(p){return p.id!==S.pc&&ageOf(p)>=6&&ageOf(p)<16;});if(!ks.length)return Eng.L(['家裡沒有適齡（六到十五歲）的孩子。'],'',S.place,[ch('↩','place')]);return Eng.L(['送誰去讀書？（學費每年二十兩）'],'',S.place,ks.map(function(k){return ch(k.n+(k.school?'（已在學）':''),'edu',{id:k.id,k:'school'});}).concat([ch('↩','place')]));};
 NODES.edu=function(a){var p=P(a.id);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
+
+/* ---------- 生存安全網：斷糧、病倒 ---------- */
+NODES.hungry=function(){var hung=Eng.house().filter(function(p){return p.food<=8;});var L=['米缸見了底。'+hung.map(function(p){return p.id===S.pc?'你':p.n;}).join('、')+'餓得頭暈眼花。'];var c=[];
+ c.push(ch('🙏 放下臉面去乞討','hgDo',{k:'beg'}));if(S.region!=='road')c.push(ch('🤝 向鄰里借糧（欠下人情）','hgDo',{k:'borrow'}));var it=Object.keys(S.inv).filter(function(k){return S.inv[k]>0&&ITEMS[k]&&ITEMS[k].p>=8&&ITEMS[k].k!=='book';})[0];if(it)c.push(ch('📦 典當'+ITEMS[it].n,'hgDo',{k:'pawn',it:it}));c.push(ch('🌿 去野外找吃的','forage'));
+ return Eng.L(L,'',S.place,c);};
+NODES.hgDo=function(a){var me=pc();var L=[];if(a.k==='beg'){Eng.pass(2);var n=1+rnd(2);Inv.add('grain',n);me.mood=clamp(me.mood-8,0,100);S.fam.fame=Math.max(0,S.fam.fame-1);L.push('你在街口站了半日，討到'+n+'升粟米。有人丟下一句「年紀輕輕的」，你只當沒聽見。');}
+ else if(a.k==='borrow'){Eng.pass(1);Inv.add('grain',3);S.flags.debt=(S.flags.debt||0)+20;L.push('隔壁的大娘嘆口氣，舀了三升米給你：「先吃著，秋後再還。」（欠糧：約 20 兩）');}
+ else if(a.k==='pawn'){var it=ITEMS[a.it];Inv.add(a.it,-1);var g=Math.max(4,Math.round(it.p*0.5));Inv.gold(g);L.push('當舖掌櫃撥了撥算盤，'+it.n+'換了'+g+'兩。');}
+ return Eng.L(L,'',S.place,[ch('🍚 用膳','eat'),ch('↩ 行動選單','place')]);};
+NODES.collapse=function(){var me=pc();var hh=Eng.house().filter(function(p){return p.id!==S.pc&&ageOf(p)>=12;});var who=hh[0]||P(Object.keys(S.ppl).filter(function(id){var q=S.ppl[id];return id!==S.pc&&q.alive&&q.met&&q.aff>=30&&!q.hh;}).sort(function(a,b){return P(b).aff-P(a).aff;})[0]);
+ Eng.pass(4);me.hp=clamp(me.hp+30,0,100);me.sta=clamp(me.sta+60,0,100);me.food=clamp(me.food+35,0,100);var fee=Math.min(S.gold,8);Inv.gold(-fee);
+ var L=['你眼前一黑，倒了下去。'];if(who){L.push('醒來時，'+(who.hh?who.n:who.n+'坐在床邊')+'正替你換額上的濕布。');if(!who.hh)People.rel(who.id,{aff:3,trust:3},'照顧病倒的'+me.n);L.push([who.id,who.hh?'「你再這樣不要命，這個家怎麼辦？」':'「醫者不自醫——你也太不愛惜自己了。」']);}else L.push('好心的店家把你扶進屋裡，灌了一碗熱粥。');
+ L.push('（昏睡了大半日。健康+30、體力+60'+(fee?'；花去藥錢'+fee+'兩':'')+'。再這樣下去，可就不是昏倒那麼簡單了。）');return Eng.L(L,who?who.id:'',S.place,[ch('↩ 行動選單','place')]);};

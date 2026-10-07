@@ -53,10 +53,10 @@ var Pace={
 };
 /* ===== 世界節制（M26 WS） ===== */
 var WS={};
-WS.log=function(t,why,tag){S.world.maj.push({d:S.day,t:t,why:why||'',tag:tag||'傳聞'});if(S.world.maj.length>60)S.world.maj.shift();addLog('〔'+(tag||'傳聞')+'〕'+t+(why?'——'+why:''),'世');};
-WS.brief=function(n){return S.world.maj.filter(function(m){return S.day-m.d<=60;}).slice(-(n||8)).reverse().map(function(m){return '〔'+m.tag+'〕'+m.t+(m.why?'——'+m.why:'');});};
+WS.log=function(t,why,tag){S.wev.maj.push({d:S.day,t:t,why:why||'',tag:tag||'傳聞'});if(S.wev.maj.length>60)S.wev.maj.shift();addLog('〔'+(tag||'傳聞')+'〕'+t+(why?'——'+why:''),'世');};
+WS.brief=function(n){return S.wev.maj.filter(function(m){return S.day-m.d<=60;}).slice(-(n||8)).reverse().map(function(m){return '〔'+m.tag+'〕'+m.t+(m.why?'——'+m.why:'');});};
 WS.cap=function(){return {low:1,mid:2,high:3}[SET.wdens]||2;};
-WS.allow=function(major,related){if(SET.wsane===false)return rand()<0.4;if(S.day<8)return false;var auto=S.world.maj.filter(function(m){return m.tag!=='你所為'&&m.tag!=='史';});var ld=auto.length?auto[auto.length-1].d:-99;
+WS.allow=function(major,related){if(SET.wsane===false)return rand()<0.4;if(S.day<8)return false;var auto=S.wev.maj.filter(function(m){return m.tag!=='你所為'&&m.tag!=='史';});var ld=auto.length?auto[auto.length-1].d:-99;
  var cd={slow:12,mid:9,fast:6}[SET.pace]||9;if(major)cd+=2;if(S.day-ld<cd)return false;var n30=auto.filter(function(m){return S.day-m.d<30;}).length;var cap=WS.cap()-(major&&SET.pace==='slow'?1:0);if(n30>=Math.max(1,cap))return false;
  var k={slow:0.55,mid:0.75,fast:1}[SET.pace]||0.75;if(!related)k*=0.45;return rand()<0.6*k;};
 WS.auth=function(id){if(id===S.pc){var me=pc();return Math.max(me.office?Math.ceil(me.office/2)+1:0,me.medoff?me.medoff:0,1);}var p=P(id);if(!p)return 0;if(p.kind==='named')return NAMED[id].auth||1;return Math.max(1,{guard:2,clerk:3,soldier:2}[p.job]||1,p.office?Math.ceil(p.office/2)+1:0);};

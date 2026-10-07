@@ -6,7 +6,7 @@ var People={};
   var cap=pl==='market'||pl==='village'||pl==='tavern'?3:2;for(var i=have;i<cap;i++){var q=genPerson({job:want[i%want.length],loc:{r:PLACES[pl].r,pl:pl}});q.title=JOBS[q.job];}};
  /* 位置 */
  People.where=function(id){var p=P(id);if(!p||!p.alive||id===S.pc)return '';if(p.jailed||p.away)return '';
-  if(p.here&&p.here.d===S.day&&p.here.r===S.region)return p.here.pl;
+  if(p.here&&p.here.d===S.day&&(p.here.r||S.region)===S.region)return p.here.pl;
   if(S.focusAt&&S.focusAt.id===id&&Eng.now()-S.focusAt.t<=2&&S.focusAt.r===S.region)return S.focusAt.pl;
   if(p.hh){if(S.region==='road')return 'road';if(S.home&&S.home.r===S.region)return S.home.pl;return '';}
   if(p.kind==='named'){if(S.region!=='xianyang')return '';if(p.hidden&&!S.flags.xy_open)return '';var N=NAMED[id];var pl=N.at[S.per]||'';if(p.spouse===S.pc&&S.per===5&&S.home&&S.home.r==='xianyang')return S.home.pl;return pl;}

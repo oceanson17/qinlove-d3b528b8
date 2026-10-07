@@ -65,6 +65,10 @@ Act.RULES=[
  {k:'craft',solo:1,re:/製藥|蒸餾|提煉|熬藥|煎藥|配藥|做繃帶|製作/,f:function(){return {go:'craft'};}},
  {k:'treat',re:/治療|看病|診治|診脈|把脈|包紮|縫合|清創|聽診|療傷/,f:function(id){return id?{go:'treat',a:{id:id}}:{go:'treat',a:{id:S.pc}};},solo:1},
  {k:'propose',re:/求婚|提親|嫁給|娶/,f:function(id){return id?{go:'propose',a:{id:id}}:'你想求婚，可身邊沒有那個人。';}},
+ {k:'give',ok:1,re:/遞給|遞上|遞過|交給|塞給|分給|拿給|奉上|送上|斟/,f:function(id,src){var p=P(id);if(!p)return '你伸出手，卻沒有可以遞給的人。';var ks=Object.keys(S.inv).filter(function(k){return S.inv[k]>0&&ITEMS[k]&&!ITEMS[k].hide;});var k=null;
+   ks.forEach(function(x){var n=ITEMS[x].n;if(!k&&(src.indexOf(n)>=0||(n.length>=2&&src.indexOf(n.slice(-1))>=0&&/酒|糖|餅|肉|魚|藥|布|簡|琴|玉|花|果/.test(n.slice(-1)))))k=x;});
+   if(!k)return {go:'gift',a:{id:id}};var it=ITEMS[k];Inv.add(k,-1);var like=p.like.some(function(l){return it.n.indexOf(l)>=0||l.indexOf(it.n.slice(-1))>=0;});if(it.food)p.food=clamp((p.food||60)+it.food,0,100);
+   People.rel(id,like?{aff:6,love:2}:{aff:2},_me()+'遞給我'+it.n);Eng.pass(0);return '你把'+it.n+'遞給了'+p.n+'。'+(like?ta(p)+'眼睛一亮，顯然正合心意。':ta(p)+'接了過去。');}},
  {k:'gift',re:/送禮|送給|贈/,f:function(id){return id?{go:'gift',a:{id:id}}:'此刻沒有可送的人。';}},
  {k:'bribe',re:/行賄|塞錢|賄賂|打點|給.*銀子/,f:function(id){var p=P(id);if(!p)return '你摸出銀子，卻不知該給誰。';var amt=Math.min(S.gold,10+rnd(10));if(amt<5)return '你囊中羞澀，拿不出像樣的錢。';Inv.gold(-amt);var greedy=p.pers.indexOf('貪財')>=0;var ok=greedy||rand()<0.5;addLog('〔行賄〕'+_me()+'向'+p.n+'行賄'+amt+'兩','行');if(ok){People.rel(id,{aff:greedy?6:3},'收了'+_me()+amt+'兩');S.flags['bribed_'+id]=S.day;return p.n+'掂了掂銀子，嘴角一鬆：「算你懂事。」（'+amt+'兩，今日對你寬容）';}People.rel(id,{trust:-4},_me()+'想賄賂我');if(p.pers.indexOf('正直')>=0)FW.add(_me()+'曾試圖賄賂'+p.n,[id],S.pc,{});return p.n+'把銀子推回來，沉下臉：「收起來。」';},ok:1},
  {k:'threaten',re:/威脅|恐嚇|嚇唬|警告/,f:function(id){var p=P(id);if(!p)return '你對著空氣放了狠話。';People.rel(id,{aff:-8,trust:-5},'被'+_me()+'威脅');Bond.apply(id,{e:{戒備:10,怨恨:5}});if(p.pers.indexOf('膽小')>=0)return p.n+'臉色發白，連連退後：「有話好說、有話好說！」';return p.n+'冷冷看著你：「你大可試試。」';}},
@@ -128,7 +132,7 @@ Decl.apply=function(t){var out={lines:[],focus:''};var x=t.replace(/^[\/／]?(�
  m=x.match(/^(.{1,6}?)(?:來到|來了|出現在|在這裡|就在)(.{0,6})$/);
  if(m){id=People.idByName(m[1]);if(id&&id!==S.pc){p=P(id);if(!p.alive){say('（宣告調整）'+p.n+'已不在人世。');return out;}if(p.jailed){say('（宣告調整）'+p.n+'身陷囹圄，無法前來。');return out;}p.met=1;p.here={d:S.day,per:S.per,pl:S.place};out.focus=id;Eng.keep(id);say(p.n+'出現在'+PLACES[S.place].n+'。');return out;}}
  m=x.match(/(下起|下了|開始下)(大雪|小雪|雪|大雨|小雨|雨)|(放晴|天晴|晴了)/);
- if(m){S.wx.k=m[3]?'sun':(/雪/.test(m[2])?'snow':'rain');Weather.upd();say('（作者設定）'+(m[3]?'雲開日出，天放晴了。':'天空'+m[1]+m[2]+'。'));return out;}
+ if(m){S.wx.k=m[3]?'晴':({大雪:'大雪',小雪:'雪',雪:'雪',大雨:'大雨',小雨:'小雨',雨:'小雨'}[m[2]]);if(/雪/.test(S.wx.k)&&S.wx.b>2)S.wx.b=1;S.wx.lock=S.day;Weather.upd();say('（作者設定）'+(m[3]?'雲開日出，天放晴了。':'天空'+m[1]+m[2]+'。'));return out;}
  m=x.match(/(?:撿到|得到|有人送來|繼承了|挖出)(?:了)?(\d+|[一二三四五六七八九十百]+)兩/);
  if(m){var n=parseInt(m[1],10);if(isNaN(n))n=({一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10,百:100}[m[1].slice(-1)]||10)*(m[1].length>1?10:1);var capg=SET.decld!==false?100:500;var got=Math.min(n,capg);Inv.gold(got);say('（作者設定）你得到了'+got+'兩銀子。'+(got<n?'（宣告調整：單次上限 '+capg+' 兩）':''));return out;}
  m=x.match(/^我(?:是|其實是|乃)(.{1,12})$/);

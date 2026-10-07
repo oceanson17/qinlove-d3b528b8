@@ -47,7 +47,7 @@ var Pace={
  mark:function(id){S.pace.last=S.day;S.pace.per[id]=S.day;},
  guard:function(id,f,conf,how){if(how==='told'||how==='src'||how==='force'||how==='interrogate'||how==='witness')return conf;var p=P(id);var auth=p&&p.kind==='named'?(NAMED[id]||{}).auth||1:1;
   if(f.sub===S.pc&&auth>=6&&S.day<({slow:60,mid:40,fast:20}[SET.pace]||40))return Math.min(conf,38);if(how==='ai'&&f.sub===S.pc)return Math.min(conf,48);return conf;},
- maybeIntro:function(){var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=8&&S.fam.fame<20&&!pc().office&&!pc().medoff)continue;c.push(id);}
+ maybeIntro:function(){if(ageOf(pc())<14)return;var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=8&&S.fam.fame<20&&!pc().office&&!pc().medoff)continue;c.push(id);}
   if(!c.length)return;c.sort(function(a,b){return ((P(a).kind==='named'?NAMED[a].auth:1)-(P(b).kind==='named'?NAMED[b].auth:1));});var id=rand()<0.6?c[0]:pick(c);S.pace.intro=S.day;S.queue.push({go:'paceMeet',a:{id:id},pace:1});},
  aiRule:function(){var met=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met&&p.alive&&id!==S.pc)met.push(p.n);}return '【劇情節奏・'+({slow:'慢熱',mid:'適中',fast:'緊湊'}[SET.pace])+'】不可讓未相識的大人物主動找上門；陌生人須先搭話相識；秘密只能慢慢傳開。已相識者：'+(met.slice(0,24).join('、')||'無')+'。';}
 };

@@ -119,7 +119,7 @@ function randomState(r,o){S=baseState({world:o.world,mode:'rand'});addNamed();va
  else if(r.birth==='gentry'){S.place='lodge';S.fam.house=2;S.inv.lawbook=1;S.inv.bamboo=2;p.sk.lit=Math.max(p.sk.lit,r.age*2);}
  else if(r.birth==='tradoc'){S.place='clinic';S.fam.house=2;}
  else{S.place='lodge';}
- S.home={r:S.region,pl:S.region==='road'?'road':(S.place==='farm'?'farm':'lodge')};Weather.roll();return S;}
+ S.home={r:S.region,pl:S.region==='road'?'road':S.place};Weather.roll();return S;}
 /* ---- 存檔 ---- */
 var SAVE_KEY='qlv2_save_';
 function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:pc().n,day:S.day,gen:S.fam.gen,s:S};var js=JSON.stringify(o);

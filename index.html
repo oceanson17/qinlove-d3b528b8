@@ -789,7 +789,7 @@ function randomState(r,o){S=baseState({world:o.world,mode:'rand'});addNamed();va
  else if(r.birth==='gentry'){S.place='lodge';S.fam.house=2;S.inv.lawbook=1;S.inv.bamboo=2;p.sk.lit=Math.max(p.sk.lit,r.age*2);}
  else if(r.birth==='tradoc'){S.place='clinic';S.fam.house=2;}
  else{S.place='lodge';}
- S.home={r:S.region,pl:S.region==='road'?'road':(S.place==='farm'?'farm':'lodge')};Weather.roll();return S;}
+ S.home={r:S.region,pl:S.region==='road'?'road':S.place};Weather.roll();return S;}
 /* ---- 存檔 ---- */
 var SAVE_KEY='qlv2_save_';
 function saveSlot(slot,quiet){if(!S)return false;try{var o={t:Date.now(),name:pc().n,day:S.day,gen:S.fam.gen,s:S};var js=JSON.stringify(o);
@@ -1104,7 +1104,7 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
  var SHELTER=[0,6,10,13,15];var HOUSE_N=['無處棲身','草棚','土屋','瓦屋','宅院'];Eng.HOUSE_N=HOUSE_N;
  Eng.atHome=function(){return S.home&&S.place===S.home.pl&&S.region===S.home.r;};
  Eng.shelter=function(){if(S.region==='road')return S.flags.tent===S.day?4:0;if(Eng.atHome())return S.place==='lodge'&&!S.fam.house?(S.flags.paidLodge>=S.day-1&&S.flags.paidLodge?10:0):SHELTER[S.fam.house||0];if(['clinic','tavern','palace','study','yamen','school','lodge'].indexOf(S.place)>=0)return 10;if(PLACES[S.place]&&PLACES[S.place].wild)return 0;return 4;};
- Eng.effT=function(p){var e=S.wx.t+Eng.shelter()+(S.flags.fire===S.day&&S.per>=4&&(Eng.atHome()||S.region==='road')?6:0)+(p.cloth||0)/100*5+((S.inv.winterc||0)>0&&S.wx.t<12?8:0)-(Eng.shelter()<4&&Weather.wet()?3:0);return e;};
+ Eng.effT=function(p){var t=S.wx.t,sh=Eng.shelter();var bonus=sh+(S.flags.fire===S.day&&(S.per>=4||Eng.skipping)&&(Eng.atHome()||S.region==='road')?6:0)+(p.cloth||0)/100*5+((S.inv.winterc||0)>0&&t<12?8:0);var e=t<22?Math.min(t+bonus,Math.max(t,23)):t-(sh>=4?3:0);if(sh<4&&Weather.wet())e-=3;return e;};
  /* ---- 家中成員（同住、在世） ---- */
  Eng.house=function(){var r=[];for(var id in S.ppl){var p=S.ppl[id];if(p.alive&&(p.hh||id===S.pc))r.push(p);}return r;};
  /* ---- 每時段 ---- */
@@ -1142,14 +1142,16 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
  /* ---- 歲月流轉：快速度過若干日（自動吃飯、睡覺、工作），途中遇大事或危險即停 ---- */
  Eng.skip=function(days){var out=[],d0=S.day,me=pc();Eng.skipping=1;S.skipLog=out;
   try{for(var i=0;i<days;i++){var hp0=me.hp;Eng.autoDay(out);Eng.pass(6);
-   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
+   if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.flags.babyStart&&ageOf(me)<14)S.queue=S.queue.filter(function(q){return /^(birth|nameKid|funeral|poisoned|hungry|collapse|pcDeath|comeOfAge|poisonAll)$/.test(q.go);});if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
   finally{Eng.skipping=0;}saveSlot('auto',true);return {lines:out,days:S.day-d0};};
  Eng.autoDay=function(out){var me=pc();var a=ageOf(me);
   if(S.region!=='road'){var units=Eng.foodKeys().reduce(function(t,k){return t+S.inv[k];},0);var need=Math.ceil(Eng.house().length*1.5)+1;if(units<need&&S.gold>=12){var n=Math.min(need-units+1,Math.floor((S.gold-6)/6));if(n>0){S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}}}
   if(S.home&&S.region===S.home.r)S.place=S.home.pl;
+  if(S.region!=='road'&&S.wx.t<10&&Eng.atHome()&&S.flags.fire!==S.day){if((S.inv.wood||0)>0){S.inv.wood--;S.flags.fire=S.day;}else if(S.gold>=4){S.gold-=2;S.flags.fire=S.day;}}
   if(S.place==='lodge'&&!S.fam.house&&S.gold>=10){S.gold-=10;S.flags.paidLodge=S.day;}
   if(S.fam.clinic.open&&S.region==='xianyang'){var bought=[];['alcohol','bandage','thread','ors','antipyr'].forEach(function(k){if(ITEMS[k]&&(S.inv[k]||0)<2&&S.gold>=ITEMS[k].p*2+30){S.gold-=ITEMS[k].p*2;Inv.add(k,2);bought.push(ITEMS[k].n);}});if(bought.length&&out.length<40)out.push('補購醫館用品：'+bought.join('、')+'。');}
   if(a>=14)Work.auto(out);
+  if(S.region!=='road'){var JOBPAY={tradoc:10,owner:12,trader:9,scholar:7,farmer:7,weaver:6,exile:3,guard:7,none:2,child:0};var inc=0;Eng.house().forEach(function(q){var qa=ageOf(q);if(q.id===S.pc||!q.alive||qa<15||qa>62||q.hp<40)return;inc+=(JOBPAY[q.job]!=null?JOBPAY[q.job]:3);});if(S.gold>300*(1+(S.fam.tier||0)))inc=Math.round(inc*0.2);if(inc){S.gold+=inc;S.flags.famInc=inc;}}
   me.sta=clamp(me.sta+40,0,100);Eng.house().forEach(function(p){Ill.autoCare(p);});};
 })();
 /* ===== 疾病 ===== */
@@ -1346,7 +1348,7 @@ var Pace={
  mark:function(id){S.pace.last=S.day;S.pace.per[id]=S.day;},
  guard:function(id,f,conf,how){if(how==='told'||how==='src'||how==='force'||how==='interrogate'||how==='witness')return conf;var p=P(id);var auth=p&&p.kind==='named'?(NAMED[id]||{}).auth||1:1;
   if(f.sub===S.pc&&auth>=6&&S.day<({slow:60,mid:40,fast:20}[SET.pace]||40))return Math.min(conf,38);if(how==='ai'&&f.sub===S.pc)return Math.min(conf,48);return conf;},
- maybeIntro:function(){var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=8&&S.fam.fame<20&&!pc().office&&!pc().medoff)continue;c.push(id);}
+ maybeIntro:function(){if(ageOf(pc())<14)return;var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=8&&S.fam.fame<20&&!pc().office&&!pc().medoff)continue;c.push(id);}
   if(!c.length)return;c.sort(function(a,b){return ((P(a).kind==='named'?NAMED[a].auth:1)-(P(b).kind==='named'?NAMED[b].auth:1));});var id=rand()<0.6?c[0]:pick(c);S.pace.intro=S.day;S.queue.push({go:'paceMeet',a:{id:id},pace:1});},
  aiRule:function(){var met=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met&&p.alive&&id!==S.pc)met.push(p.n);}return '【劇情節奏・'+({slow:'慢熱',mid:'適中',fast:'緊湊'}[SET.pace])+'】不可讓未相識的大人物主動找上門；陌生人須先搭話相識；秘密只能慢慢傳開。已相識者：'+(met.slice(0,24).join('、')||'無')+'。';}
 };
@@ -2196,13 +2198,13 @@ Eng.on('day',function(){var me=pc();if(!me)return;
  Eng.house().forEach(function(p){if(p.preg&&S.day>=p.preg.due){var ks=People.birth(p);S.queue.push({go:'birth',a:{ids:ks.map(function(k){return k.id;}),mo:p.id},stop:1});}});
  if(me.spouse&&alive(me.spouse))People.tryConceive();
  var earners=Eng.house().filter(function(p){var a=ageOf(p);return p.id!==S.pc&&a>=16&&a<62&&p.hp>40&&!Ill.has(p,'old');});if(earners.length&&S.region!=='road')S.gold+=earners.length*(S.region==='frontier'?2:3);
- FW.tick();WS.tick();Gender.tick();if(S.region!=='road'){Pace.maybeIntro();Letters.tick();Npc.tick();}History.tick();
+ FW.tick();WS.tick();Gender.tick();if(S.region!=='road'&&ageOf(me)>=14){Pace.maybeIntro();Letters.tick();Npc.tick();}History.tick();
  S.invites=S.invites.filter(function(v){return v.day>=S.day;});S.calls=S.calls.filter(function(v){return v.until>=S.day;});
  if(!Eng.skipping&&rand()<0.25)Ev.roll('morning');});
 Eng.on('year',function(){People.yearTick();Eng.house().forEach(function(p){if(p.id===S.pc)return;var a=ageOf(p);if(a<16&&a>=6){if(p.school)p.sk.lit=clamp(p.sk.lit+5,0,100);if(p.teach)p.sk[p.teach]=clamp(p.sk[p.teach]+5+(p.tal[p.teach]?3:0),0,100);if(!p.school&&!p.teach)p.sk.farm=clamp(p.sk.farm+2,0,100);}});
  Eng.house().forEach(function(p){if(p.school&&S.gold>=20)S.gold-=20;});});
 NODES.eduPick=function(){var ks=Eng.house().filter(function(p){return p.id!==S.pc&&ageOf(p)>=6&&ageOf(p)<16;});if(!ks.length)return Eng.L(['家裡沒有適齡（六到十五歲）的孩子。'],'',S.place,[ch('↩','place')]);return Eng.L(['送誰去讀書？（學費每年二十兩）'],'',S.place,ks.map(function(k){return ch(k.n+(k.school?'（已在學）':''),'edu',{id:k.id,k:'school'});}).concat([ch('↩','place')]));};
-NODES.edu=function(a){var p=P(a.id);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
+NODES.edu=function(a){var p=P(a.id);if(a.k==='school'&&!p.school&&!Rule.ok(p,'school'))return Eng.L(['學室的先生搖頭：「'+Rule.why(p,'school')+'」','（只能在家自己教了。）'],'',S.place,[ch('↩','eduPick')]);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
 
 /* ---------- 生存安全網：斷糧、病倒 ---------- */
 NODES.hungry=function(){var hung=Eng.house().filter(function(p){return p.food<=8;});var L=['米缸見了底。'+hung.map(function(p){return p.id===S.pc?'你':p.n;}).join('、')+'餓得頭暈眼花。'];var c=[];
@@ -2443,10 +2445,10 @@ NODES.endAfter=function(a){var me=pc();var heirs=People.heirs().filter(alive);va
 NODES.heirPick=function(){var hs=People.heirs().filter(alive);if(!hs.length)return NODES.endAfter({final:1});return Eng.L(['選一位繼承人，接過'+Fam.name()+'：'].concat(hs.map(function(id){var p=P(id);return p.n+'（'+(p.rel||People.relTo(id))+'，'+ageOf(p)+'歲，醫'+p.sk.med+' 文'+p.sk.lit+' 農'+p.sk.farm+(p.expr.length?'；'+p.expr.map(function(g){return GENES[g].n;}).join('、'):'')+'）';})),'',S.place,hs.map(function(id){return ch('由'+P(id).n+'繼承','inherit',{id:id});}));};
 NODES.inherit=function(a){var old=pc();if(old.alive){old.alive=0;old.died=S.day;old.cause='隱退';}var p=P(a.id);
  Meta.get().lives.push({name:old.n,gen:S.fam.gen,fam:Fam.name(),born:old.born,died:old.died,age:ageOf(old),title:old.title||'',med:old.sk.med,d:Date.now()});Meta.save();S.lives.push({id:old.id,gen:S.fam.gen});
- S.pc=p.id;p.kind='pc';p.hh=1;p.met=1;p.loc=null;S.fam.gen++;S.fam.fame=Math.round(S.fam.fame*0.7);if(Inv.has('notes')||S.fam.book){p.sk.med=Math.min(100,p.sk.med+8);}if(S.fam.clinic.apps.indexOf(p.id)>=0)S.fam.clinic.apps=S.fam.clinic.apps.filter(function(x){return x!==p.id;});
+ S.pc=p.id;p.kind='pc';p.hh=1;p.met=1;p.loc=null;S.fam.gen++;S.fam.fame=Math.round(S.fam.fame*0.7);S.flags.headNote=Rule.ok(p,'head')?'':Rule.why(p,'head').replace(/可考慮易裝。$/,'族中長輩頗有微詞，家族名聲再減一成。');if(S.flags.headNote)S.fam.fame=Math.round(S.fam.fame*0.9);if(Inv.has('notes')||S.fam.book){p.sk.med=Math.min(100,p.sk.med+8);}if(S.fam.clinic.apps.indexOf(p.id)>=0)S.fam.clinic.apps=S.fam.clinic.apps.filter(function(x){return x!==p.id;});
  if(p.sur!==S.fam.sur){p.notes.adoptedHeir=1;}S.flags.dying=0;S.flags.held=0;S.flags.harem='';S.disg=null;S.focus='';S.queue=[];S.thread=null;S.recent='';S.back=[];if(S.home)S.place=S.home.pl;if(S.region==='road')S.region='frontier';
  S.flags.ms={};FW.add(p.n+'繼承了'+Fam.name(),[],p.id,{pub:1});addLog('〔家〕第'+S.fam.gen+'代：'+p.n+'繼承家業','家');Fam.tierCalc();
- var L=['第'+cnum0(S.fam.gen)+'代。','你是'+p.n+'，'+ageOf(p)+'歲。'+old.n+'留下了'+(S.gold)+'兩銀子、'+Eng.HOUSE_N[S.fam.house||0]+(S.fam.clinic.open?'、一間醫館':'')+(Object.keys(S.fam.tech).length?'，還有家傳的'+Object.keys(S.fam.tech).length+'門醫術':'')+'。'];if(ageOf(p)<14){S.flags.babyStart=1;return Eng.L(L,'',S.place,[ch('開始長大','childYear')]);}
+ var L=['第'+cnum0(S.fam.gen)+'代。','你是'+p.n+'，'+ageOf(p)+'歲。'+old.n+'留下了'+(S.gold)+'兩銀子、'+Eng.HOUSE_N[S.fam.house||0]+(S.fam.clinic.open?'、一間醫館':'')+(Object.keys(S.fam.tech).length?'，還有家傳的'+Object.keys(S.fam.tech).length+'門醫術':'')+'。'];if(S.flags.headNote)L.push('（'+S.flags.headNote+'）');if(ageOf(p)<14){S.flags.babyStart=1;return Eng.L(L,'',S.place,[ch('開始長大','childYear')]);}
  return Eng.L(L,'',S.place,[ch('接過家業','place')]);};
 NODES.restart=function(){return {screen:'title'};};
 NODES.album=function(){return {screen:'album'};};
@@ -2710,7 +2712,7 @@ Panels.tree=function(){var me=pc();var set={};function add(id,d){if(!id||set[id]
 Panels.chip=function(p){var yb=Eng.yb(p.born);return '<span class="tchip'+(p.id===S.pc?' cur':'')+(p.alive?'':' dead')+'"><i>'+ART.avatar(p)+'</i><b>'+esc(p.n)+'</b><small>'+(p.alive?ageOf(p)+'歲':'享年'+ageOf(p))+'</small></span>';};
 Panels.act.famTalk=function(id){Sh.close();UI.go('talk',{id:id});};
 Panels.act.famTreat=function(id){Sh.close();UI.go('treat',{id:id});};
-Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
+Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'&&!p.school&&!Rule.ok(p,'school')){toast(Rule.why(p,'school'),3000);return;}if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
 /* ---------- 人脈 ---------- */
 Panels.ppl=function(tab){Sh.open('人脈',[['rom','心動'],['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'rom');};
 Panels.pplR=function(tab){if(tab&&tab.indexOf('p:')===0)return Panels.pdet(tab.slice(2));if(tab&&tab.indexOf('l:')===0)return Panels.letter(+tab.slice(2));

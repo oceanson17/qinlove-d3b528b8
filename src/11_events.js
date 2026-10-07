@@ -174,13 +174,13 @@ Eng.on('day',function(){var me=pc();if(!me)return;
  Eng.house().forEach(function(p){if(p.preg&&S.day>=p.preg.due){var ks=People.birth(p);S.queue.push({go:'birth',a:{ids:ks.map(function(k){return k.id;}),mo:p.id},stop:1});}});
  if(me.spouse&&alive(me.spouse))People.tryConceive();
  var earners=Eng.house().filter(function(p){var a=ageOf(p);return p.id!==S.pc&&a>=16&&a<62&&p.hp>40&&!Ill.has(p,'old');});if(earners.length&&S.region!=='road')S.gold+=earners.length*(S.region==='frontier'?2:3);
- FW.tick();WS.tick();Gender.tick();if(S.region!=='road'){Pace.maybeIntro();Letters.tick();Npc.tick();}History.tick();
+ FW.tick();WS.tick();Gender.tick();if(S.region!=='road'&&ageOf(me)>=14){Pace.maybeIntro();Letters.tick();Npc.tick();}History.tick();
  S.invites=S.invites.filter(function(v){return v.day>=S.day;});S.calls=S.calls.filter(function(v){return v.until>=S.day;});
  if(!Eng.skipping&&rand()<0.25)Ev.roll('morning');});
 Eng.on('year',function(){People.yearTick();Eng.house().forEach(function(p){if(p.id===S.pc)return;var a=ageOf(p);if(a<16&&a>=6){if(p.school)p.sk.lit=clamp(p.sk.lit+5,0,100);if(p.teach)p.sk[p.teach]=clamp(p.sk[p.teach]+5+(p.tal[p.teach]?3:0),0,100);if(!p.school&&!p.teach)p.sk.farm=clamp(p.sk.farm+2,0,100);}});
  Eng.house().forEach(function(p){if(p.school&&S.gold>=20)S.gold-=20;});});
 NODES.eduPick=function(){var ks=Eng.house().filter(function(p){return p.id!==S.pc&&ageOf(p)>=6&&ageOf(p)<16;});if(!ks.length)return Eng.L(['家裡沒有適齡（六到十五歲）的孩子。'],'',S.place,[ch('↩','place')]);return Eng.L(['送誰去讀書？（學費每年二十兩）'],'',S.place,ks.map(function(k){return ch(k.n+(k.school?'（已在學）':''),'edu',{id:k.id,k:'school'});}).concat([ch('↩','place')]));};
-NODES.edu=function(a){var p=P(a.id);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
+NODES.edu=function(a){var p=P(a.id);if(a.k==='school'&&!p.school&&!Rule.ok(p,'school'))return Eng.L(['學室的先生搖頭：「'+Rule.why(p,'school')+'」','（只能在家自己教了。）'],'',S.place,[ch('↩','eduPick')]);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
 
 /* ---------- 生存安全網：斷糧、病倒 ---------- */
 NODES.hungry=function(){var hung=Eng.house().filter(function(p){return p.food<=8;});var L=['米缸見了底。'+hung.map(function(p){return p.id===S.pc?'你':p.n;}).join('、')+'餓得頭暈眼花。'];var c=[];

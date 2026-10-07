@@ -80,7 +80,7 @@ Panels.tree=function(){var me=pc();var set={};function add(id,d){if(!id||set[id]
 Panels.chip=function(p){var yb=Eng.yb(p.born);return '<span class="tchip'+(p.id===S.pc?' cur':'')+(p.alive?'':' dead')+'"><i>'+ART.avatar(p)+'</i><b>'+esc(p.n)+'</b><small>'+(p.alive?ageOf(p)+'歲':'享年'+ageOf(p))+'</small></span>';};
 Panels.act.famTalk=function(id){Sh.close();UI.go('talk',{id:id});};
 Panels.act.famTreat=function(id){Sh.close();UI.go('treat',{id:id});};
-Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
+Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'&&!p.school&&!Rule.ok(p,'school')){toast(Rule.why(p,'school'),3000);return;}if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
 /* ---------- 人脈 ---------- */
 Panels.ppl=function(tab){Sh.open('人脈',[['rom','心動'],['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'rom');};
 Panels.pplR=function(tab){if(tab&&tab.indexOf('p:')===0)return Panels.pdet(tab.slice(2));if(tab&&tab.indexOf('l:')===0)return Panels.letter(+tab.slice(2));

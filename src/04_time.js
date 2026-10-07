@@ -84,7 +84,7 @@ var Ill={
  add:function(p,k,sev){if(!p.ill)p.ill=[];var x=Ill.get(p,k);if(x){x.sev=clamp(x.sev+(sev||1),1,5);return x;}x={k:k,sev:clamp(sev||1,1,5),d:S.day,tr:0};p.ill.push(x);if(p.id===S.pc)toast('🤒 你得了「'+ILLS[k].n+'」');return x;},
  cure:function(p,k,n){var x=Ill.get(p,k);if(!x)return;x.sev-=n||5;x.tr=1;if(x.sev<=0)p.ill=p.ill.filter(function(y){return y!==x;});},
  day:function(p){if(!p.ill||!p.ill.length)return;var con=p.at?p.at.con:10;p.ill.slice().forEach(function(x){if(ILLS[x.k]&&ILLS[x.k].chronic)return;
-  var res=con/20+(p.food>50?0.2:-0.2)+(x.tr?0.35:0)+(p.temp>35.8?0.1:-0.2);if(rand()<0.25+res*0.4)x.sev--;else if(rand()<0.35-res*0.2)x.sev++;
+  var res=con/20+(p.food>50?0.2:-0.2)+(x.tr?0.35:0)+(p.temp>35.8?0.1:-0.2);if(/^(poison|diarrhea|heat|blister)$/.test(x.k)){if(rand()<0.6+res*0.3)x.sev--;else if(x.sev>=4&&rand()<0.1)x.sev++;}else if(rand()<0.25+res*0.4)x.sev--;else if(rand()<0.35-res*0.2)x.sev++;
   if(x.k==='wound'&&!x.tr&&rand()<0.2){Ill.add(p,'infect',1);}if(x.k==='cold'&&x.sev>=3&&rand()<0.15)Ill.add(p,'lung',1);if(x.k==='blister'&&!x.tr&&rand()<0.15)Ill.add(p,'infect',1);
   x.sev=clamp(x.sev,0,5);p.hp=clamp(p.hp-x.sev*1.6,0,100);if(x.sev<=0)p.ill=p.ill.filter(function(y){return y!==x;});});
   if(p.id!==S.pc&&p.hp<=0)People.die(p.id,Ill.cause(p));},

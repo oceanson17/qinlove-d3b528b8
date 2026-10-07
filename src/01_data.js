@@ -45,7 +45,7 @@ var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','p
 var EXILE_DEST=[{k:'shu',n:'蜀郡',d:'巴山蜀水，潮濕多瘴',dt:2,days:14},{k:'shang',n:'上郡',d:'黃土高坡，風沙苦寒',dt:-5,days:12},{k:'longxi',n:'隴西',d:'隴山之西，羌戎雜處',dt:-3,days:16}];
 /* 物品 */
 var ITEMS={
- grain:{n:'粟米',k:'food',p:6,food:22,d:'一升粟米，煮粥可飽一餐'},cake:{n:'麥餅',k:'food',p:5,food:18},gruel:{n:'稀粥',k:'food',p:2,food:10},
+ grain:{n:'粟米',k:'food',p:6,food:22,d:'一升粟米，煮粥可飽一餐'},cake:{n:'麥餅',k:'food',p:5,food:18},gruel:{n:'稀粥',k:'food',p:2,food:15},
  veg:{n:'野菜',k:'food',p:1,food:7},fruit:{n:'野果',k:'food',p:1,food:5},mush:{n:'菌菇',k:'food',p:2,food:8},
  vegP:{n:'野菜',k:'food',p:1,food:7,poison:1,hide:1},fruitP:{n:'野果',k:'food',p:1,food:5,poison:1,hide:1},mushP:{n:'菌菇',k:'food',p:2,food:8,poison:2,hide:1},
  jerky:{n:'乾肉',k:'food',p:14,food:25},fish:{n:'鮮魚',k:'food',p:6,food:15},egg:{n:'雞蛋',k:'food',p:2,food:6},

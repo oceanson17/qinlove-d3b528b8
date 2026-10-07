@@ -68,9 +68,10 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
    if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
   finally{Eng.skipping=0;}saveSlot('auto',true);return {lines:out,days:S.day-d0};};
  Eng.autoDay=function(out){var me=pc();var a=ageOf(me);
-  if(Eng.foodKeys().length<2&&S.gold>=12&&S.region!=='road'){var n=Math.min(6,Math.floor(S.gold/6));S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}
+  if(S.region!=='road'){var units=Eng.foodKeys().reduce(function(t,k){return t+S.inv[k];},0);var need=Math.ceil(Eng.house().length*1.5)+1;if(units<need&&S.gold>=12){var n=Math.min(need-units+1,Math.floor((S.gold-6)/6));if(n>0){S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}}}
   if(S.home&&S.region===S.home.r)S.place=S.home.pl;
   if(S.place==='lodge'&&!S.fam.house&&S.gold>=10){S.gold-=10;S.flags.paidLodge=S.day;}
+  if(S.fam.clinic.open&&S.region==='xianyang'){var bought=[];['alcohol','bandage','thread','ors','antipyr'].forEach(function(k){if(ITEMS[k]&&(S.inv[k]||0)<2&&S.gold>=ITEMS[k].p*2+30){S.gold-=ITEMS[k].p*2;Inv.add(k,2);bought.push(ITEMS[k].n);}});if(bought.length&&out.length<40)out.push('補購醫館用品：'+bought.join('、')+'。');}
   if(a>=14)Work.auto(out);
   me.sta=clamp(me.sta+40,0,100);Eng.house().forEach(function(p){Ill.autoCare(p);});};
 })();

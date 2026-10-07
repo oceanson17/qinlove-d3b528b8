@@ -19,7 +19,7 @@ var WX={
 /* 地區與地點 */
 var REGIONS={xianyang:{n:'咸陽',title:'咸陽輿圖',dt:0},frontier:{n:'邊地',title:'邊地輿圖',dt:-3},road:{n:'流放途中',title:'流放路',dt:-1}};
 var PLACES={
- lodge:{r:'xianyang',s:'舍',n:'城南客舍',d:'簡陋客舍，十錢一宿；有了宅子便是家。',bg:'tavern',x:24,y:80,home:1},
+ lodge:{r:'xianyang',s:'舍',n:'城南客舍',d:'簡陋客舍，十兩一宿；有了宅子便是家。',bg:'tavern',x:24,y:80,home:1},
  clinic:{r:'xianyang',s:'醫',n:'青囊醫館',d:'城南臨街的舖面。開館後便是你的醫館。',bg:'clinic',x:22,y:64},
  market:{r:'xianyang',s:'市',n:'咸陽市集',d:'人聲鼎沸，糧米、布帛、藥材、器物應有盡有。',bg:'market',x:52,y:62},
  plum:{r:'xianyang',s:'林',n:'城西梅林',d:'城西林地，可採野菜、柴薪與藥草。',bg:'plum',x:16,y:38,wild:1},

@@ -34,3 +34,6 @@ exports.newRand=async function(p,o){o=o||{};await p.click('#tNew');await p.waitF
 exports.shot=async(p,n)=>{await p.waitForTimeout(500);return p.screenshot({path:'/workspace/qinlove/screenshots/'+n+'.png'});};
 exports.go=async function(p,node,a){await p.evaluate(([n,a])=>UI.go(n,a),[node,a||{}]);await p.waitForTimeout(40);return L.flush(p);};
 exports.closeSheet=async p=>{await p.click('#shX');await p.waitForTimeout(40);};
+/* 試玩紀錄：印出當前一幕 */
+exports.log=async function(p,tag){const r=await p.evaluate(()=>UI.sc?{l:UI.sc.lines.map(l=>(l.sp?cn(l.sp)+'：':'')+l.t),c:(UI.sc.ch||[]).map(c=>c.t),st:S?{d:S.day,per:S.per,pl:S.place,g:S.gold,f:Math.round(pc().food),s:Math.round(pc().sta),h:Math.round(pc().hp),m:Math.round(pc().mood),t:pc().temp.toFixed(1)}:null}:null);if(!r)return;console.log('── '+(tag||'')+' '+JSON.stringify(r.st));r.l.forEach(x=>console.log('   '+x.slice(0,120)));console.log('   [選項] '+r.c.join(' | '));};
+exports.pickLog=async function(p,re,tag){await L.flush(p);const t=await L.click(p,re);await L.flush(p);await L.log(p,tag||t);return t;};

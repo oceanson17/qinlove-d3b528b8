@@ -500,7 +500,7 @@ var WX={
 /* 地區與地點 */
 var REGIONS={xianyang:{n:'咸陽',title:'咸陽輿圖',dt:0},frontier:{n:'邊地',title:'邊地輿圖',dt:-3},road:{n:'流放途中',title:'流放路',dt:-1}};
 var PLACES={
- lodge:{r:'xianyang',s:'舍',n:'城南客舍',d:'簡陋客舍，十錢一宿；有了宅子便是家。',bg:'tavern',x:24,y:80,home:1},
+ lodge:{r:'xianyang',s:'舍',n:'城南客舍',d:'簡陋客舍，十兩一宿；有了宅子便是家。',bg:'tavern',x:24,y:80,home:1},
  clinic:{r:'xianyang',s:'醫',n:'青囊醫館',d:'城南臨街的舖面。開館後便是你的醫館。',bg:'clinic',x:22,y:64},
  market:{r:'xianyang',s:'市',n:'咸陽市集',d:'人聲鼎沸，糧米、布帛、藥材、器物應有盡有。',bg:'market',x:52,y:62},
  plum:{r:'xianyang',s:'林',n:'城西梅林',d:'城西林地，可採野菜、柴薪與藥草。',bg:'plum',x:16,y:38,wild:1},
@@ -751,9 +751,9 @@ function addNamed(){NAMED_ORDER.forEach(function(k){var N=NAMED[k];var p={id:k,s
   aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:0),medoff:k==='xiawuju'?3:0,mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:''};
   for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.arrive&&START_BC>N.arrive)p.away=1;});
  S.ppl.hanfei.away=1;S.ppl.xuanye.hidden=1;}
-function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||DEF_NAMES[0]).length>=3?o.name.slice(0,1):'白';
+function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||'').length>=2?o.name.slice(0,1):'白';
  var p=genPerson({id:'pc1',g:'f',age:19,sur:sur,kind:'pc',job:'doctor',hh:1,met:1,pers:['正直','熱心'],at:{con:12,wit:15,look:15,cha:12,dex:16},sk:{med:42,farm:5,craft:10,trade:5,mart:5,lit:25},genes:['hand']});
- p.gn=(o.name||DEF_NAMES[0]).length>=3?o.name.slice(1):(o.name||DEF_NAMES[0]);p.n=o.name||DEF_NAMES[0];p.sur=p.n.length>=3?p.n.slice(0,1):sur;p.portrait='heroine';p.look={hair:'#2a1c18',skin:'#f8e6da',seed:3};
+ p.n=o.name||DEF_NAMES[0];p.sur=p.n.length>=2?p.n.slice(0,1):'白';p.gn=p.n.length>=2?p.n.slice(1):p.n;sur=p.sur;p.portrait='heroine';p.look={hair:'#2a1c18',skin:'#f8e6da',seed:3};
  S.pc=p.id;S.fam.sur=p.sur;S.gold=160;S.inv={grain:3,cake:2,alcohol:3,bandage:6,thread:4,antipyr:2,ors:2,herb:4,soap:1,needle:1,steth:1,scalpel:1,notes:1,sandal:1};
  TECH_BASIC.forEach(function(t){S.fam.tech[t]=1;});S.region='xianyang';S.place='lodge';
  var m=genPerson({id:'master',g:'m',age:78,sur:'青囊',gn:'子',kind:'npc',job:'tradoc',met:1,aff:80,trust:80,pers:['溫和','正直'],loc:{r:'frontier',pl:'mountain'}});m.n='青囊子';m.title='師父';m.sk.med=95;
@@ -1145,9 +1145,10 @@ var Eng={hooks:{per:[],day:[],year:[]}};var NODES={};
    if(!me.alive||me.hp<=0||S.flags.dying)break;if(S.queue.some(function(q){return q.stop;})){out.push('（有要事發生，歲月暫停流轉。）');break;}if(me.hp<35&&hp0>=35){out.push('（你病倒了，歲月暫停流轉。）');break;}}}
   finally{Eng.skipping=0;}saveSlot('auto',true);return {lines:out,days:S.day-d0};};
  Eng.autoDay=function(out){var me=pc();var a=ageOf(me);
-  if(Eng.foodKeys().length<2&&S.gold>=12&&S.region!=='road'){var n=Math.min(6,Math.floor(S.gold/6));S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}
+  if(S.region!=='road'){var units=Eng.foodKeys().reduce(function(t,k){return t+S.inv[k];},0);var need=Math.ceil(Eng.house().length*1.5)+1;if(units<need&&S.gold>=12){var n=Math.min(need-units+1,Math.floor((S.gold-6)/6));if(n>0){S.gold-=n*6;S.inv.grain=(S.inv.grain||0)+n;}}}
   if(S.home&&S.region===S.home.r)S.place=S.home.pl;
   if(S.place==='lodge'&&!S.fam.house&&S.gold>=10){S.gold-=10;S.flags.paidLodge=S.day;}
+  if(S.fam.clinic.open&&S.region==='xianyang'){var bought=[];['alcohol','bandage','thread','ors','antipyr'].forEach(function(k){if(ITEMS[k]&&(S.inv[k]||0)<2&&S.gold>=ITEMS[k].p*2+30){S.gold-=ITEMS[k].p*2;Inv.add(k,2);bought.push(ITEMS[k].n);}});if(bought.length&&out.length<40)out.push('補購醫館用品：'+bought.join('、')+'。');}
   if(a>=14)Work.auto(out);
   me.sta=clamp(me.sta+40,0,100);Eng.house().forEach(function(p){Ill.autoCare(p);});};
 })();
@@ -1493,7 +1494,7 @@ AI.pline=function(id){var p=P(id);var b=SET.bondd!==false?Bond.card(id):'';var m
  return p.n+'('+id+'｜'+(p.g==='f'?'女':'男')+a+'歲｜'+(p.title||JOBS[p.job]||'')+'｜'+People.relTo(id)+(p.met?'｜已識':'｜未識')+')：好感'+p.aff+' 信任'+p.trust+' 情意'+(p.love||0)+' 健康'+Math.round(p.hp)+(p.ill.length?'('+Ill.str(p)+')':'')+'｜性格：'+p.pers.join('、')+'｜喜好：'+p.like.join('、')+(b?'｜心態卡：'+b:'')+(mem?'｜持久記憶：'+mem:'');};
 AI.summary=function(){var me=pc(),L=[];
  L.push('【時間地點】'+Eng.dateStr()+'，'+Weather.str()+'；'+(REGIONS[S.region]||{n:''}).n+'·'+(PLACES[S.place]||{n:''}).n+(S.road?'（流放第'+S.road.day+'/'+S.road.total+'日，往'+S.road.dn+'）':''));
- L.push('【主角】'+me.n+'（'+(me.g==='f'?'女':'男')+(Gender.on()?'，易裝為'+(S.disg.as==='m'?'男':'女')+'子':'')+'，'+ageOf(me)+'歲，'+(me.title||JOBS[me.job]||'')+(me.office?'，'+OFFICE[me.office]:'')+(me.medoff?'，'+MEDOFF[me.medoff]:'')+(me.rank?'，爵'+RANKS[me.rank]:'')+'）：飽食'+Math.round(me.food)+' 體力'+Math.round(me.sta)+' 健康'+Math.round(me.hp)+' 體溫'+me.temp.toFixed(1)+' 心情'+Math.round(me.mood)+' 錢'+S.gold+'；醫'+me.sk.med+' 農'+me.sk.farm+' 工'+me.sk.craft+' 商'+me.sk.trade+' 武'+me.sk.mart+' 文'+me.sk.lit+'；疾病：'+Ill.str(me)+(me.preg?'；有孕':'')+'；行囊：'+Inv.str().slice(0,160));
+ L.push('【主角】'+me.n+'（'+(me.g==='f'?'女':'男')+(Gender.on()?'，易裝為'+(S.disg.as==='m'?'男':'女')+'子':'')+'，'+ageOf(me)+'歲，'+(me.title||JOBS[me.job]||'')+(me.office?'，'+OFFICE[me.office]:'')+(me.medoff?'，'+MEDOFF[me.medoff]:'')+(me.rank?'，爵'+RANKS[me.rank]:'')+'）：飽食'+Math.round(me.food)+' 體力'+Math.round(me.sta)+' 健康'+Math.round(me.hp)+' 體溫'+me.temp.toFixed(1)+' 心情'+Math.round(me.mood)+' 銀'+S.gold+'；醫'+me.sk.med+' 農'+me.sk.farm+' 工'+me.sk.craft+' 商'+me.sk.trade+' 武'+me.sk.mart+' 文'+me.sk.lit+'；疾病：'+Ill.str(me)+(me.preg?'；有孕':'')+'；行囊：'+Inv.str().slice(0,160));
  L.push('【家族】'+Fam.name()+'，第'+S.fam.gen+'代，名聲'+S.fam.fame+(S.fam.grudge&&!S.fam.grudge.done?'，背負冤案：'+S.fam.grudge.crime:'')+'；住所：'+Eng.HOUSE_N[S.fam.house||0]+(S.fam.clinic.open?'；醫館已開':''));
  var fam=Eng.house().filter(function(p){return p.id!==S.pc;});if(fam.length)L.push('【家人】'+fam.map(function(p){return p.n+'('+p.id+'｜'+(p.rel||People.relTo(p.id))+'｜'+ageOf(p)+'歲｜健康'+Math.round(p.hp)+(p.ill.length?Ill.str(p):'')+'｜心聲：'+People.thought(p)+')';}).join('；'));
  var ids=People.present().slice(0,6);if(S.focus&&ids.indexOf(S.focus)<0&&P(S.focus)&&P(S.focus).alive)ids.unshift(S.focus);
@@ -1849,7 +1850,7 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
  if(S.flags.held){A('⛓ 在牢中熬過一日','heldDay');A('💰 打點獄卒','heldBribe');return c;}
  if(S.region==='road'){if(!S.road.marched)A('🚶 跟著隊伍趕路','march');A('🩹 照料家人（腳泡、衣物）','care');A('⛺ 搭帳歇腳','tent');A('🌿 路邊採摘','forage');A('🙇 去跟衙役說話','talk',{id:S.road.guards[rand()<0.5?0:1]});}
  else{
-  if(pl==='lodge'){if(!S.fam.house&&S.flags.paidLodge!==S.day)A('🪙 付十錢住一宿','payLodge');if(!S.fam.house)A('🏠 置一處宅子（瓦屋 300 兩）','buyHouse');}
+  if(pl==='lodge'){if(!S.fam.house&&S.flags.paidLodge!==S.day)A('🪙 付十兩住一宿','payLodge');if(!S.fam.house)A('🏠 置一處宅子（瓦屋 300 兩）','buyHouse');}
   if(pl==='clinic'){if(S.fam.tech.alco||me.sk.med>=30){if(!S.fam.clinic.open)A('📜 租下舖面開醫館（120 兩）','openClinic');else{A('🩺 坐堂看診','clinicSit');A('👩‍⚕️ 收徒／學徒','apps');if(S.fam.clinic.lv<3)A('🔨 擴建醫館（'+(S.fam.clinic.lv+1)*150+' 兩）','clinicUp');}}A('📖 研習醫術','research');}
   if(pl==='market'||pl==='fair'){A('🛒 買賣','shop');if(adult)A('💪 打零工','work');if(adult&&(S.fam.tech.alco||me.sk.med>=25))A('⛺ 擺攤義診','streetClinic');if(adult)A('🐫 合夥經商','trade');}
   if(P0.wild){A('🌿 採集（野菜、野果、藥草）','forage');A('🪓 砍柴','chop');}
@@ -1885,7 +1886,7 @@ NODES.skipMenu=function(){var c=[ch('⏩ 三日','skip',{n:3}),ch('⏩ 十日（
  return Eng.L(['歲月流轉：自動吃飯、睡覺、做活（醫館開著就看診、田裡有莊稼就照料）。遇到大事或病倒便會停下。'],'',S.place,c);};
 NODES.skip=function(a){if(S.region==='road')return Eng.L(['流放路上，一日一日都得自己走。'],'',S.place,[ch('↩','place')]);var r=Eng.skip(a.n);var L=['（'+cnum0(r.days)+'日過去了。）'].concat(r.lines.slice(-8));return Eng.L(L,'',S.place,[ch('繼續','place')]);};
 /* ---------- 生活動作 ---------- */
-NODES.payLodge=function(){if(S.gold<10)return Eng.L(['你摸了摸錢袋——連十錢都湊不出。今夜只能睡在簷下了。'],'',S.place,[ch('↩','place')]);Inv.gold(-10);S.flags.paidLodge=S.day;return Eng.L(['掌櫃收了錢，給你一間朝北的小房。'],'',S.place,[ch('↩','place')]);};
+NODES.payLodge=function(){if(S.gold<10)return Eng.L(['你摸了摸錢袋——連十兩都湊不出。今夜只能睡在簷下了。'],'',S.place,[ch('↩','place')]);Inv.gold(-10);S.flags.paidLodge=S.day;return Eng.L(['掌櫃收了錢，給你一間朝北的小房。'],'',S.place,[ch('↩','place')]);};
 NODES.buyHouse=function(){if(S.gold<300)return Eng.L(['牙人報了價：一處像樣的瓦屋要三百兩。你還差'+(300-S.gold)+'兩。'],'',S.place,[ch('↩','place')]);Inv.gold(-300);S.fam.house=3;S.home={r:'xianyang',pl:'lodge'};PLACES.lodge.n='自家宅院';addLog('〔家〕置下咸陽的宅子','家');Fam.tierCalc();return Eng.L(['你在城南置下一處瓦屋小院。從今往後，這裡就是家。'],'',S.place,[ch('↩','place')]);};
 NODES.openClinic=function(){if(S.gold<120)return Eng.L(['舖主要一百二十兩押租。你還差'+(120-S.gold)+'兩。可以先擺攤義診攢些名聲和銀子。'],'',S.place,[ch('↩','place')]);Inv.gold(-120);S.fam.clinic.open=1;S.fam.clinic.lv=0;S.fam.clinic.d0=S.day;addLog('〔醫館〕'+pc().n+'開館','醫');WS.log('城南新開一間醫館，大夫用刀圭針線治病','起因：'+pc().n+'開館','你所為');FW.add(pc().n+'在城南開了醫館',[],S.pc,{pub:1});
  return Eng.L(['你掛上親手寫的木牌：「青囊醫館」。','街坊探頭探腦——聽說這位大夫治病不用符水，用刀子和針線。'],'',S.place,[ch('🩺 開門看診','clinicSit'),ch('↩','place')]);};
@@ -1922,11 +1923,11 @@ NODES.shop=function(a){return {screen:'shop',a:a||{}};};
 NODES.craft=function(){return {screen:'craft'};};
 /* ---------- 打工 ---------- */
 NODES.work=function(){var me=pc();if(me.sta<25)return Eng.L(['你累得抬不起手。'],'',S.place,[ch('↩','place')]);Eng.pass(2);me.sta-=25;var pay=S.region==='frontier'?4+rnd(4):6+rnd(6);if(S.flags.dear&&S.day-S.flags.dear<30)pay-=2;
- var job=S.place==='market'?'在碼頭搬貨':(S.place==='village'?'幫鄰家修屋頂':'在市集幫人看攤');Inv.gold(pay);me.sk.craft=clamp(me.sk.craft+(rand()<0.2?1:0),0,100);var L=['你'+job+'，忙了兩個時辰，掙了'+pay+'錢。'];
+ var job=S.place==='market'?'在碼頭搬貨':(S.place==='village'?'幫鄰家修屋頂':'在市集幫人看攤');Inv.gold(pay);me.sk.craft=clamp(me.sk.craft+(rand()<0.2?1:0),0,100);var L=['你'+job+'，忙了兩個時辰，掙了'+pay+'兩。'];
  if(S.world==='male'&&me.g==='f'&&!Gender.on()&&rand()<0.3){L.push('工頭斜眼看你：「女人家幹什麼粗活？」只給了一半。');Inv.gold(-Math.floor(pay/2));}if(S.world==='female'&&me.g==='m'&&!Gender.on()&&rand()<0.3){L.push('管事的娘子皺眉：「男子不在家帶孩子，跑出來拋頭露面？」');}
  return Eng.L(L,'',S.place,[ch('↩','place')]);};
 var Work={auto:function(out){var me=pc();var cl=S.fam.clinic;
- if(cl.open&&S.region==='xianyang'){var n=1+cl.lv+rnd(2);var earn=0,cured=0;for(var i=0;i<n;i++){var r=Med.auto(Med.pickCase(),me.sk.med,true);if(r.ok){earn+=Math.round(r.fee*(1+cl.lv*0.2));cured++;}}S.gold+=earn;S.fam.fame=clamp(S.fam.fame+(cured>=2?1:0),0,999);S.stats.pat+=n;S.stats.cure+=cured;cl.days++;if(rand()<0.15)me.sk.med=clamp(me.sk.med+1,0,100);if(earn&&out.length<40)out.push('醫館看診'+n+'人，診金'+earn+'兩。');}
+ if(cl.open&&S.region==='xianyang'){var n=1+cl.lv+Math.min(3,Math.floor(S.fam.fame/15))+rnd(2);var earn=0,cured=0;for(var i=0;i<n;i++){var r=Med.auto(Med.pickCase(),me.sk.med,true);if(r.ok){earn+=Math.round(r.fee*(1+cl.lv*0.2));cured++;}else if(rand()<0.5){earn+=Math.round(r.d.fee*0.4);}}S.gold+=earn;S.fam.fame=clamp(S.fam.fame+(cured>=2?1:0),0,999);S.stats.pat+=n;S.stats.cure+=cured;cl.days++;if(rand()<0.15)me.sk.med=clamp(me.sk.med+1,0,100);if(earn&&out.length<40)out.push('醫館看診'+n+'人，診金'+earn+'兩。');}
  else if(S.region==='frontier'&&S.fam.plots.length){Farm.tendAll();}
  else if(me.office||me.medoff){}
  else{var pay=S.region==='frontier'?4:7;S.gold+=pay;}
@@ -1977,7 +1978,7 @@ NODES.enlist=function(){var me=pc();if(!Rule.ok(me,'army')&&!Gender.on())return 
 NODES.campaign=function(){var me=pc();var d=5+rnd(4);var L=['大軍開拔。你隨軍走了'+d+'日。'];var cur=0,earn=0;for(var i=0;i<d;i++){Eng.pass(6);var r=Med.auto(pick([Med.caseOf('arrow'),Med.caseOf('fracture'),Med.caseOf('cut')]),me.sk.med,true);if(r.ok){cur++;earn+=20;}}
  S.gold+=earn;me.sk.med=clamp(me.sk.med+2,0,100);S.fam.fame+=2;L.push('你在營帳裡救治了'+cur+'名傷兵，得軍餉'+earn+'。');if(cur>=3&&rand()<0.6){Idn.apply({k:'ennoble',by:''},true);L.push('論功行賞，你得爵「'+RANKS[me.rank]+'」。');}if(rand()<0.12){Ill.add(me,'wound',2);L.push('流矢擦過你的肩頭。');}return Eng.L(L,'mengtian',S.place,[ch('↩','place')]);};
 /* ---------- 江湖 ---------- */
-NODES.jianghu=function(){var me=pc();var c=[ch('🗡 跟遊俠學兩招（10 錢）','jhDo',{k:'learn'}),ch('🐎 接一趟護送（數日，有險）','jhDo',{k:'escort'})];var xia=People.present().filter(function(id){return P(id).job==='xia'||id==='jingke';});if(!xia.length&&rand()<0.6){var x=genPerson({age:20+rnd(15),kind:'npc',job:'xia',pers:['仗義',pick(['開朗','暴躁','沉默'])],loc:{r:S.region,pl:S.place}});x.title='遊俠';xia=[x.id];}
+NODES.jianghu=function(){var me=pc();var c=[ch('🗡 跟遊俠學兩招（10 兩）','jhDo',{k:'learn'}),ch('🐎 接一趟護送（數日，有險）','jhDo',{k:'escort'})];var xia=People.present().filter(function(id){return P(id).job==='xia'||id==='jingke';});if(!xia.length&&rand()<0.6){var x=genPerson({age:20+rnd(15),kind:'npc',job:'xia',pers:['仗義',pick(['開朗','暴躁','沉默'])],loc:{r:S.region,pl:S.place}});x.title='遊俠';xia=[x.id];}
  return Eng.L(['酒肆一角，幾個佩劍的漢子在擲骰。'].concat(xia.length?['其中一個是'+People.label(xia[0])+'。']:[]),xia[0]||'',S.place,c.concat(xia.length?[ch('💬 搭話','talk',{id:xia[0]})]:[]).concat([ch('↩','place')]));};
 NODES.jhDo=function(a){var me=pc();if(a.k==='learn'){if(S.gold<10)return Eng.L(['錢不夠。'],'',S.place,[ch('↩','place')]);Inv.gold(-10);Eng.pass(2);me.sk.mart=clamp(me.sk.mart+2,0,100);return Eng.L(['你學了一套拳腳。（武+2）'],'',S.place,[ch('↩','place')]);}
  var d=3+rnd(3);Eng.pass(6*d);var risk=rand()*100>me.sk.mart+30;var L=['你隨商隊走了'+d+'日。'];if(risk){var dmg=10+rnd(15);me.hp=clamp(me.hp-dmg,1,100);Ill.add(me,'wound',2);L.push('途中遇上盜匪，你掛了彩。（健康-'+dmg+'）');Inv.gold(30);}else{Inv.gold(70);L.push('一路平安，得酬金七十。');}me.sk.mart=clamp(me.sk.mart+1,0,100);return Eng.L(L,'',S.place,[ch('↩','place')]);};
@@ -2041,7 +2042,7 @@ Ev.LIB=[
  {id:'fMasterHint',ctx:['move','morning'],w:1,cd:15,cond:function(){return S.region==='frontier'&&!S.flags.masterMet;},text:function(){return ['獵戶說，深山雲霧裡住著個怪老頭，「會用刀子剖開人的肚子，再縫回去，人還活著！」'];},opts:[['記在心上',function(){S.flags.masterHint=1;return '你望向雲霧繚繞的山頭。';}]]},
  /* ---- 城中 ---- */
  {id:'cDoor',ctx:['move','morning'],w:2,cd:5,cond:function(){return S.region==='xianyang'&&(S.fam.tech.alco||pc().sk.med>=30);},text:function(){return ['一群人抬著個血淋淋的漢子衝到你面前：「大夫！救救他！」'];},opts:[['立刻動手',function(){Med.open({src:'call',ci:Med.caseOf(pick(['arrow','cut','burn']))});return {screen:'med'};}],['指點他們去找別的醫者',function(){S.fam.fame=Math.max(0,S.fam.fame-1);return '他們罵罵咧咧地走了。';}]]},
- {id:'cThief',ctx:['move'],w:2,cd:8,cond:function(){return S.region==='xianyang'&&S.gold>30;},text:function(){return ['人群裡有隻手輕輕碰了碰你的錢袋。'];},opts:[['反手扣住',function(){if(pc().at.dex+rnd(10)>14)return '你一把扣住那隻手——是個瘦得皮包骨的孩子。你鬆開手，塞給他一個餅。';var n=Math.min(S.gold,10+rnd(20));Inv.gold(-n);return '慢了一步，錢袋輕了'+n+'錢。';}]]},
+ {id:'cThief',ctx:['move'],w:2,cd:8,cond:function(){return S.region==='xianyang'&&S.gold>30;},text:function(){return ['人群裡有隻手輕輕碰了碰你的錢袋。'];},opts:[['反手扣住',function(){if(pc().at.dex+rnd(10)>14)return '你一把扣住那隻手——是個瘦得皮包骨的孩子。你鬆開手，塞給他一個餅。';var n=Math.min(S.gold,10+rnd(20));Inv.gold(-n);return '慢了一步，錢袋輕了'+n+'兩。';}],['捂緊錢袋快步走開',function(){if(rand()<0.6)return '你捂著錢袋擠出人群，回頭只看見一個瘦小的背影鑽進了巷子。';var n=Math.min(S.gold,5+rnd(8));Inv.gold(-n);return '走出老遠才發現，錢袋還是被劃了個口子，少了'+n+'兩。';}]]},
  {id:'cRival',ctx:['move'],w:2,cd:10,cond:function(){return S.region==='xianyang'&&S.fam.fame>=6;},text:function(){return ['一位老醫者在街口高聲說：「剖人肌膚、穿針引線，這是醫術？這是屠戶！」圍觀者越來越多。'];},opts:[['當眾講解消毒之理',function(){var me=pc();if(me.sk.lit+me.sk.med+rnd(30)>80){S.fam.fame+=2;return '你講沸水殺穢、酒精潔創，舉了幾個病例。人群中有人點頭——老醫者拂袖而去。（名聲+2）';}S.fam.notor=(S.fam.notor||0)+2;return '你講得太玄，人們只聽懂了「剖開」二字，紛紛後退。';}],['一笑置之',function(){return '你轉身回醫館。治好病人，比什麼都有說服力。';}]]},
  {id:'cOfficial',ctx:['move','morning'],w:1,cd:15,cond:function(){return S.region==='xianyang'&&S.fam.fame>=15;},text:function(){return ['一位官員府上的管家登門：「我家大人腹痛三日，請大夫過府。」'];},opts:[['出診',function(){if(S.fam.grudge&&!S.fam.grudge.done&&S.fam.grudge.clues.indexOf('人脈相助')<0){S.fam.grudge.clues.push('人脈相助');S.fam.grudge.ev++;}Med.open({src:'call',ci:Med.caseOf('append'),fee:150});return {screen:'med'};}],['推辭',function(){return '管家臉色一沉，走了。';}]]},
  {id:'cMatch',ctx:['move','morning'],w:2,cd:20,cond:function(){var me=pc();return !me.spouse&&ageOf(me)>=17&&ageOf(me)<40&&S.region!=='road';},text:function(){return ['媒婆扭著腰上門：「哎喲，這麼好的人才還沒婚配？我手上有一門好親事！」'];},opts:[['聽聽看',function(){var me=pc();var g=me.g==='f'?(S.world==='female'&&rand()<0.2?'f':'m'):'f';var p=genPerson({g:g,age:clamp(ageOf(me)+rnd(7)-3,16,45),kind:'npc',job:pick(['trader','scholar','farmer','owner','clerk']),met:1,aff:35,love:20,loc:{r:S.region,pl:'market'}});return {lines:['媒婆說的是'+p.n+'，'+ageOf(p)+'歲，'+JOBS[p.job]+'，性子'+p.pers.join('、')+'。'],focus:p.id,ch:[ch('💬 見一面','talk',{id:p.id}),ch('↩ 再說吧','place')]};}],['婉拒',function(){return '媒婆悻悻地走了。';}]]},
@@ -2054,13 +2055,26 @@ Ev.LIB=[
 Ev.cool=function(e){return S.day-(S.evseen[e.id]||-999)>=(e.cd||5);};
 Ev.roll=function(ctx){if(S.queue.length)return false;var c=Ev.LIB.filter(function(e){return e.ctx.indexOf(ctx)>=0&&Ev.cool(e)&&(!e.cond||e.cond());});if(!c.length)return false;var tot=c.reduce(function(s,e){return s+e.w;},0);var r=rand()*tot,e=c[0];for(var i=0;i<c.length;i++){r-=c[i].w;if(r<=0){e=c[i];break;}}S.evseen[e.id]=S.day;S.queue.push({go:'ev',a:{id:e.id}});return true;};
 Ev.get=function(id){return Ev.LIB.filter(function(e){return e.id===id;})[0];};
-NODES.ev=function(a){var e=Ev.get(a.id);if(!e)return NODES.place();var L=e.text();S.evcur=a.id;var c=e.opts.map(function(o,i){return ch(typeof o[0]==='function'?o[0]():o[0],'evc',{id:a.id,i:i});});if(AI.ready())c.push(ch('✍ 自己決定（輸入）','evFree',{id:a.id}));return Eng.L(L,'',S.place,c,{ev:a.id});};
+NODES.ev=function(a){var e=Ev.get(a.id);if(!e)return NODES.place();var L=e.text();S.evcur=a.id;var c=e.opts.map(function(o,i){return ch(typeof o[0]==='function'?o[0]():o[0],'evc',{id:a.id,i:i});});if(c.length<2&&!e.solo)c.push(ch('（靜觀其變）','evPass',{id:a.id}));if(AI.ready())c.push(ch('✍ 自己決定（輸入）','evFree',{id:a.id}));return Eng.L(L,'',S.place,c,{ev:a.id});};
+NODES.evPass=function(a){S.evcur='';return Eng.L([pick(['你沒有多做什麼，只把這件事記在心裡。','你按捺住了，事情就這樣過去了。','你嘆了口氣，轉身去做自己的事。'])],'',S.place,[ch('繼續','place')]);};
 NODES.evc=function(a){var e=Ev.get(a.id);var r=e.opts[a.i][1]();S.evcur='';if(r&&r.screen)return r;if(r&&r.lines){var sc=Eng.L(r.lines,r.focus||'',S.place,r.ch||[ch('繼續','place')]);return sc;}addLog('〔事〕'+String(r).slice(0,40),'事');return Eng.L([r],'',S.place,[ch('繼續','place')]);};
 NODES.evFree=function(a){return Eng.L(['（在下方輸入框寫下你的決定。）'],'',S.place,[ch('↩ 還是選吧','ev',{id:a.id})]);};
 /* ===== 交談 ===== */
 var TALK={
  greet:function(p){var T=ta(p),call=Gender.call(p.id);if(p.hh)return pick(['「回來啦？」','「今天累不累？」','「'+pc().n+'，鍋裡給你留了吃的。」']);if(!p.met)return pick(['「你是……？」'+T+'打量著你。','「有事？」']);if(p.love>=50)return '「'+call+'。」'+T+'看見你，眼睛一下子亮了。';if(p.aff>=40)return pick(['「是你啊！」','「來得正好，我正想找你。」']);if(p.aff<0)return '「……又是你。」'+T+'語氣冷淡。';return pick(['「'+call+'。」','「近來可好？」']);},
- chat:function(p){var J={farmer:['今年雨水不錯，就怕秋後蟲多。','地裡的活計，一天不做就荒了。'],trader:['最近布價又漲了。','做買賣，講究眼光。'],guard:['上頭催得緊，兄弟們也難。','差事難辦啊。'],scholar:['近讀〈商君書〉，頗有所得。','律令如山，可人心不是竹簡。'],soldier:['北邊又要打仗了。','軍中缺醫，一場仗下來，死於傷口潰爛的比死於刀下的還多。'],exile:['不知道這輩子還回不回得去。','能活著，就好。'],tradoc:['你那刀圭之術……老夫看不懂，也不服。','望聞問切，是祖宗的法子。'],fangshi:['天道玄微，凡人豈能窺測。','長生之術，確有其事。']};var a=J[p.job]||['日子嘛，一天天過。','你最近在忙什麼？','天氣'+(Eng.season()===3?'冷':'熱')+'，多保重。'];if(p.kind==='named'){var N=NAMED[p.id];a=[N.bio.replace(/。$/,'')+'——'+ta(p)+'沒有多說。','「'+(p.like[0]?'你可知哪裡有好的'+p.like[0]+'？':'無事。')+'」'];}return '「'+pick(a).replace(/^「|」$/g,'')+'」';}
+ chat:function(p){var J={farmer:['今年雨水不錯，就怕秋後蟲多。','地裡的活計，一天不做就荒了。'],trader:['最近布價又漲了。','做買賣，講究眼光。'],guard:['上頭催得緊，兄弟們也難。','差事難辦啊。'],scholar:['近讀〈商君書〉，頗有所得。','律令如山，可人心不是竹簡。'],soldier:['北邊又要打仗了。','軍中缺醫，一場仗下來，死於傷口潰爛的比死於刀下的還多。'],exile:['不知道這輩子還回不回得去。','能活著，就好。'],tradoc:['你那刀圭之術……老夫看不懂，也不服。','望聞問切，是祖宗的法子。'],fangshi:['天道玄微，凡人豈能窺測。','長生之術，確有其事。']};var a=J[p.job]||['日子嘛，一天天過。','你最近在忙什麼？','天氣'+(Eng.season()===3?'冷':'熱')+'，多保重。'];if(p.kind==='named'&&TALK.N[p.id])a=TALK.N[p.id].concat(p.like[0]?['你可知哪裡有好的'+p.like[0]+'？']:[]);else a=a.concat(TALK.G[(p.pers||[])[0]]||[]).concat(['你最近在忙什麼？','聽說城南來了個會用針線縫人的大夫。','今年的粟價，唉。']);var n=p.notes;var c=a.filter(function(x){return x!==n.lastChat&&x!==n.lastChat2;});var t=pick(c.length?c:a);n.lastChat2=n.lastChat;n.lastChat=t;return '「'+t.replace(/^「|」$/g,'')+'」';},
+ N:{yingzheng:['寡人昨夜又看了半宿奏簡。','六國……遲早是一家。','你的醫術，從哪裡學來的？','趙國的冬天很冷。寡人記得。','說吧，你想要什麼賞賜？','你不怕寡人？','朝中那些人，各有各的算盤。','你說的那個「消毒」，寡人讓宮人試過了。'],
+  mengtian:['今天的糖人做得真好看！','我爹又罵我了，哈哈。','你知道北邊的草原有多大嗎？騎三天馬都看不到頭！','軍中的弟兄們都說你是神醫！','改天我教你騎馬！','這把劍是我祖父傳下來的。','你吃過烤羊腿嗎？北邊的最好吃。','我才不怕疼呢——好吧，有一點。'],
+  lisi:['今日天色不錯，宜對弈。','人之賢不肖，譬如鼠矣。','你的醫館，生意如何？','咸陽城裡，處處是棋局。','法者，所以禁暴也。','大夫可知，我最怕什麼？——無趣。','這梅花，再過幾日就開了。','你看人的眼神，像在找病灶。'],
+  fusu:['今日讀了一卷詩，想念給你聽。','城南的孩子們，近來可好？','父王他……其實很累。','你給的藥，我按時喝了。','書上說「仁者愛人」，你便是這樣的人吧。','天又冷了。','我想去民間走走，看看真正的天下。','今日的琴，彈得還行嗎？'],
+  hanfei:['我、我近日在寫一卷新書。','世之治亂，在法、術、勢。','你、你說話很慢，我喜歡。','韓國……很小。','這竹簡，借、借你看。','人心難測，法、法可測。','你的解剖圖……我、我還想再看。','墨又用完了。'],
+  jingke:['來，喝一碗！','劍要快，人要義。','高漸離的筑，天下第一。','衛國的酒沒有這裡的烈。','你的手很穩，適合握劍——也適合握刀子救人。','我這條命，是撿回來的。','一諾千金，懂嗎？','今晚的月亮真圓。'],
+  xuanye:['……','有人跟著你。我處理了。','窗台上的東西，收到了嗎。','影子不需要名字。','你該早點睡。','傷口……好了。','今晚別出門。','……謝謝。'],
+  xiawuju:['刀子割人，成何體統。','湯藥才是正道。','你那酒精……有點意思。','宮裡的病，可不是市井的病。','老夫行醫三十年，沒見過你這種治法。'],
+  xufu:['海上有仙山，名曰蓬萊。','長生之術，你信不信？','你的醫術，莫非也是仙術？','天機不可洩露。','大王對長生，很有興趣。'],
+  zhaogao:['大夫辛苦了。','宮中耳目眾多，大夫說話要小心。','奴婢只是替大王跑腿的。','大夫的醫術，真是神乎其技啊。','有空，來奴婢府上坐坐。'],
+  gaojianli:['……想聽一曲嗎？','荊卿又喝醉了。','筑聲，是心聲。','易水的水，很冷。','你笑起來很好看。']},
+ G:{開朗:['哈哈，今天心情真好！','走，一起去看熱鬧？'],沉默:['……嗯。','你說，我聽著。'],暴躁:['煩死了！','別惹我。'],溫和:['慢慢來，不急。','你也要照顧好自己。'],精明:['這事兒，得算計算計。','無利不起早嘛。'],狡猾:['嘿嘿，大夫好啊。','有什麼好處，記得分我一份。'],仗義:['有事儘管開口！','朋友有難，豈能不管。'],熱心:['吃過了嗎？我家剛蒸了餅。','有什麼要幫忙的？'],刻薄:['哼。','你也配？'],多疑:['你打聽這個做什麼？','人心隔肚皮。'],正直:['做人要問心無愧。','不義之財，不可取。'],膽小:['最近外頭不太平……','我、我什麼都沒看見。'],貪財:['有錢能使鬼推磨。','最近手頭緊啊。']}
 };
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
  var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push(NAMED[id].sub+'。'+NAMED[id].bio);}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};

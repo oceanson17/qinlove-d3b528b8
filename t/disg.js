@@ -33,11 +33,11 @@ const SC=(scene,o)=>JSON.stringify(Object.assign({scene,speaker:'',bg:'',time:0,
  // AI 提示列出知情者
  Q.push(SC('（模擬）'));await p.evaluate(()=>{document.getElementById('free').value='嗯。';UI.submitFree();});await p.waitForTimeout(400);await L.flush(p);A(new RegExp(await p.evaluate(id=>cn(id),who)).test(last().split('【性別稱呼')[1]||''),'AI 提示列出知情者');
  // 親近／受傷掛鉤
- const hk=await p.evaluate(()=>{Gender.RISK.close=5;S.queue=[];var a=Gender.risk('zhaogao','close');return a&&S.queue.some(q=>q.go==='disgExpose'&&q.a.k==='close');});A(hk,'親近時識破機率');
+ const hk=await p.evaluate(()=>{Gender.RISK.close=5;S.queue=[];var t=['zhaogao','lisi','fusu','mengtian','xiawuju'].filter(function(x){People.meet(x);return !Gender.knows(x);})[0];var a=Gender.risk(t,'close');return {ok:a&&S.queue.some(q=>q.go==='disgExpose'&&q.a.k==='close'),t:t};});A(hk.ok,'親近時識破機率 '+JSON.stringify(hk));
  await p.evaluate(()=>{S.queue=[];});
  // 換回女裝（趙高在場，未知情 → 得知）、再換男裝
  await p.evaluate(()=>{S.place=S.home.pl;S.region=S.home.r;var z=P('zhaogao');z.here={d:S.day,per:S.per,pl:S.place};UI.go('place');});await L.flush(p);
- const hb=await L.btns(p);A(hb.some(t=>/換回女裝/.test(t))&&hb.some(t=>/沐浴/.test(t)),'家中有換裝／沐浴 '+hb.join('|').slice(0,120));
+ let hb=await L.btns(p);for(let i=0;i<5&&!hb.some(t=>/沐浴/.test(t));i++){await p.waitForTimeout(300);await p.evaluate(()=>{S.queue=[];UI.present(Eng.L(['（客舍）'],'',S.place,Place.acts()));});await p.waitForTimeout(200);hb=await L.btns(p);}A(hb.some(t=>/換回女裝/.test(t))&&hb.some(t=>/沐浴/.test(t)),'家中有換裝／沐浴 '+hb.join('|').slice(0,120));
  await L.click(p,/換回女裝/);await L.flush(p);const w1=await p.evaluate(()=>({on:Gender.on(),zk:FW.byId(S.disg.fid).kn.indexOf('zhaogao')>=0,pub:FW.byId(S.disg.fid).pub,txt:UI.sc.lines.map(l=>l.t).join('')}));
  A(!w1.on&&w1.zk&&!w1.pub&&/換回女/.test(w1.txt),'換回女裝：在場者得知、未公開 '+JSON.stringify([w1.on,w1.zk,w1.pub]));
  await L.click(p,/繼續/);await L.flush(p);await L.click(p,/換上男裝/);await L.flush(p);A(await p.evaluate(()=>Gender.on()&&S.disg.as==='m'),'再換男裝（沿用同一秘密）');

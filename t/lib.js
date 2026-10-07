@@ -27,7 +27,7 @@ exports.medSolve=async function(p,right){const ex=['t','pulse','resp','mind','lo
  for(const t of ans.seq){const ok=await p.evaluate(t=>Med.techOk(t).ok,t);if(ok){await p.click('[data-tc="'+t+'"]');await p.waitForTimeout(20);if(await p.$eval('#dlg',e=>e.className.indexOf('on')>=0))await L.dlgOk(p);}}
  await p.click('#mdFin');await p.waitForTimeout(40);const res=await p.evaluate(()=>Med.cur&&Med.cur.res?Med.cur.res.out:'');await p.click('#mdDone');await p.waitForTimeout(60);return res;};
 exports.newStd=async function(p,name,world){await p.click('#tNew');await p.waitForTimeout(60);if(world)await p.click('[data-act="suWorld"][data-v="'+world+'"]');if(name)await p.fill('#suName',name);await p.click('[data-act="suGo"]');await p.waitForTimeout(100);};
-exports.newRand=async function(p,o){o=o||{};await p.click('#tNew');await p.waitForTimeout(60);await p.click('[data-act="suMode"][data-v="'+(o.custom?'custom':'rand')+'"]');await p.waitForTimeout(30);if(o.world)await p.click('[data-act="suWorld"][data-v="'+o.world+'"]');
+exports.newRand=async function(p,o){o=o||{};await p.click('#tNew');await p.waitForTimeout(60);await p.click('[data-act="suMode"][data-v="'+(o.custom?'custom':'rand')+'"]');await p.waitForTimeout(30);if(o.world)await p.click('[data-act="suWorld"][data-v="'+o.world+'"]');if(o.g)await p.click('[data-act="suG"][data-v="'+o.g+'"]');
  if(o.custom){await p.fill('#suText',o.custom);await p.click('[data-act="suParse"]');await p.waitForTimeout(40);}
  else{if(o.birth){await p.selectOption('#suBirth',o.birth);await p.waitForTimeout(40);}if(o.baby)await p.click('[data-act="suBaby"]');}
  await p.click('[data-act="suGo"]');await p.waitForTimeout(100);};

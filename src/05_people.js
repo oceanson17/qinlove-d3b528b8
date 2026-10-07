@@ -56,7 +56,7 @@ var People={};
  People.mort=function(p){var a=ageOf(p);var base=a<5?0.03:(a<50?0.004:(a<60?0.02:(a<70?0.05:(a<80?0.12:0.25))));var c=(p.at.con||10);base*=(1.4-c/25);if(p.expr&&p.expr.indexOf('longev')>=0)base*=0.6;if(p.expr&&p.expr.indexOf('heart')>=0)base*=1.5;if(p.hp<40)base*=2;return base;};
  People.yearTick=function(){for(var id in S.ppl){var p=S.ppl[id];if(!p.alive)continue;var a=ageOf(p);
    if(a>=60&&!Ill.has(p,'old')){p.ill.push({k:'old',sev:1,d:S.day,tr:0});}
-   if(p.kind==='named')continue;if(id===S.pc){if(rand()<People.mort(p)*0.8)S.queue.unshift({go:'pcDeath',a:{why:a>55?'壽終':'急病'},stop:1});continue;}
+   if(p.kind==='named')continue;if(id===S.pc){if(a>=14&&rand()<People.mort(p)*0.8)S.queue.unshift({go:'pcDeath',a:{why:a>55?'壽終':'急病'},stop:1});continue;}
    if(rand()<People.mort(p)*(p.hh?0.8:1))People.die(id,a>55?'壽終正寢':'急病');
    if(p.job==='child'&&a>=14){p.job='none';if(p.hh)S.queue.push({go:'comeOfAge',a:{id:id},stop:1});}}
   Fam.tierCalc();};

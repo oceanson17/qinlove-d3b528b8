@@ -171,7 +171,8 @@ var Npc={tick:function(){if(S.region==='road')return;for(var id in S.ppl){var p=
  if(S.queue.length)return;var c=Object.keys(S.ppl).filter(function(id){var p=S.ppl[id];return p.alive&&p.met&&!p.hh&&id!==S.pc&&!p.jailed&&!p.away&&p.loc&&p.loc.r===S.region&&(p.aff>=35||p.love>=50)&&Pace.allow(id,'visit');});if(c.length&&rand()<0.35)S.queue.push({go:'visit',a:{id:pick(c)}});}};
 /* ===== 每日／每年鉤子 ===== */
 Eng.on('day',function(){var me=pc();if(!me)return;
- if(me.alive&&S.region!=='held'){var hung=Eng.house().filter(function(p){return p.food<=8;});if(hung.length&&!Eng.foodKeys().length&&S.gold<8&&S.day-(S.flags.hungry||-9)>=2){S.flags.hungry=S.day;S.queue.push({go:'hungry',a:{},stop:1});}
+ if(me.alive&&S.region!=='held'){var hung=Eng.house().filter(function(p){return p.food<=8;});if(hung.length&&S.region!=='road'&&S.gold>=8){var nb=Math.min(Math.ceil(hung.length*1.5),Math.floor(S.gold/6));if(!Eng.foodKeys().length&&nb>0){S.gold-=nb*6;Inv.add('grain',nb);addLog('〔家〕餓得發慌，花'+nb*6+'兩買了粟米','家');}Eng.meal(true);}
+ if(hung.length&&!Eng.foodKeys().length&&S.gold<8&&S.day-(S.flags.hungry||-9)>=2){S.flags.hungry=S.day;S.queue.push({go:'hungry',a:{},stop:1});}
   if(S.flags.debt&&S.gold>=S.flags.debt+40){Inv.gold(-S.flags.debt);addLog('〔家〕還清鄰里借糧 '+S.flags.debt+' 兩','家');S.flags.debt=0;}
   if(me.hp<25&&me.hp>0&&S.day-(S.flags.collapse||-99)>=8){S.flags.collapse=S.day;S.queue.push({go:'collapse',a:{},stop:1});}}
  Eng.house().forEach(function(p){if(p.preg&&S.day>=p.preg.due){var ks=People.birth(p);S.queue.push({go:'birth',a:{ids:ks.map(function(k){return k.id;}),mo:p.id},stop:1});}});

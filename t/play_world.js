@@ -14,7 +14,7 @@ const ok=[],fail=[];const A=(c,m)=>{(c?ok:fail).push(m);if(!c)console.log('FAIL'
  await L.shot(p,'v2_world_male');
  // ---- 女尊：隨機男主角 ----
  await p.evaluate(()=>UI.go('title'));await p.waitForTimeout(100);
- let tries=0,isMale=false;do{await L.newRand(p,{world:'female',birth:'farm'});await L.flush(p);isMale=await p.evaluate(()=>pc().g==='m');tries++;if(!isMale)await p.evaluate(()=>UI.go('title'));}while(!isMale&&tries<8);
+ let tries=0,isMale=false;do{await L.newRand(p,{world:'female',birth:'farm',g:'m'});await L.flush(p);isMale=await p.evaluate(()=>pc().g==='m');tries++;if(!isMale)await p.evaluate(()=>UI.go('title'));}while(!isMale&&tries<8);
  A(isMale,'女尊：隨機到男主角（'+tries+' 次）');if(V)await L.log(p,'女尊開局');
  const fw=await p.evaluate(()=>({w:S.world,o:Rule.ok(pc(),'office'),why:Rule.why(pc(),'office'),mw:Rule.marryWord(pc(),{g:'f'}),heads:Eng.house().map(function(q){return q.n+q.g+(q.rel||'');}).join(' ')}));
  A(fw.w==='female'&&!fw.o&&/女尊/.test(fw.why)&&fw.mw==='出嫁','女尊：男子不能入仕、成婚稱出嫁 '+JSON.stringify(fw));
@@ -27,7 +27,7 @@ const ok=[],fail=[];const A=(c,m)=>{(c?ok:fail).push(m);if(!c)console.log('FAIL'
  await p.evaluate(()=>UI.go('title'));await p.waitForTimeout(100);
  await L.newRand(p,{world:'equal',birth:'tradoc',baby:true});await L.flush(p);if(V)await L.log(p,'嬰兒開局');
  const a0=await p.evaluate(()=>ageOf(pc()));A(a0<=1,'嬰兒開局 年齡 '+a0);
- for(let i=0;i<160;i++){const r=await L.flush(p);if(r==='dlg'){await L.dlgOk(p);continue;}if(r==='med'){await L.medSolve(p,true);continue;}const age=await p.evaluate(()=>ageOf(pc()));if(age>=14)break;const b=await L.btns(p);if(V&&i<4)await L.log(p,'成長'+age);let k=b.findIndex(t=>/繼續|開始長大|咿咿|學醫|識字|長大成人|↩/.test(t));if(k<0)k=b.length-1;await p.locator('#choices .cbtn').nth(k).click();await p.waitForTimeout(30);}
+ for(let i=0;i<160;i++){const r=await L.flush(p);if(r==='dlg'){await L.dlgOk(p);continue;}if(r==='med'){await L.medSolve(p,true);continue;}const age=await p.evaluate(()=>ageOf(pc()));if(age>=14)break;const b=await L.btns(p);if(V&&i<4)await L.log(p,'成長'+age);if(!b.length){await p.waitForTimeout(250);continue;}let k=b.findIndex(t=>/繼續|開始長大|咿咿|學醫|識字|長大成人|↩/.test(t));if(k<0)k=b.length-1;await p.locator('#choices .cbtn').nth(k).click();await p.waitForTimeout(30);}
  const g1=await p.evaluate(()=>({age:ageOf(pc()),sk:pc().sk,expr:pc().expr}));A(g1.age>=14,'成長到十四歲 '+JSON.stringify(g1));if(V)await L.log(p,'十四歲');await L.shot(p,'v2_grownup');
  // 成婚生子後老死
  await p.evaluate(()=>{var me=pc();var sp=genPerson({g:me.g==='f'?'m':'f',age:ageOf(me)+2,kind:'npc',job:'farmer',met:1,aff:70,love:60});S.ppl[sp.id]=sp;People.marry(sp.id);var mo=me.g==='f'?me:sp;mo.born=S.day-20*DPY;mo.preg={d:S.day,due:S.day,fa:me.g==='f'?sp.id:me.id};var k=People.birth(mo)[0];k.born=S.day-15*DPY;k.sk.med=20;var k2;mo.preg={d:S.day,due:S.day,fa:me.g==='f'?sp.id:me.id};k2=People.birth(mo)[0];k2.born=S.day-12*DPY;me.born=S.day-70*DPY;S.fam.fame=40;});

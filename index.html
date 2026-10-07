@@ -1605,7 +1605,7 @@ var Letters={};
   if(NAMED_L[id2]&&q.aff>=35&&rand()<0.5)return Letters.send(id2,'named');
   if(r<0.3){var pls=REGION_PLACES[S.region].filter(function(k){return !PLACES[k].need&&!PLACES[k].home;});return Letters.send(id2,'invite',{pl:pick(pls),dd:1+rnd(3),per:1+rnd(3)});}
   if(r<0.5){var gifts=['cake','fruit','cloth','honey','wine','herb','salt'];return Letters.send(id2,'gift',{item:pick(gifts)});}
-  if(r<0.65&&S.fam.tech.alco){var cs=pick(['fever','diarrhea','cut','abscess','fracture','lung']);return Letters.send(id2,'ask',{cs:cs,ill:CASES[cs].n});}
+  if(r<0.65&&S.fam.tech.alco){var cs=pick(['fever','diarrhea','cut','abscess','fracture','lung']);return Letters.send(id2,'ask',{cs:cs,ill:CASES[Med.caseOf(cs)].dx});}
   Letters.send(id2,'greet');};
  Letters.unread=function(){return S?S.letters.filter(function(l){return !l.read;}).length:0;};
  Letters.reply=function(i,tone,text){var l=S.letters[i];if(!l||l.rep)return;l.rep=tone;l.rt=text||'';var id=l.id;var p=P(id);
@@ -2060,15 +2060,16 @@ var TALK={
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
  var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push(NAMED[id].sub+'。'+NAMED[id].bio);}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
  if(AI.ready()&&!a.off){return {async:{type:'talk',id:id,topic:a.topic||'閒聊'},fb:off};}return off();};
-NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));
+NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl&&Med.caseOf(cl.cs)>=0)c.push(ch('🏠 應邀出診（'+CASES[Med.caseOf(cl.cs)].dx+'）','talkT',{id:id,k:'call'}));
  if(Object.keys(S.inv).some(function(k){return ITEMS[k]&&(ITEMS[k].gift||ITEMS[k].k==='food')&&S.inv[k]>0&&!ITEMS[k].hide;}))c.push(ch('🎁 送禮','gift',{id:id}));
  if(p.love>=25&&p.spouse!==S.pc&&!p.confessed&&!p.hh&&ageOf(p)>=16&&ageOf(me)>=16)c.push(ch('💗 表白心意','confess',{id:id}));if(!People.canPropose(id))c.push(ch('💍 '+Rule.marryWord(me,p).replace(/^結為/,'')+'／求親','propose',{id:id}));
  if(p.aff>=30&&!p.hh)c.push(ch('🌸 邀'+ta(p)+'同遊','talkT',{id:id,k:'date'}));if(FW.secretsOf().length&&p.trust>=35)c.push(ch('🔏 吐露秘密','talkT',{id:id,k:'secret'}));c.push(ch('告辭','place'));return c;};
 NODES.talkT=function(a){var id=a.id,p=P(id),me=pc();var L=[];var k=a.k;
- if(AI.ready()&&k!=='heal'){var tp={chat:'閒聊',news:'問近況',date:'邀約同遊',secret:'主角想吐露秘密'}[k];return {async:{type:'talk',id:id,topic:tp},fb:function(){return NODES.talkT({id:id,k:k,off:1,_o:1});}};}
+ if(AI.ready()&&k!=='heal'&&k!=='call'){var tp={chat:'閒聊',news:'問近況',date:'邀約同遊',secret:'主角想吐露秘密'}[k];return {async:{type:'talk',id:id,topic:tp},fb:function(){return NODES.talkT({id:id,k:k,off:1,_o:1});}};}
  if(k==='chat'){Eng.pass(1);L.push([id,TALK.chat(p)]);if(p.notes.tk!==S.day){p.notes.tk=S.day;People.rel(id,{aff:2,trust:1},'與'+me.n+'閒聊');if(p.love<60&&p.aff>=35&&rand()<0.3)People.rel(id,{love:2});}}
  else if(k==='news'){L.push([id,'「'+People.thought(p).replace(/^（|）$/g,'')+'」']);if(p.ill.length)L.push(ta(p)+'說著咳了兩聲——看起來是'+Ill.str(p)+'。');if(p.kind==='named'&&NAMED[id].ail&&!p.notes.ailCured)L.push('你注意到'+ta(p)+'似乎有'+NAMED[id].ail+'的毛病。');}
  else if(k==='heal'){if(p.ill.length){Med.open({pid:id,src:'call',fee:p.kind==='named'?60:15});return {screen:'med'};}if(p.kind==='named'){var ci=Med.caseOf({頭痛失眠:'fever',舊箭傷:'arrow',胃疾:'diarrhea',寒症:'lung',心悸:'fever',舊毒:'poison',刀傷:'cut'}[NAMED[id].ail]||'fever');p.notes.ailTry=S.day;Med.open({pid:'',ci:ci,src:'call',fee:40,cb:'ail:'+id});return {screen:'med'};}}
+ else if(k==='call'){var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl){S.calls=S.calls.filter(function(v){return v!==cl;});Eng.pass(1);People.rel(id,{aff:4,trust:4},me.n+'應邀到我家出診');Med.open({pid:'',ci:Med.caseOf(cl.cs),src:'call',fee:15+Fam.tier()*5});return {screen:'med'};}}
  else if(k==='date'){Eng.pass(2);People.rel(id,{aff:4,love:3},'和'+me.n+'同遊');me.mood=clamp(me.mood+6,0,100);L.push('你們沿著'+(S.region==='frontier'?'河灘':'渭水')+'走了很久，說了很多話。');L.push([id,p.love>=40?'「……下回，還一起來吧。」':'「今天很開心。」']);}
  else if(k==='secret'){var f=FW.secretsOf().filter(function(x){return x.kn.indexOf(id)<0;})[0];if(!f)L.push('你想說的，'+ta(p)+'都已經知道了。');else{Seal.told(id,f);People.rel(id,{trust:6},me.n+'把秘密託付給我');L.push('你壓低聲音，把「'+f.t+'」告訴了'+p.n+'。');L.push([id,'「……我知道了。這件事，我不會對任何人說。」']);}}
  return Eng.L(L,id,S.place,NODES.talkCh(id));};

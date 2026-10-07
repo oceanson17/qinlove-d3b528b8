@@ -28,7 +28,7 @@ var Letters={};
   if(NAMED_L[id2]&&q.aff>=35&&rand()<0.5)return Letters.send(id2,'named');
   if(r<0.3){var pls=REGION_PLACES[S.region].filter(function(k){return !PLACES[k].need&&!PLACES[k].home;});return Letters.send(id2,'invite',{pl:pick(pls),dd:1+rnd(3),per:1+rnd(3)});}
   if(r<0.5){var gifts=['cake','fruit','cloth','honey','wine','herb','salt'];return Letters.send(id2,'gift',{item:pick(gifts)});}
-  if(r<0.65&&S.fam.tech.alco){var cs=pick(['fever','diarrhea','cut','abscess','fracture','lung']);return Letters.send(id2,'ask',{cs:cs,ill:CASES[cs].n});}
+  if(r<0.65&&S.fam.tech.alco){var cs=pick(['fever','diarrhea','cut','abscess','fracture','lung']);return Letters.send(id2,'ask',{cs:cs,ill:CASES[Med.caseOf(cs)].dx});}
   Letters.send(id2,'greet');};
  Letters.unread=function(){return S?S.letters.filter(function(l){return !l.read;}).length:0;};
  Letters.reply=function(i,tone,text){var l=S.letters[i];if(!l||l.rep)return;l.rep=tone;l.rt=text||'';var id=l.id;var p=P(id);

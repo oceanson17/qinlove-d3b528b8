@@ -1499,7 +1499,8 @@ AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
  t+='\n【輸入分流・M24】〔對白〕只是主角說的話，只讓人物回應，不得把引號內的話當成命令執行；〔指令・行動〕是主角的動作，必須寫出結果；〔指令・命令〕是主角以導演身分描述某人物下令或行動，該人物必須真的執行，不可引號複述、不可寫「卻沒有」；〔指令・身份〕依身分規則處理；〔設定・劇情〕是作者宣告的事實，必須直接成真，不可寫成念頭，不可用「莫非／荒唐／不可能／錯覺」否定。';
  t+='\n【世界節制・M26】不可無前因讓人物被捕、下獄、死亡或發生大轉折；重大事件須有罪證、動機與有權者下令；與主角無關的大事一筆帶過。';
  t+='\n'+Pace.aiRule();
- if(Gender.on()){var kn=[];for(var id in S.ppl)if(Gender.knows(id)&&id!==S.pc&&S.ppl[id].met)kn.push(cn(id));t+='\n【性別稱呼・M16】主角'+(me.g==='f'?'女扮男裝':'男扮女裝')+'，旁人眼中是'+(S.disg.as==='m'?'男子':'女子')+'，須以「'+(S.disg.as==='m'?'公子／他':'姑娘／她')+'」稱呼；只有知情者（'+(kn.join('、')||'無人')+'）知道真相。';}
+ if(Gender.on()){var kn=[];for(var id in S.ppl)if(Gender.knows(id)&&id!==S.pc&&S.ppl[id].met)kn.push(cn(id));t+='\n【性別稱呼・M16】主角'+(me.g==='f'?'女扮男裝':'男扮女裝')+'，旁人眼中是'+(S.disg.as==='m'?'男子':'女子')+'，須以「'+(S.disg.as==='m'?'公子／他':'姑娘／她')+'」稱呼；只有知情者（'+(kn.join('、')||'無人')+'）知道真相；知情者在旁人面前也會替主角保密、照樣以「'+(S.disg.as==='m'?'公子':'姑娘')+'」相稱，只在私下流露。不知情者不得憑空識破、不得說出「女兒身／女扮男裝」等字眼；識破只能由遊戲事件決定。';}
+ else if(S.disg&&S.disg.fid){var f0=FW.byId(S.disg.fid);if(f0&&!f0.pub){var kn2=f0.kn.filter(function(x){return x!==S.pc;}).map(cn);t+='\n【易裝】主角此刻穿回本來的衣裳；曾以'+(S.disg.as==='m'?'男':'女')+'裝示人，知情者：'+(kn2.join('、')||'無人')+'。';}}
  t+='\n【身分變更・M17】主角的身分（官職、醫官、爵位、入宮、拜師、從軍）只能由有權者親口批准而改變，寫在 fx.change；主角單方面「想當」不算。官秩：'+OFFICE.slice(1).join('＞')+'；醫官：'+MEDOFF.slice(1).join('＞')+'。';
  return t;};
 AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
@@ -1670,8 +1671,8 @@ Act.RULES=[
  {k:'poison',re:/下毒|投毒|毒死/,f:function(id){var p=P(id);if(!p)return '你握著藥包，終究沒有找到下手的對象。';addLog('〔密謀〕'+_me()+'向'+p.n+'下毒','行');FW.add(_me()+'曾向'+p.n+'下毒',[S.pc],S.pc,{secret:1,kw:['下毒','投毒']});Ill.add(p,'poison',2);S.fam.notor=(S.fam.notor||0)+5;return '你把藥末抖進'+p.n+'的碗裡。'+p.n+'喝下後不久，臉色就變了。（醫者之手，也能殺人。）';},ok:1},
  {k:'selfharm',solo:1,re:/自盡|自殘|割腕|尋死|撞牆/,f:function(id){var me=pc();me.hp=clamp(me.hp-15,1,100);me.mood=clamp(me.mood-10,0,100);var h=People.present()[0];if(h){People.rel(h,{trust:3},'阻止'+_me()+'傷害自己');Bond.apply(h,{e:{依賴:3},th:'擔心'+_me()+'想不開'});return P(h).n+'撲上來死死攥住你的手：「你瘋了嗎！」（健康-15）';}return '血滲了出來。你看著它，忽然覺得很累。（健康-15）';}},
  {k:'show',re:/出示|拿出|亮出|掏出/,f:function(id,t){var it='';for(var k in ITEMS)if(!ITEMS[k].hide&&t.indexOf(ITEMS[k].n)>=0&&Inv.has(k))it=k;if(!it)return '你在懷裡摸了摸，沒有那樣東西。';var p=P(id);if(p&&ITEMS[it].c==='tool'&&(it==='steth'||it==='scalpel')){Bond.apply(id,{e:{戒備:4},th:'那古怪的器具是什麼'});return p.n+'盯著你手中的'+ITEMS[it].n+'，眉頭緊皺：「這是何物？」';}return '你拿出'+ITEMS[it].n+'。'+(p?p.n+'看了一眼。':'');}},
- {k:'disguise',solo:1,re:/女扮男裝|男扮女裝|易裝|束胸|改作男裝|改作女裝/,f:function(){var me=pc();if(Gender.on())return '你本來就作'+(S.disg.as==='m'?'男':'女')+'裝打扮。';if(!Inv.has('cloth'))return '易裝至少要一匹布。';Inv.add('cloth',-1);Gender.start(me.g==='f'?'m':'f');return '你束起長髮、換上'+(me.g==='f'?'男子':'女子')+'衣裳，對著水面看了很久——從今天起，旁人會叫你「'+(me.g==='f'?'公子':'姑娘')+'」。';}},
- {k:'undisguise',solo:1,re:/卸去易裝|恢復女裝|恢復男裝|卸裝|不再易裝/,f:function(){if(!Gender.on())return '你並未易裝。';Gender.stop();return '你換回本來的衣裳。街坊們的眼神，一下子都變了。';}},
+ {k:'disguise',solo:1,re:/女扮男裝|男扮女裝|易裝|束胸|改作男裝|改作女裝|換上男裝|換男裝/,f:function(){var me=pc();return Gender.wear(me.g==='f'?'m':'f');}},
+ {k:'undisguise',solo:1,re:/卸去易裝|恢復女裝|恢復男裝|卸裝|不再易裝|換回女裝|換回男裝/,f:function(){if(!Gender.on())return '你並未易裝。';return Gender.wear(pc().g);}},
  {k:'study',solo:1,re:/讀書|學習|練字|唸書|背書/,f:function(){var me=pc();Eng.pass(1);me.sk.lit=clamp(me.sk.lit+1,0,100);return '你讀了一個時辰的竹簡。（文+1）';}},
  {k:'train',solo:1,re:/練武|練劍|習武|鍛鍊|打拳/,f:function(){var me=pc();Eng.pass(1);me.sk.mart=clamp(me.sk.mart+1,0,100);me.sta=clamp(me.sta-10,0,100);return '你練得一身大汗。（武+1，體力-10）';}},
  {k:'work',solo:1,re:/打工|幹活|做工|做活|找活/,f:function(){return {go:'work'};}},
@@ -2391,6 +2392,46 @@ NODES.aflDo=function(a){if(a.k==='dose'){Poison.dose();pc().hp=clamp(pc().hp+6,0
 Eng.on('day',function(){Poison.tick();});
 RECIPES.push({id:'dose',n:'緩解藥',need:{herb:2,alcohol:1},out:2,sk:3,d:'按舊方配製，壓制體內舊毒'});
 
+/* ---- 13_disg.js ---- */
+/* ===== 女扮男裝（v4）：開局／遊戲中換裝、識破機率與事件（診症、受傷、沐浴、親近）、主動坦白、心動反應、立繪切換 ===== */
+(function(){
+ Gender.syncArt=function(){var me=pc();if(!me||me.portrait.indexOf('heroine')!==0)return;var m=Gender.on()&&S.disg.as==='m';me.portrait=m&&ART.file('char_heroine_m')?'heroine_m':'heroine';};
+ var os=Gender.start;Gender.start=function(as){if(S.disg&&S.disg.fid&&FW.byId(S.disg.fid)){S.disg.on=1;S.disg.as=as;S.disg.since=S.day;}else os(as);S.disg.kit=1;Gender.syncArt();};
+ /* 換裝：w＝要穿的性別衣裳 */
+ Gender.wear=function(w){var me=pc();var L=[];if(w===me.g){if(!Gender.on())return '你本來就是這身打扮。';var f=FW.byId(S.disg.fid);var seen=People.present().filter(function(id){return P(id).met&&f&&f.kn.indexOf(id)<0&&!f.pub;});S.disg.on=0;Gender.syncArt();
+   L.push('你解開束胸，換回'+(me.g==='f'?'女':'男')+'裝，長髮放了下來。');seen.forEach(function(id){Gender.learn(id,'see');L.push(P(id).n+'看著你，愣住了——原來那位「'+(S.disg.as==='m'?'公子':'姑娘')+'」……');});addLog('〔易裝〕換回'+(me.g==='f'?'女':'男')+'裝','秘');return L.join('\n');}
+  if(Gender.on())return '你已經是'+(w==='m'?'男':'女')+'裝打扮。';if(!(S.disg&&S.disg.kit)&&!Inv.has('cloth'))return '易裝至少要一匹布（市集有賣）。';if(!(S.disg&&S.disg.kit))Inv.add('cloth',-1);Gender.start(w);return '你束起長髮、壓低嗓音，換上'+(w==='m'?'男':'女')+'子衣裳。從現在起，不知情的人會叫你「'+(w==='m'?'公子':'姑娘')+'」。';};
+ /* 私下得知（不公開；好感不差者自動守秘） */
+ Gender.learn=function(id,how){var f=S.disg&&FW.byId(S.disg.fid);if(!f||f.kn.indexOf(id)>=0)return false;FW.learn(id,f.id,100,how==='told'?'told':'witness');var p=P(id);if(p&&p.aff>-20){f.seal=f.seal||{};f.seal[id]=1;}S.disg.exp=(S.disg.exp||0)+1;addLog('〔易裝〕'+cn(id)+'知道了你的真實性別','秘');if(p&&p.kind==='named')Nom.add(id,'得知'+pc().n+'其實是'+(pc().g==='f'?'女子':'男子'),'secret');return true;};
+ Gender.expose=function(by){if(!S.disg)return;var f=FW.byId(S.disg.fid);if(by)Gender.learn(by,'see');S.disg.on=0;if(f)FW.goPublic(f,by?'與'+cn(by)+'有關':'主動公開');addLog('〔易裝〕身分公開','秘');Gender.syncArt();Fam.tierCalc();};
+ /* 識破機率 */
+ Gender.RISK={med:0.45,hurt:0.3,bath:0.6,close:0.22,notice:0.08};
+ Gender.risk=function(id,kind){if(!Gender.on()||!id||Gender.knows(id))return false;var p=P(id);if(!p||!p.alive)return false;var r=Gender.RISK[kind]||0.1;r+=((p.at&&p.at.wit)||10)/100;if(p.pers.indexOf('多疑')>=0||p.pers.indexOf('精明')>=0)r+=0.1;if(S.disg.since&&S.day-S.disg.since<2)r*=0.5;
+  if(rand()<r){if(!S.queue.some(function(q){return q.go==='disgExpose';}))S.queue.push({go:'disgExpose',a:{id:id,k:kind},stop:1});return true;}return false;};
+ Gender.REACT={yingzheng:['（沉默良久）「欺君。」他忽然笑了，「……寡人倒想看看，你還藏著什麼。」',{love:4,trust:-3}],mengtian:['「難怪你的手那麼小！我、我之前還跟你勾肩搭背……」他整張臉都紅透了。',{love:6,aff:3}],lisi:['「我早猜到幾分。放心，這種秘密，我比你更懂得怎麼收好。」',{trust:4,love:2}],fusu:['「你一個人扛了這麼久……辛苦了。往後在我面前，不必再裝。」',{love:5,trust:5}],hanfei:['他提筆寫了幾個字遞給你：「我，不會說。你，很勇敢。」',{love:4,trust:4}],jingke:['「哈！妙極！這天下能騙過我荊軻的，你是頭一個！」他舉起酒罈，「該罰三杯——罰我自己！」',{love:4,aff:4}],xuanye:['「……我一直知道。」面具下的聲音很輕，「從你第一次替我縫傷的時候。」',{love:5,trust:3}]};
+ Gender.react=function(id){var p=P(id);var R=Gender.REACT[id];if(R&&(Rom.stage(id)>0||p.love>0||p.aff>=25)){People.rel(id,R[1],'得知'+pc().n+'的真實性別');Bond.apply(id,{e:{震驚:4,愛慕:R[1].love||0},th:'原來'+pc().n+'是'+(pc().g==='f'?'女子':'男子')});return [[id,pc().g==='f'?R[0]:'（他怔了很久）「……原來如此。我不會說出去。」']];}
+  if(p.kind==='named')return [[id,'「……原來如此。」']];return [];};
+ var KT={med:'替你解開衣襟查看傷勢時，'+'手停在了半空。',hurt:'扶你起來時，碰到了你束得緊緊的胸口。',bath:'推門進來時，你正散著長髮在水邊梳洗。',close:'靠得太近了——近得能看清你喉間沒有喉結、耳垂上那個早已癒合的耳洞。',notice:'盯著你的喉頭和手腕，眼神從疑惑變成了震驚。'};
+ NODES.disgExpose=function(a){var p=P(a.id);if(!p||!Gender.on()||Gender.knows(a.id))return NODES.place();var me=pc();var k=a.k||'notice';
+  return Eng.L([p.n+KT[k],[a.id,'「你……'+(me.g==='f'?'你是女子？':'你是男子？')+'」']],a.id,S.place,[ch('🙏 求'+ta(p)+'替我保密','dxDo',{id:a.id,k:'beg'}),ch('🤫 坦白一切，只告訴'+ta(p),'dxDo',{id:a.id,k:'confide'}),ch('📢 索性公開，不再隱瞞','dxDo',{id:a.id,k:'admit'}),ch('😠 威脅'+ta(p)+'閉嘴','dxDo',{id:a.id,k:'threat'})]);};
+ NODES.dxDo=function(a){var p=P(a.id);var L=[];
+  if(a.k==='beg'){Gender.learn(a.id,'see');People.rel(a.id,{trust:3});L.push([a.id,'「……我什麼也沒看見。」']);L=L.concat(Gender.react(a.id));}
+  else if(a.k==='confide'){Gender.learn(a.id,'told');People.rel(a.id,{trust:6,aff:3},pc().n+'對'+ta(p)+'說了真話');L.push('你把一切原原本本告訴了'+p.n+'。');L=L.concat(Gender.react(a.id));}
+  else if(a.k==='admit'){Gender.expose(a.id);L.push('消息傳開了。有人驚嘆，有人非議'+(S.world==='male'&&pc().g==='f'?'：「女人也敢……」':'。'));L=L.concat(Gender.react(a.id));}
+  else{Gender.learn(a.id,'see');People.rel(a.id,{aff:-10,trust:-8});Bond.apply(a.id,{e:{怨恨:8,戒備:10}});var f=FW.byId(S.disg.fid);if(f&&f.seal)delete f.seal[a.id];L.push(p.n+'臉色發白，點了點頭。但你知道，這根刺埋下了。');}
+  return Eng.L(L,a.id,S.place,[ch('繼續','place')]);};
+ NODES.dxTell=function(a){var p=P(a.id);Gender.learn(a.id,'told');People.rel(a.id,{trust:5},pc().n+'主動坦白真實性別');return Eng.L(['你深吸一口氣，對'+p.n+'說出了真相：你其實是'+(pc().g==='f'?'女子':'男子')+'。'].concat(Gender.react(a.id)),a.id,S.place,[ch('繼續','place')]);};
+ NODES.wear=function(a){return Eng.L([Gender.wear(a.g)],'',S.place,[ch('繼續','place')]);};
+ NODES.bath=function(){Eng.pass(1);var me=pc();me.mood=clamp(me.mood+6,0,100);if(Ill.has(me,'blister'))Ill.cure(me,'blister',1);var w=People.present().filter(function(id){return P(id).met&&!Gender.knows(id);});
+  if(Gender.on()&&w.length&&Gender.risk(pick(w),'bath'))return NODES.disgExpose(S.queue.pop().a);return Eng.L(['你閂上門，好好洗去了一身塵土。'+(Gender.on()?'束胸布解開的那一刻，你長長吐了一口氣。':'')],'',S.place,[ch('繼續','place')]);};
+ /* 掛鉤：親近（心動章節）、受傷／毒發／病倒時被扶 */
+ var ord=NODES.romDo;NODES.romDo=function(a){var r=ord(a);if(Gender.on())Gender.risk(a.id,'close');return r;};
+ ['collapse','antiFit','aflFit'].forEach(function(n){var o=NODES[n];if(!o)return;NODES[n]=function(a){var r=o(a);if(Gender.on()&&r&&r.focus)Gender.risk(r.focus,n==='collapse'?'hurt':'med');return r;};});
+ var otc=NODES.talkCh;NODES.talkCh=function(id){var c=otc(id);if(Gender.on()&&!Gender.knows(id)&&P(id)&&P(id).trust>=20)c.splice(Math.max(0,c.length-1),0,ch('🤫 坦白真實性別','dxTell',{id:id}));return c;};
+ var oacts=Place.acts;Place.acts=function(){var c=oacts.apply(this,arguments);var me=pc();var priv=Eng.atHome()||S.place==='lodge'||S.place==='river';if(me.alive&&me.g==='f'&&ageOf(me)>=12&&priv){if(Gender.on())c.splice(Math.max(0,c.length-1),0,ch('👘 換回女裝','wear',{g:'f'}));else if(S.disg&&S.disg.kit||Inv.has('cloth'))c.splice(Math.max(0,c.length-1),0,ch('🎭 換上男裝','wear',{g:'m'}));}
+  if(me.alive&&priv&&S.region!=='road')c.splice(Math.max(0,c.length-1),0,ch('🛁 沐浴','bath'));return c;};
+})();
+
 /* ---- 13_end.js ---- */
 /* ===== 結局：12 個固定結局＋AI／模板獨特結局、結局冊（跨存檔）、傳承 ===== */
 var End={};
@@ -2775,7 +2816,7 @@ Panels.setup=function(){Panels.su={mode:'std',world:'equal',g:'f',era:'y10',name
 Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div class="seg">'+[['std','標準開局'],['rand','全隨機'],['custom','自設身世']].map(function(o){return '<button data-act="suMode" data-v="'+o[0]+'" class="'+(u.mode===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';
  h+='<h4>世界設定</h4><div class="seg">'+Object.keys(WORLDS).map(function(k){return '<button data-act="suWorld" data-v="'+k+'" class="'+(u.world===k?'on':'')+'">'+WORLDS[k].n+'</button>';}).join('')+'</div><p class="note">'+esc(WORLDS[u.world].d)+'</p>';
  h+='<h4>開局時間</h4><div class="seg">'+Object.keys(ERAS).map(function(k){return '<button data-act="suEra" data-v="'+k+'" class="'+(u.era===k?'on':'')+'">'+ERAS[k].n+'</button>';}).join('')+'</div><p class="note">'+esc(ERAS[u.era].d)+'</p>';
- h+='<h4>主角性別</h4><div class="seg">'+[['f','女'],['m','男']].map(function(o){return '<button data-act="suG" data-v="'+o[0]+'" class="'+(u.g===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div><p class="note">'+(u.g==='m'?'男主角：稱呼、婚嫁（娶／入贅按世界設定）、心動角色反應、易裝（男扮女裝）都會跟著變；七位核心人物照樣可以結緣。':'女主角（標準開局預設）。')+'</p>';
+ h+='<h4>主角性別</h4><div class="seg">'+[['f','女'],['m','男']].map(function(o){return '<button data-act="suG" data-v="'+o[0]+'" class="'+(u.g===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>'+(u.g==='f'?'<div class="row"><button class="btn'+(u.disg?' on':'')+'" data-act="suDisg">'+(u.disg?'☑':'☐')+' 女扮男裝開局</button></div>':'')+'<p class="note">'+(u.g==='m'?'男主角：稱呼、婚嫁（娶／入贅按世界設定）、心動角色反應、易裝（男扮女裝）都會跟著變；七位核心人物照樣可以結緣。':'女主角（標準開局預設）。')+'</p>';
  if(u.mode==='std'){h+='<h4>'+(u.g==='m'?'西醫':'女西醫')+'</h4><p class="note">'+(u.g==='m'?'他':'她')+'在隱世山谷隨師父青囊子學了十二年西方醫術——解剖、縫合、消毒、退燒、接骨、藥理、聽診——今日學成下山，來到咸陽。</p><label class="field">姓名（2–4 字）<input id="suName" maxlength="6" value="'+esc(u.name)+'" autocomplete="off"></label><div class="row">'+(u.g==='m'?DEF_NAMES_M:DEF_NAMES).map(function(n){return '<button class="btn" data-act="suNm" data-v="'+esc(n)+'">'+esc(n)+'</button>';}).join('')+'</div>';}
  else if(u.mode==='rand'){var r=u.r;var B=BIRTHS.filter(function(b){return b.k===r.birth;})[0];h+='<h4>隨機身世</h4><div class="rcard"><div class="rav">'+ART.sil({id:'pv',n:r.sur+r.gn,gn:r.gn,g:r.g,born:S?0:0,look:{hair:'#2a2020'},kind:'pc',alive:1,_age:r.age})+'</div><div><b>'+esc(r.sur+r.gn)+'</b>（'+(r.g==='f'?'女':'男')+'，'+(r.baby?'初生嬰兒':r.age+'歲')+'）<br>'+esc(B.n)+'——'+esc(B.d)+'<br>天賦：'+r.tal.map(function(t){return {med:'醫',mart:'武',lit:'文',trade:'商',farm:'農',craft:'工'}[t];}).join('、')+'；體'+r.at.con+' 智'+r.at.wit+' 貌'+r.at.look+'<br>'+(r.genes.length?'隱約有「'+r.genes.map(function(g){return GENES[g].n;}).join('、')+'」之相':'未見特殊稟賦')+(r.birth==='exile'?'<br>罪名：'+esc(r.crime)+'；流放'+esc(EXILE_DEST.filter(function(d){return d.k===r.dest;})[0].n):'')+'<br>兄弟姊妹 '+r.sibs+' 人'+(r.grand?'、祖母同住':'')+'</div></div>';
   h+='<div class="row"><button class="btn pri" data-act="suRoll">🎲 重抽</button><button class="btn'+(u.baby?' on':'')+'" data-act="suBaby">'+(u.baby?'☑':'☐')+' 從嬰兒開始</button></div><label class="field">指定出身<select id="suBirth"><option value="">隨機</option>'+BIRTHS.map(function(b){return '<option value="'+b.k+'"'+(u.birth===b.k?' selected':'')+'>'+b.n+'</option>';}).join('')+'</select></label><p class="note">流放之家：要護著家人走完流放路、在邊地開荒搭屋，或許還會在深山遇見傳授西醫的奇人。</p>';}
@@ -2785,6 +2826,7 @@ Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div clas
 Panels.act.suMode=function(v){Panels.su.mode=v;Sh.draw();};Panels.act.suWorld=function(v){Panels.su.world=v;Sh.redraw();};
 Panels.act.suG=function(v){var u=Panels.su;if(u.g===v)return;u.g=v;var A=v==='m'?DEF_NAMES_M:DEF_NAMES,B=v==='m'?DEF_NAMES:DEF_NAMES_M;var i=B.indexOf(u.name);if(i>=0||!u.name)u.name=A[Math.max(0,i)];u.r=rollBirth({birth:u.r.birth,g:v,baby:u.baby});Sh.redraw();};
 Panels.act.antiTake=function(){if(Fate.take())Sh.redraw();};
+Panels.act.suDisg=function(){Panels.su.disg=!Panels.su.disg;Sh.redraw();};
 Panels.act.suEra=function(v){Panels.su.era=v;Sh.redraw();};
 Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
 Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
@@ -2795,6 +2837,7 @@ Panels.act.suGo=function(){var u=Panels.su;var first;START_BC=(ERAS[u.era]||ERAS
  if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}
  else{u.ctext=($('suText')||{}).value||u.ctext;if(!u.parsed||u.parsed.raw!==u.ctext.trim().slice(0,400))u.parsed=Origin.parse(u.ctext);var o=u.parsed;var cn0=(($('suName')||{}).value||'').replace(/\s/g,'').slice(0,6);if(o.base==='std'){first=Start.std({name:cn0||(u.g==='m'?DEF_NAMES_M:DEF_NAMES)[0],world:u.world,g:u.g,age:o.age!=null&&o.age>=14?o.age:19});Origin.apply(o);}else{var r=rollBirth({birth:o.birth||'',g:u.g,baby:false});if(o.age!=null&&o.age>=14)r.age=o.age;if(cn0.length>=2){r.sur=cn0.slice(0,1);r.gn=cn0.slice(1);}first=Start.rand(r,{world:u.world,origin:o});}}
+ if(u.disg&&u.g==='f'&&pc().g==='f'&&!Gender.on()){Gender.start('m');(S.origin=S.origin||{lines:[]}).lines=(S.origin.lines||[]);S.origin.lines.push('出門前，你束起長髮、纏好束胸，換上一身男裝。從今往後，不知情的人會叫你「公子」——直到有人識破。');}
  UI.begin(first);};
 /* ---------- 行囊 ---------- */
 Panels.bag=function(tab){Sh.open('行囊',[['st','狀態'],['inv','物品'],['craft','製藥'],['tech','醫術']],Panels.bagR,tab||'st');};

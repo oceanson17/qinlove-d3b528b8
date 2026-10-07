@@ -1345,7 +1345,7 @@ var Pace={
  mark:function(id){S.pace.last=S.day;S.pace.per[id]=S.day;},
  guard:function(id,f,conf,how){if(how==='told'||how==='src'||how==='force'||how==='interrogate'||how==='witness')return conf;var p=P(id);var auth=p&&p.kind==='named'?(NAMED[id]||{}).auth||1:1;
   if(f.sub===S.pc&&auth>=6&&S.day<({slow:60,mid:40,fast:20}[SET.pace]||40))return Math.min(conf,38);if(how==='ai'&&f.sub===S.pc)return Math.min(conf,48);return conf;},
- maybeIntro:function(){var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=6&&S.fam.fame<20&&!pc().office)continue;c.push(id);}
+ maybeIntro:function(){var every=Math.round({slow:5,mid:3,fast:2}[SET.pace]*Pace.vf());if(S.day-(S.pace.intro||-99)<every)return;var c=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met||!p.alive||p.hh||p.hidden)continue;var w=People.where(id);if(!w)continue;var auth=p.kind==='named'?NAMED[id].auth:1;if(auth>=8&&S.fam.fame<20&&!pc().office&&!pc().medoff)continue;c.push(id);}
   if(!c.length)return;c.sort(function(a,b){return ((P(a).kind==='named'?NAMED[a].auth:1)-(P(b).kind==='named'?NAMED[b].auth:1));});var id=rand()<0.6?c[0]:pick(c);S.pace.intro=S.day;S.queue.push({go:'paceMeet',a:{id:id},pace:1});},
  aiRule:function(){var met=[];for(var id in S.ppl){var p=S.ppl[id];if(p.met&&p.alive&&id!==S.pc)met.push(p.n);}return '【劇情節奏・'+({slow:'慢熱',mid:'適中',fast:'緊湊'}[SET.pace])+'】不可讓未相識的大人物主動找上門；陌生人須先搭話相識；秘密只能慢慢傳開。已相識者：'+(met.slice(0,24).join('、')||'無')+'。';}
 };
@@ -1502,6 +1502,7 @@ AI.summary=function(){var me=pc(),L=[];
  var pub=S.facts.filter(function(f){return f.pub;}).slice(-5).map(function(f){return f.t;});if(pub.length)L.push('【公開事實】'+pub.join('；'));
  var wl=WS.brief(4);if(wl.length)L.push('【近期大事】'+wl.join('；'));
  if(S.thread&&S.thread.cur&&S.thread.cur.status!=='closed')L.push(Thread.brief());
+ var rc=S.flags.romCtx;if(rc&&rc.d===S.day&&P(rc.id))L.push('【心動場景】主角正與'+cn(rc.id)+'經歷「'+rc.t+'」；請依角色性格與情意('+P(rc.id).love+')回應，可在 fx.ppl 調整 love/aff/trust（單次±8內）。');
  if(S.recent)L.push('【剛說過的對話】'+S.recent.slice(-1800));
  return L.join('\n');};
 AI.userMsg=function(a){var sum=AI.summary();var tag=a.tag||'';var x=a.extra||'';
@@ -1867,7 +1868,7 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
  if(S.per>=4||me.sta<30)A('💤 就寢','sleep');else A('⏳ 歇一個時辰','wait');
  A('⏩ 歲月流轉','skipMenu');if(S.region!=='road')A('🗺 地圖','map');
  return c;};
-NODES.place=function(){var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
+NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
 NODES.map=function(){if(S.region==='road')return NODES.place();if(S.flags.held)return NODES.place();return {screen:'map'};};
 NODES.go=function(a){var pl=PLACES[a.pl];if(!pl)return NODES.place();if(pl.need==='palace'&&!S.flags.palace&&!pc().office)return Eng.L(['宮門侍衛橫戟攔住你：「無詔不得入。」'],'',S.place,[ch('↩ 返回','map')]);
  if(pl.night&&S.per<4)return Eng.L(['月色庭院只在入夜後才去得。'],'',S.place,[ch('↩ 返回','map')]);
@@ -2060,7 +2061,7 @@ var TALK={
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
  var off=function(){var L=[[id,TALK.greet(p)]];if(first&&p.kind==='named'){L.push(NAMED[id].sub+'。'+NAMED[id].bio);}var q=Thread.quote(id);if(q&&!first)L.push([id,q]);if(p.hh&&ageOf(p)>=3)L.push('（心聲）'+People.thought(p));return Eng.L(L,id,S.place,NODES.talkCh(id));};
  if(AI.ready()&&!a.off){return {async:{type:'talk',id:id,topic:a.topic||'閒聊'},fb:off};}return off();};
-NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl&&Med.caseOf(cl.cs)>=0)c.push(ch('🏠 應邀出診（'+CASES[Med.caseOf(cl.cs)].dx+'）','talkT',{id:id,k:'call'}));
+NODES.talkCh=function(id){var p=P(id),me=pc();var c=[ch('閒聊','talkT',{id:id,k:'chat'}),ch('問近況','talkT',{id:id,k:'news'})];if(Rom.ARC[id]&&Rom.ready(id))c.unshift(ch('💞 '+Rom.title(id),'rom',{id:id}));if(p.ill.length||(p.kind==='named'&&NAMED[id].ail&&p.met&&!p.notes.ailCured&&p.trust>=20))c.push(ch('🩺 替'+ta(p)+'診治','talkT',{id:id,k:'heal'}));var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl&&Med.caseOf(cl.cs)>=0)c.push(ch('🏠 應邀出診（'+CASES[Med.caseOf(cl.cs)].dx+'）','talkT',{id:id,k:'call'}));
  if(Object.keys(S.inv).some(function(k){return ITEMS[k]&&(ITEMS[k].gift||ITEMS[k].k==='food')&&S.inv[k]>0&&!ITEMS[k].hide;}))c.push(ch('🎁 送禮','gift',{id:id}));
  if(p.love>=25&&p.spouse!==S.pc&&!p.confessed&&!p.hh&&ageOf(p)>=16&&ageOf(me)>=16)c.push(ch('💗 表白心意','confess',{id:id}));if(!People.canPropose(id))c.push(ch('💍 '+Rule.marryWord(me,p).replace(/^結為/,'')+'／求親','propose',{id:id}));
  if(p.aff>=30&&!p.hh)c.push(ch('🌸 邀'+ta(p)+'同遊','talkT',{id:id,k:'date'}));if(FW.secretsOf().length&&p.trust>=35)c.push(ch('🔏 吐露秘密','talkT',{id:id,k:'secret'}));c.push(ch('告辭','place'));return c;};
@@ -2181,6 +2182,115 @@ Eng.on('year',function(){People.yearTick();Eng.house().forEach(function(p){if(p.
  Eng.house().forEach(function(p){if(p.school&&S.gold>=20)S.gold-=20;});});
 NODES.eduPick=function(){var ks=Eng.house().filter(function(p){return p.id!==S.pc&&ageOf(p)>=6&&ageOf(p)<16;});if(!ks.length)return Eng.L(['家裡沒有適齡（六到十五歲）的孩子。'],'',S.place,[ch('↩','place')]);return Eng.L(['送誰去讀書？（學費每年二十兩）'],'',S.place,ks.map(function(k){return ch(k.n+(k.school?'（已在學）':''),'edu',{id:k.id,k:'school'});}).concat([ch('↩','place')]));};
 NODES.edu=function(a){var p=P(a.id);if(a.k==='school'){p.school=p.school?0:1;}else{p.teach=a.k;}return Eng.L([p.n+(a.k==='school'?(p.school?'背起書箱去了學室。':'不再去學室了。'):'從今往後跟著學'+({med:'醫',mart:'武',farm:'農',trade:'商',craft:'手藝'}[a.k])+'。')],'',S.place,[ch('↩','place')]);};
+
+/* ---- 11_romance.js ---- */
+/* ===== 心動：七位核心人物的羈絆故事（無固定路線，按好感／情意自然觸發；可多線並行） ===== */
+var Rom={};
+Rom.CORE=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
+Rom.call=function(id){var p=P(id);if(p&&p.spouse===S.pc)return Gender.call(id);var me=pc();return (me.sk.med>=30||S.fam.tech.alco)?(me.n.slice(0,1)+'大夫'):Gender.call(id);};
+/* 每段：need 門檻、t 標題、L(id,c) 台詞、o 選項 [文字, 效果, 回應, 記憶] */
+Rom.ARC={
+ yingzheng:[
+  {need:{aff:6},t:'夜不能寐的君王',L:function(id,c){return ['他按著額角，案上的竹簡堆得像一座小山。',[id,'「……寡人頭疼了三年。太醫的湯藥喝了一缸，沒用。」'],[id,'「聽說你不用湯藥，用的是什麼——刀和線？」']];},
+   o:[['「頭疼不必動刀。請大王先躺下，讓我量一量脈息。」',{aff:6,trust:5},'「……躺下？寡人在朝堂上從不躺下。」他沉默片刻，竟真的解了冠。','讓我躺下聽脈'],['「大王每夜睡幾個時辰？」',{aff:4,trust:3},'「兩個時辰。」他看你一眼，「你是第一個問這個的人。」','問我睡多久'],['「臣女告退。」',{aff:-2},'他揮揮手，再沒抬頭。','']]},
+  {need:{aff:20},t:'第一次安睡',L:function(id,c){return ['你替他定了規矩：亥時熄燈、少飲濃酒、睡前以熱水泡足。',[id,'「昨夜……寡人睡足了四個時辰。」'],'他說這話時，像在承認一場敗仗。'];},
+   o:[['「那今夜再試五個時辰。大王，這是醫囑。」',{aff:5,love:4},'「醫囑。」他重複了一遍，嘴角幾乎看不出地動了一下，「好。」','她給我下「醫囑」'],['「臣女可以每晚來替大王按穴。」',{aff:3,love:6,trust:-1},'「……準。」他頓了頓，「別讓旁人知道。」','她說每晚來替我按穴'],['「大王只是太累了，國事可以交給李斯一些。」',{aff:-3,trust:2},'「寡人的天下，不交給任何人。」','她勸我放權']]},
+  {need:{love:16},t:'他的弱點',L:function(id,c){return ['夜半，章台宮只點著一盞燈。他忽然開口：',[id,'「你知道寡人為何睡不著嗎？趙國的質子，每一夜都怕醒不過來。」'],'你從沒聽人說過，秦王也會怕。'];},
+   o:[['輕輕握住他的手：「現在有我守著。睡吧。」',{love:8,trust:6},'他的手僵了一下，然後慢慢放鬆了。那一夜，他睡得很沉。','她握著我的手守了一夜'],['「怕，是因為身體記得。這叫驚懼之症，可以治。」',{trust:7,love:3},'「你把寡人的心事，說成了一種病。」他竟笑出了聲，「也好。病，總能治。」','她說我的恐懼是可以治的病'],['「大王不該對臣女說這些。」',{aff:-2,love:-2},'「……是寡人失言。」燈花爆了一下，他背過身去。','']]},
+  {need:{love:34,trust:20},t:'天下與一人',L:function(id,c){return [[id,'「宮裡的侍醫，說你的刀圭之術是妖法。」'],[id,'「寡人問他：那她治好的人，是妖還是人？他答不上來。」'],[id,'「'+c+'——若寡人要你留在宮中，只替寡人一個人看病呢？」']];},
+   o:[['「我的醫術，是為天下人學的。大王若要留我，就讓我也替百姓看病。」',{love:6,trust:8,aff:4},'他盯著你良久：「……好一個天下人。寡人的天下，也算你一份。」','她不肯只做我一人的醫者'],['「若是大王開口，我願意。」',{love:9,trust:2},'「你答得太快了。」他低聲說，「寡人反倒不捨得把你關起來。」','她說願意留在我身邊'],['「大王這是命令，還是請求？」',{love:5,trust:5},'「……」他第一次被問住，「是請求。」','她問我是命令還是請求']]},
+  {need:{love:52},t:'章台夜話',conf:1,L:function(id,c){return ['他屏退了所有人，連趙高也被趕出殿外。',[id,'「寡人這一生，能信的人不多。」'],[id,'「'+pc().n+'，留下來。不是做侍醫——做寡人身邊的人。」']];},
+   o:[['「我留下。」',{love:10,trust:6},'他把你的手按在胸口：「聽聽，這裡跳得亂不亂？」——你聽見了，很亂。','她答應留在我身邊','ok'],['「讓我再想想。」',{aff:2},'「寡人等。寡人一向沒有耐心，但這次會等。」','她要我等她',''],['「大王，我只是個大夫。」',{love:-6},'「……知道了。」他背過身，聲音很冷。','她拒絕了我','no']]}],
+ mengtian:[
+  {need:{aff:6},t:'少年將軍的舊傷',L:function(id,c){return ['他嘴裡叼著糖人，左臂卻一直不自然地垂著。',[id,'「沒事！舊箭傷而已，軍中大夫說過兩年就好了。」'],'你看見袖口滲出淡黃的膿水。'];},
+   o:[['「坐下，把袖子捲起來。」',{aff:6,trust:4},'「哎？哎哎——這麼兇？」他乖乖坐下，被你按得齜牙咧嘴。','她兇巴巴地替我看傷'],['遞給他一個新的糖人：「拿這個換你讓我看傷。」',{aff:7,love:2},'「成交！」他笑出一口白牙。','她用糖人哄我看傷'],['「將軍保重。」',{aff:1},'「好說好說！」他揮著手跑遠了。','']]},
+  {need:{aff:20},t:'清創',L:function(id,c){return ['箭頭的碎片還留在肉裡。你用煮過的小刀切開、清出膿血，再用酒精沖洗。',[id,'「嘶——這比挨一箭還疼！」'],'他疼得滿頭大汗，卻一直在講笑話，好像怕你緊張。'];},
+   o:[['「再忍一忍，你做得很好。」',{aff:5,love:4},'「被誇了……那、那我再忍一下。」耳根紅透了。','她誇我忍得好'],['邊縫邊跟他講師父的故事分散注意力',{aff:6,trust:3},'「你師父住在雲霧裡？好厲害！以後帶我去見見！」','她講了師門的事給我聽'],['「早來治就不用受這罪了。」',{aff:2,trust:2},'「下次一定！」他立刻舉手發誓。','']]},
+  {need:{love:16},t:'市集的黃昏',L:function(id,c){return ['他拉著你溜出軍營，在市集買了一堆吃的。',[id,'「我爹說我太愛玩，不像蒙家的人。」'],[id,'「可我覺得——打完仗，能跟喜歡的人逛市集，才是打仗的意義嘛。」'],'他說完才意識到什麼，臉一下子紅了。'];},
+   o:[['「喜歡的人？」故意看著他',{love:8,aff:3},'「我、我是說喜歡的人們！大家！」他把一整串糖葫蘆塞進你手裡。','她追問我喜歡的人是誰'],['「那下次打完仗，我們再來。」',{love:6,trust:4},'「說好了！拉鉤！」','她和我拉鉤約好再逛市集'],['「你爹說得也有道理。」',{aff:-2},'「……哈哈，是吧。」他笑得有點勉強。','']]},
+  {need:{love:34,trust:20},t:'出征前夜',L:function(id,c){return ['軍令下來了，明日開拔。他在營門口等你，盔甲擦得發亮。',[id,'「'+c+'，軍中缺大夫。你……願不願意隨軍？」'],[id,'「不是命令！你不想去也沒關係！只是……我想看見你。」']];},
+   o:[['「我去。軍醫帳我來管。」',{love:8,trust:6},'他一把抱起你轉了一圈，又慌忙放下：「失禮了！」','她答應隨我出征'],['把一包消毒用的酒精和繃帶塞給他：「活著回來，我等你。」',{love:7,trust:5},'「一定！」他把那包東西貼身收好。','她給我藥包、說等我回來'],['「我的醫館走不開。」',{aff:2},'「也是……那我會寫信的！」','']]},
+  {need:{love:52},t:'北原長歌',conf:1,L:function(id,c){return ['凱旋那天，他沒去慶功宴，而是直接騎馬到了你門口。',[id,'「我想了一路該怎麼說，結果全忘了。」'],[id,'「'+pc().n+'！我喜歡你！從你兇我那天起就喜歡！」']];},
+   o:[['「我也是。」',{love:10,trust:5},'他愣了三息，然後歡呼著把頭盔扔上了天。','她說她也喜歡我','ok'],['笑著搖頭：「先去慶功宴，回來再說。」',{aff:3},'「那我吃快點！」','她讓我先去慶功宴',''],['「蒙恬，你是很好的朋友。」',{love:-6},'「……嗯！朋友也很好！」他笑著，眼眶卻紅了。','她說只當我是朋友','no']]}],
+ lisi:[
+  {need:{aff:6},t:'笑面客卿的胃疾',L:function(id,c){return ['他笑容得體，手卻一直按在上腹。',[id,'「不礙事，只是飲食不節。'+c+'見笑了。」'],'他的嘴唇有點發白——這不是第一次了。'];},
+   o:[['「空腹疼還是飽後疼？最近有沒有黑便？」',{aff:4,trust:5},'他的笑容第一次停頓了一下：「……你問得比廷尉審案還細。」','她問我病情問得極細'],['「客卿思慮太重，胃是最先受累的。」',{aff:5,love:2},'「哦？」他瞇起眼，「大夫連人心也看？」','她說我思慮太重'],['「那就多保重。」',{aff:1},'「多謝。」他微笑頷首，客氣得滴水不漏。','']]},
+  {need:{aff:20},t:'一局棋',L:function(id,c){return ['他邀你在梅樹下對弈，說是答謝診金。',[id,'「棋如人。你落子不算計，倒像在救人——哪裡危急補哪裡。」'],[id,'「這樣是贏不了的。」']];},
+   o:[['「救人不需要贏，只需要人活著。」',{aff:5,love:3,trust:3},'他執子的手停在半空，許久才落下：「……說得好。這局，算你贏。」','她說救人不求贏'],['認真算計，殺他一條大龍',{aff:6,love:4},'「有意思。」他第一次真心笑了，「原來你會算計，只是不屑用。」','她下棋殺了我一條大龍'],['「客卿下棋，也是在試探我吧？」',{trust:5,aff:2},'「被看穿了。」他乾脆承認，「不過，試探的結果我很滿意。」','她看穿我在試探她']]},
+  {need:{love:16},t:'上蔡的黃犬',L:function(id,c){return ['他喝了點酒，說起少年時在上蔡牽著黃犬出東門逐兔的事。',[id,'「那時我想，人之賢不肖譬如鼠矣，在所自處耳。所以我來了咸陽。」'],[id,'「可有時候……我也想再牽一次黃犬。」']];},
+   o:[['「等你老了，我陪你回上蔡。」',{love:8,trust:4},'他怔住了，笑意終於到了眼底：「……這可是你說的。」','她說老了陪我回上蔡'],['「那就留一點不算計的時候給自己吧。」',{love:5,trust:5},'「比如現在？」他看著你，「現在就沒算計。」','她勸我給自己留點餘地'],['「客卿醉了。」',{aff:1},'「是啊，醉了。」他又戴回了那張笑臉。','']]},
+  {need:{love:34,trust:20},t:'韓非之局',L:function(id,c){return [[id,'「有人說我會害韓非。你信嗎？」'],'他的語氣很輕，眼睛卻一直看著你。',[id,'「你若要我放過一個人，我可以放。只有你可以讓我這樣做。」']];},
+   o:[['「我要你不害任何人——包括你自己的良心。」',{love:6,trust:7},'「良心。」他苦笑，「你總是要最貴的東西。……好。」','她要我守住良心'],['「我信你。」',{love:8,trust:3},'他沉默了很久：「你不該信我。但……謝謝。」','她說她信我'],['「客卿不必拿韓非來試我。」',{trust:4,love:3},'「又被看穿了。」他低笑，「你這樣的人，讓我很頭疼。」','']]},
+  {need:{love:52},t:'梅骨',conf:1,L:function(id,c){return ['梅花開了。他折了一枝遞給你，手指冰涼。',[id,'「我算了一輩子，從來沒有算錯過。唯獨你——我算不出你。」'],[id,'「所以我不算了。'+pc().n+'，我心悅你。」']];},
+   o:[['接過梅枝：「那這一局，你輸了。」',{love:10,trust:5},'「心甘情願。」他輕聲說。','她收下了梅枝','ok'],['「讓我想想。」',{aff:2},'「我等。這是我第一次不急著要答案。」','她要我等',''],['「李斯，我們不合適。」',{love:-6},'他微笑著點頭，像是早就算到了——可他沒有算到。','她拒絕了我','no']]}],
+ fusu:[
+  {need:{aff:6},t:'畏寒的長公子',L:function(id,c){return ['明明是春天，他還裹著白裘，指尖冷得發青。',[id,'「自小如此，太醫說是體寒，喝了許多薑湯。」'],'你注意到他走幾步就微微喘氣。'];},
+   o:[['「公子可否讓我聽聽心音？」取出聽診筒',{aff:5,trust:5},'「這木筒……能聽見心？」他好奇地看著，乖乖敞開衣襟。','她用木筒聽我的心'],['把自己的手爐塞給他',{aff:6,love:3},'「這怎麼好意思……」他捧著手爐，臉紅了。','她把手爐給了我'],['「公子多保重。」',{aff:1},'他溫和地行了一禮。','']]},
+  {need:{aff:20},t:'城南義診',L:function(id,c){return ['他微服來到你的義診攤，看你替一個孩子清洗傷口。',[id,'「你不收他的錢？」'],[id,'「父王的天下很大，可我常常想，天下就是這些人。」']];},
+   o:[['「公子要不要幫我按住他？」',{aff:6,trust:4},'他手忙腳亂地按住孩子，被踢了好幾腳，卻笑得很開心。','她讓我幫忙義診'],['「公子將來會是個好君王。」',{aff:3,trust:5},'「……不要這樣說，」他低聲道，「父王不喜歡聽。」','她說我會是好君王'],['教他怎麼煮沸布巾消毒',{aff:5,love:3},'「原來乾淨也能救人。」他認真地記了下來。','她教我消毒的道理']]},
+  {need:{love:16},t:'琴聲',L:function(id,c){return ['書房裡傳出琴聲，斷斷續續。他看見你，停了手。',[id,'「彈得不好。手冷，按不準弦。」'],'你看見琴譜旁邊，夾著一張你寫的醫囑。'];},
+   o:[['握住他的手替他搓熱：「再彈一次。」',{love:8,aff:3},'他的琴聲穩了。曲子很溫柔，像春天。','她替我暖手聽我彈琴'],['「醫囑怎麼夾在琴譜裡？」',{love:6,trust:3},'「……因為兩樣都是每天要看的。」他的耳朵紅了。','她發現我把醫囑夾在琴譜'],['「公子該休息了。」',{aff:2},'「嗯。聽你的。」','']]},
+  {need:{love:34,trust:20},t:'焚書之議',L:function(id,c){return [[id,'「朝中有人要燒書。醫書、卜筮、種樹之書可以留，其餘都燒。」'],[id,'「我想去勸父王。可我若勸了，也許會被趕去北邊。」'],[id,'「'+c+'，你覺得我該說嗎？」']];},
+   o:[['「該說。若你被趕去北邊，我跟你去。」',{love:9,trust:6},'他看著你，眼睛很亮：「……那我就什麼都不怕了。」','她說若我被貶就跟我走'],['「先保重自己。活著，才能做更多事。」',{trust:6,love:4},'「你說話像個大夫。」他微笑，「也像個……家人。」','她要我先保重自己'],['「這是公子自己的事。」',{aff:-2},'「……是我為難你了。」','']]},
+  {need:{love:52},t:'仁者春風',conf:1,L:function(id,c){return ['他捧著你送的手爐，站在初雪裡。',[id,'「我一直不敢說，怕給你添麻煩。」'],[id,'「可我想通了。'+pc().n+'——往後的每個冬天，我都想和你一起過。」']];},
+   o:[['「好。我做你的手爐。」',{love:10,trust:5},'他把你連同手爐一起抱進白裘裡。很暖。','她答應陪我過每個冬天','ok'],['「再給我一點時間。」',{aff:2},'「好。春天之前告訴我就好。」','她要一點時間',''],['「公子身分尊貴，我配不上。」',{love:-6},'「……配不上的是我。」他輕聲說，轉身走進雪裡。','她拒絕了我','no']]}],
+ hanfei:[
+  {need:{aff:6},t:'口吃的公子',L:function(id,c){return ['他提筆寫字，一句話也不說。',[id,'「我……我、我不善言。」'],'他寫給你看：「聽說你的醫術，可以剖開人體看五臟？」'];},
+   o:[['也拿起筆寫字回答他',{aff:7,trust:4},'他眼睛一亮，你們筆談了一整個下午，竹簡堆了一地。','她陪我筆談了一下午'],['「慢慢說，我等你。」',{aff:5,love:3},'他愣住了。從來沒有人說要等他說完。','她說會等我慢慢說'],['「公子忙，我改日再來。」',{aff:1},'他點點頭，又埋首書中。','']]},
+  {need:{aff:20},t:'解剖圖',L:function(id,c){return ['你給他看師父的解剖圖。他看得入神，半天沒有翻頁。',[id,'「人……人的身體，有法度。」'],[id,'「國家也是。心、心臟不正，全身皆病。」']];},
+   o:[['「那公子的書，就是國家的解剖圖。」',{aff:6,trust:5},'他怔怔看著你，提筆寫下：「知我者。」','她說我的書是國家的解剖圖'],['「公子的心悸，也該治一治。」',{aff:4,love:3,trust:3},'「你、你連這個都看出來了？」','她看出我心悸'],['「這些是師門秘傳，不能外傳。」',{trust:4},'他鄭重地點頭，把圖還給你：「我、我不說。」','']]},
+  {need:{love:16},t:'孤憤',L:function(id,c){return ['他把一卷新寫的書遞給你，題作《孤憤》。',[id,'「我寫給秦王看。但……我想讓你先看。」'],'書頁裡夾著一片乾掉的花。'];},
+   o:[['認真讀完，寫下自己的批注',{love:7,trust:4},'他看著你的批注，第一次流暢地說了一整句話：「你懂我。」','她為我的書寫了批注'],['「這朵花是？」',{love:8},'他的臉一下子紅透了，結巴得比任何時候都厲害。','她問起書中的花'],['「公子寫得很好。」',{aff:3},'「……謝、謝謝。」','']]},
+  {need:{love:34,trust:20},t:'入秦',L:function(id,c){return [[id,'「韓、韓國危矣。我要以使者身分入秦。」'],[id,'「也許……回不去了。」'],'他看著你，目光比任何時候都堅定。'];},
+   o:[['「我會在咸陽。若你有事，我一定來。」',{love:7,trust:7},'他握住你的手，寫下：「有你在，便不懼。」','她答應在咸陽護我'],['把一包解毒藥交給他：「隨身帶著。」',{trust:8,love:4},'「……你、你總是想得很遠。」','她給我解毒藥'],['「公子別去。」',{love:4,trust:2},'他搖搖頭：「非、非去不可。」','她求我別去']]},
+  {need:{love:52},t:'同著一書',conf:1,L:function(id,c){return ['他寫了很久，最後只交給你一片竹簡。',[id,'「我、我說不好。所以寫下來了。」'],'竹簡上寫著：「願與君同著一書，同度一生。」'];},
+   o:[['在竹簡背面寫：「好。」',{love:10,trust:5},'他看了那個字很久很久，然後小心地把竹簡收進懷裡。','她在竹簡背面寫了好','ok'],['「我需要想一想。」',{aff:2},'他點頭：「我、我等。多久都等。」','她要我等',''],['輕輕把竹簡推回去',{love:-6},'他沉默地收回竹簡，筆跡上落了一滴墨。','她推回了我的竹簡','no']]}],
+ jingke:[
+  {need:{aff:6},t:'醉臥酒肆的劍客',L:function(id,c){return ['他倒在酒肆角落，臉色青白，嘴唇發紫——不像是醉。',[id,'「別、別管我……老毛病……」'],'你摸到他的脈又快又亂，指甲泛著奇怪的顏色。'];},
+   o:[['立刻催吐、灌鹽水',{aff:6,trust:5},'他吐得天昏地暗，醒來第一句話：「……妳下手真狠。」然後笑了。','她把我從鬼門關拉回來'],['「你中過毒，對不對？」',{aff:4,trust:6},'他眼神一凜，隨即又懶洋洋地笑：「好眼力。」','她看出我中過毒'],['叫店家照看他',{aff:1},'','']]},
+  {need:{aff:20},t:'舊毒',L:function(id,c){return ['他說，那是多年前在衛國替人報仇時中的毒，一直沒除乾淨。',[id,'「大夫們都說治不了。妳呢？」'],[id,'「治不了也沒關係。反正我這條命，早晚是要交出去的。」']];},
+   o:[['「我的病人，不准把命隨便交出去。」',{aff:6,love:4},'他大笑，笑完了認真地看你：「好，聽大夫的。」','她不准我輕賤性命'],['「我試試提煉解毒的藥。」',{aff:5,trust:4},'「妳為了我，熬夜？」他撓撓頭，「那我請妳喝酒。」','她為我熬夜研藥'],['「那就隨你吧。」',{aff:-2},'「哈，乾脆。」','']]},
+  {need:{love:16},t:'擊筑而歌',L:function(id,c){return ['高漸離擊筑，他跟著放聲高歌，旁若無人。',[id,'「來！妳也唱！」'],'他伸手拉你，掌心全是練劍的繭。'];},
+   o:[['跟著他一起唱',{love:7,aff:4},'你唱得跑調，他笑得從長凳上摔下去。那晚的酒，特別甜。','她跟我一起唱歌'],['「我不會唱，我給你打拍子。」',{love:5,aff:3},'「那就打拍子！」他唱得更響了。','她替我打拍子'],['「你又喝多了。」',{aff:1},'「沒多！」','']]},
+  {need:{love:34,trust:20},t:'燕國的來信',L:function(id,c){return ['他收到一封燕國來的信，看完就燒了。',[id,'「有人請我去做一件事。很大的事。」'],[id,'「做了，我大概就回不來了。」'],'他沒有說是什麼事，但你看見了他眼裡的決絕。'];},
+   o:[['「別去。留下來，我需要你。」',{love:8,trust:5},'他看著你，第一次沉默了很久：「……讓我想想。」','她求我留下'],['「無論你去哪，答應我活著。」',{love:6,trust:6},'「一諾千金。」他把你的手握得很緊。','她要我答應活著'],['「這是你的選擇。」',{trust:3},'「嗯。」他仰頭飲盡一碗酒。','']]},
+  {need:{love:52},t:'易水不寒',conf:1,L:function(id,c){return ['他把劍放在你面前，劍鞘上刻著一個字——你的名字。',[id,'「我想了很久。荊軻這一生，一諾千金。」'],[id,'「所以這個諾，我想許給妳：'+pc().n+'，我想留下來，跟妳過日子。」']];},
+   o:[['「我收下了。」',{love:10,trust:5},'他把你抱起來轉了好幾圈，整個酒肆都在起鬨。','她收下了我的諾言','ok'],['「你先把燕國的事了結。」',{aff:2},'「好！等我！」','她要我先了結燕國的事',''],['「荊軻，我不能。」',{love:-6},'他笑了笑，把劍收回去：「沒關係。能遇見妳，已經很好了。」','她拒絕了我','no']]}],
+ xuanye:[
+  {need:{},t:'夜裡的影子',L:function(id,c){return ['深夜，院中落下一個人。銀髮，覆面，肩上插著一把斷刀。',[id,'「……別出聲。」'],'他的血滴在你的藥圃裡。'];},
+   o:[['二話不說，拿出刀具和酒精',{aff:7,trust:5},'他看著你剪開他的衣服、清創、縫合，一聲不吭。走前只說了一句：「欠妳一次。」','她深夜替我療傷'],['「你是誰的人？」',{trust:2,aff:2},'「……不能說。」他按著傷口，翻牆而去。','她問我是誰的人'],['大聲呼救',{aff:-5,trust:-5},'他瞬間消失在夜色裡。','']]},
+  {need:{aff:18},t:'窗台上的糖',L:function(id,c){return ['之後每隔幾日，你的窗台上就會出現一包糖，或一束野花。',[id,'「……謝禮。」'],'他站在樹影裡，像是隨時會消失。'];},
+   o:[['「下來，讓我看看傷口癒合得怎樣。」',{aff:5,trust:5},'他猶豫了很久，終於落到你面前，乖乖讓你拆線。','她替我拆線'],['把一包自製的金創藥放在窗台上',{aff:5,love:3},'第二天，藥不見了，換成了一枝帶露水的梅花。','她給我留了金創藥'],['「你不必這樣。」',{aff:1},'他沉默地消失了。','']]},
+  {need:{love:14},t:'沒有名字',L:function(id,c){return ['月光下，他第一次摘下覆面。',[id,'「我沒有名字。玄夜，是主人給的代號。」'],[id,'「影子不該有名字，也不該有……想要的東西。」']];},
+   o:[['「那你想要什麼？」',{love:8,trust:5},'他看著你，很久很久，什麼都沒說。但你知道答案。','她問我想要什麼'],['「玄夜，是很好聽的名字。我叫你，你就是你。」',{love:7,aff:4},'「……再叫一次。」','她叫我的名字'],['「你的主人是誰？」',{trust:-3},'他重新戴上覆面：「不能說。」','']]},
+  {need:{love:32,trust:20},t:'背叛的代價',L:function(id,c){return [[id,'「主人要我殺一個人。」'],[id,'「是妳。」'],'刀在他手裡，卻一直在發抖。'];},
+   o:[['平靜地看著他：「那你會嗎？」',{love:9,trust:8},'刀落在地上。「……不會。永遠不會。」','她問我會不會殺她'],['「跟我走。離開那個主人。」',{love:7,trust:6},'「影子離開主人，會死。」他頓了頓，「……但我想試試。」','她要我離開主人'],['抓起藥箱逃走',{trust:-6},'他沒有追。只是站在原地很久很久。','']]},
+  {need:{love:50},t:'影歸',conf:1,L:function(id,c){return ['他第一次從大門進來，沒有覆面，手裡什麼武器也沒帶。',[id,'「我離開主人了。現在，我什麼都沒有。」'],[id,'「只有一個想回去的地方——'+pc().n+'，可以是妳身邊嗎？」']];},
+   o:[['「歡迎回家。」',{love:10,trust:6},'這個從不流淚的人，把臉埋在你肩上，很久沒有抬頭。','她說歡迎回家','ok'],['「讓我想一想。」',{aff:2},'「我會等。影子最擅長等待。」','她要我等',''],['「對不起。」',{love:-6},'「……嗯。」他退後一步，又成了影子。','她拒絕了我','no']]}]
+};
+Rom.stage=function(id){var p=P(id);return p&&p.notes?(p.notes.rs||0):0;};
+Rom.why=function(id){var p=P(id),me=pc();if(!p||!p.alive)return '未相識';if(!p.met&&!(id==='xuanye'&&Rom.stage(id)===0&&S.per===5))return '未相識';if(id===S.pc)return 'self';if(p.spouse&&p.spouse!==S.pc)return '已有家室';if(p.spouse===S.pc)return '已成眷屬';if(ageOf(me)<16)return '年紀尚小';
+ var A=Rom.ARC[id];if(!A)return 'none';var s=Rom.stage(id);if(s>=A.length)return '已互許';var n=A[s].need;for(var k in n){if((p[k]||0)<n[k])return ({aff:'好感',love:'情意',trust:'信任'})[k]+'需達'+n[k];}
+ if(p.notes.rsd===S.day)return '今日已見';if(p.notes.rej&&S.day-p.notes.rej<10)return '尚在冷靜';return '';};
+Rom.ready=function(id){return Rom.why(id)==='';};
+Rom.title=function(id){var A=Rom.ARC[id];var s=Rom.stage(id);return A&&A[s]?A[s].t:'';};
+Rom.progress=function(id){var A=Rom.ARC[id]||[];return {s:Rom.stage(id),n:A.length,next:Rom.title(id),why:Rom.why(id)};};
+/* 抵達地點時：在場核心人物若有新篇章，有機會主動觸發 */
+Rom.auto=function(){if(!S||S.region==='road'||S.flags.held)return null;var xy=P('xuanye');if(xy&&xy.alive&&!xy.met&&S.per===5&&S.day>=6&&ageOf(pc())>=16&&(Eng.atHome()||S.place==='courtyard'||S.place==='lodge')&&S.region==='xianyang'&&S.flags.xyTry!==S.day){S.flags.xyTry=S.day;if(rand()<({slow:0.15,mid:0.25,fast:0.4}[SET.pace]||0.25))return 'xuanye';}var here=People.present().filter(function(id){return Rom.CORE.indexOf(id)>=0&&Rom.ready(id);});if(!here.length)return null;
+ var mul={slow:0.35,mid:0.55,fast:0.8}[SET.pace]||0.55;if(S.flags.romAuto===S.day||rand()>mul)return null;S.flags.romAuto=S.day;return here[0];};
+NODES.rom=function(a){var id=a.id,p=P(id);if(!Rom.ready(id))return NODES.talk({id:id});var st=Rom.ARC[id][Rom.stage(id)];p.notes.rsd=S.day;People.meet(id);Eng.keep(id);S.focus=id;p.here={d:S.day,per:S.per,pl:S.place};
+ var L=['【'+st.t+'】'].concat(st.L(id,Rom.call(id)));var c=st.o.map(function(o,i){return ch(o[0],'romDo',{id:id,k:i});});
+ if(AI.ready()&&SET.ai!=='off')c.push(ch('✍ 自由回應（輸入）','romFree',{id:id},{sys:1}));return Eng.L(L,id,S.place,c);};
+NODES.romFree=function(a){var p=P(a.id);S.focus=a.id;S.flags.romCtx={id:a.id,t:Rom.title(a.id),d:S.day};return Eng.L(['（'+p.n+'在等你的回應。在下方輸入框寫下你想說或想做的事。）'],a.id,S.place,[ch('↩ 還是不說了','talk',{id:a.id})]);};
+NODES.romDo=function(a){var id=a.id,p=P(id),me=pc();var s=Rom.stage(id);var st=Rom.ARC[id][s];var o=st.o[a.k];Eng.pass(1);
+ People.rel(id,o[1],o[3]?o[3].replace(/^她/,me.n):'');if(o[3]&&o[1].love>0)Bond.apply(id,{e:{愛慕:Math.ceil(o[1].love/2)},th:o[3].replace(/^她/,me.n)});if(o[1].trust>0)Bond.apply(id,{e:{信任:Math.ceil(o[1].trust/2)}});
+ var L=[];if(o[2])L.push(/^「/.test(o[2])?[id,o[2]]:o[2]);var end=null;
+ if(st.conf){if(o[4]==='ok'){p.notes.rs=s+1;p.lover=1;p.confessed=1;FW.add(me.n+'與'+p.n+'互許心意',[S.pc,id],S.pc,{});L.push('（你與'+p.n+'互許心意。往後可以向'+ta(p)+'求親。）');end='confessOk';}
+  else if(o[4]==='no'){p.notes.rej=S.day;p.notes.rs=s;L.push('（'+p.n+'的心意被你婉拒了。）');end='confessNo';}
+  else{p.notes.rsd=S.day;}}
+ else if(o[1].aff<0&&!o[1].love){/* 冷淡回應：不推進 */}
+ else p.notes.rs=s+1;
+ var sc=Eng.L(L.length?L:['……'],id,S.place,NODES.talkCh(id));if(end)sc=End.milestone(end,{id:id},sc);return sc;};
 
 /* ---- 12_origin.js ---- */
 /* ===== 自設身世解析（M14 Origin）＋舊毒（Poison） ===== */
@@ -2488,7 +2598,7 @@ var Sh={tab:''};
 Sh.open=function(title,tabs,render,tab){$('sheet').className='sheet on';$('shT').textContent=title;Sh.render=render;Sh.tabs=tabs||[];Sh.tab=tab||(tabs&&tabs[0]?tabs[0][0]:'');Sh.draw();};
 Sh.draw=function(){var t=$('shTabs');t.innerHTML=Sh.tabs.map(function(x){return '<button data-tab="'+x[0]+'" class="'+(x[0]===Sh.tab||Sh.tab.indexOf(x[0]+':')===0?'on':'')+'">'+x[1]+'</button>';}).join('');var y=$('shB').scrollTop;$('shB').innerHTML=Sh.render(Sh.tab)||'';$('shB').scrollTop=Sh.keep?y:0;Sh.keep=0;};
 Sh.redraw=function(){Sh.keep=1;Sh.draw();};
-Sh.close=function(){$('sheet').className='sheet';Sh.render=null;if(S){UI.hud();UI.badge();if(UI.cur==='map')UI.showMap();}};
+Sh.close=function(){$('sheet').className='sheet';Sh.render=null;if(S){UI.hud();UI.badge();if(UI.cur==='map')UI.showMap();else if(UI.cur==='game'&&UI.sc&&!UI.busyOn&&!$('choices').children.length&&UI.li>=UI.sc.lines.length-1&&$('med').className.indexOf('on')<0)UI.choices(UI.sc.ch&&UI.sc.ch.length?UI.sc.ch:[ch('↩ 返回','place')]);}};
 function bar(n,v,cl,max){max=max||100;return '<span>'+n+'</span><div class="bar '+(cl||'')+'"><i style="width:'+clamp(v/max*100,0,100)+'%"></i></div><span>'+Math.round(v)+'</span>';}
 function seg(key,opts){return '<div class="seg">'+opts.map(function(o){return '<button data-set="'+key+'" data-v="'+o[0]+'" class="'+(String(SET[key])===String(o[0])?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';}
 var Panels={act:{}};
@@ -2567,13 +2677,20 @@ Panels.act.famTalk=function(id){Sh.close();UI.go('talk',{id:id});};
 Panels.act.famTreat=function(id){Sh.close();UI.go('treat',{id:id});};
 Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
 /* ---------- 人脈 ---------- */
-Panels.ppl=function(tab){Sh.open('人脈',[['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'list');};
+Panels.ppl=function(tab){Sh.open('人脈',[['rom','心動'],['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'rom');};
 Panels.pplR=function(tab){if(tab&&tab.indexOf('p:')===0)return Panels.pdet(tab.slice(2));if(tab&&tab.indexOf('l:')===0)return Panels.letter(+tab.slice(2));
  if(tab==='let'){if(!S.letters.length)return '<p class="note" style="text-align:center;margin-top:40px">尚無來信。熟絡的人會寄信、邀約、送禮，也可能有人暗中寫信給你。</p>';var h='';for(var i=S.letters.length-1;i>=0;i--){var l=S.letters[i];var anon=l.k==='crush'&&!l.rep;h+='<button class="env'+(l.read?' read':'')+'" data-act="letOpen" data-v="'+i+'"><span class="wax">'+(anon?'？':esc(cn(l.id).slice(0,1)))+'</span><span class="ef"><b>'+(anon?'無署名':esc(cn(l.id)))+'</b>　<small>'+'第'+l.d+'日'+'</small><p>'+esc(l.t.slice(0,24))+'…</p></span>'+(l.read?(l.rep?'<small>已回</small>':''):'<span class="dot"></span>')+'</button>';}return h;}
  if(tab==='sec'){var sec=FW.secretsOf();return (sec.length?sec.map(function(f){var kn=f.kn.filter(function(x){return x!==S.pc;});return '<div class="kv"><b>🔏 '+esc(f.t)+'</b>知情者：'+(kn.map(function(x){return esc(cn(x))+(f.seal[x]?'（託付守秘）':'');}).join('、')||'只有你自己')+(Object.keys(f.rum).length?'<br>聽到風聲：'+Object.keys(f.rum).map(function(x){return esc(cn(x));}).join('、'):'')+'</div>';}).join(''):'<p class="note">你沒有不可告人的秘密。</p>')+'<p class="note">親口告訴某人的秘密，對方會守口如瓶（除非反目、被審問）。秘密只會慢慢傳開（M13／M22）。</p>';}
+ if(tab==='rom')return Panels.romR();
  if(tab==='news'){return '<h4>近期大事（M26）</h4><div class="mem">'+(WS.brief(12).map(esc).join('<br>')||'風平浪靜')+'</div><h4>耳聞</h4><div class="mem">'+esc(History.hint()||'——')+'</div>';}
  var ids=Object.keys(S.ppl).filter(function(id){var p=S.ppl[id];return id!==S.pc&&p.met&&!p.hh;}).sort(function(a,b){var x=P(a),y=P(b);return (y.alive-x.alive)||((y.aff+y.love)-(x.aff+x.love));});
  return '<div class="plist">'+ids.map(function(id){var p=P(id);var w=People.where(id);return '<button class="pcard'+(p.alive?'':' dead')+'" data-act="pOpen" data-v="'+id+'"><span class="fav">'+ART.avatar(p)+'</span><span class="pi"><b>'+esc(p.n)+'</b> <small>'+esc(p.title||JOBS[p.job]||'')+'・'+ageOf(p)+'歲'+(p.spouse===S.pc?'・配偶':(p.lover?'・心上人':''))+'</small><span class="hb">♥'+p.aff+' 信'+p.trust+' 情'+(p.love||0)+'</span><small>'+(p.alive?(w&&PLACES[w]?'📍'+PLACES[w].n:'不知去向'):'已故')+'</small></span></button>';}).join('')+'</div>'+(ids.length?'':'<p class="note">還沒有結識什麼人。</p>');};
+Panels.romR=function(){var h='<p class="note">七段羈絆沒有固定路線：好感、信任、情意到了，相遇時便會翻開下一章。可以同時與幾個人相知，也可以誰都不選。</p><div class="plist">';
+ Rom.CORE.forEach(function(id){var p=P(id);var N=NAMED[id];if(!p)return;var pr=Rom.progress(id);var met=p.met;var dots='';for(var i=0;i<pr.n;i++)dots+=i<pr.s?'●':'○';
+  var at=[];N.at.forEach(function(x,k){if(x&&PLACES[x]&&at.indexOf(PLACES[x].n+'（'+PER_S[k]+'）')<0&&at.length<3)at.push(PLACES[x].n+'（'+PER_S[k]+'）');});
+  var st=!p.alive?'已故':(p.spouse===S.pc?'💍 已成眷屬':(p.lover?'💗 互許心意':(pr.why===''?'💞 下一章「'+pr.next+'」已可觸發':(met?(pr.next?'下一章「'+pr.next+'」：'+pr.why:pr.why):'未相識'))));
+  h+='<button class="pcard'+(p.alive?'':' dead')+'" data-act="'+(met?'pOpen':'noop')+'" data-v="'+id+'"><span class="fav">'+(met?ART.avatar(p):ART.sil({g:p.g,_age:ageOf(p),n:'？',alive:p.alive}))+'</span><span class="pi"><b>'+(met?esc(p.n):'？？？')+'</b> <small>'+esc(N.sub)+'</small><span class="hb">'+dots+'　情'+(p.love||0)+' 好'+p.aff+' 信'+p.trust+'</span><small>'+esc(st)+'</small>'+(p.alive&&!p.hh?'<small>常在：'+esc(at.join('、')||'行蹤不定')+'</small>':'')+'</span></button>';});
+ return h+'</div>';};
 Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();var kn=FW.knows(id).filter(function(f){return !f.pub;}).slice(-5);var ru=FW.rumors(id).slice(-3);
  return '<button class="btn" data-act="pBack">↩ 返回</button><div class="gdet" style="margin-top:8px"><div class="dtop">'+(ART.hasChar(p)?ART.html('char',p.portrait):'<div class="bigav">'+ART.avatar(p)+'</div>')+'<div class="dname">'+esc(p.n)+'<small>'+esc((p.title||JOBS[p.job]||'')+'・'+People.relTo(id))+'</small></div></div>'
   +'<div class="bars">'+bar('好感',p.aff+100,'',200)+bar('信任',p.trust+100,'t',200)+bar('情意',p.love||0)+bar('健康',p.hp,'h')+'</div>'
@@ -2586,7 +2703,7 @@ Panels.letter=function(i){var l=S.letters[i];if(!l)return '';l.read=1;UI.badge()
  if(l.rep)h+='<p class="note" style="text-align:center">已回信：'+esc(l.rt||{warm:'溫柔',tease:'俏皮',polite:'得體',decline:'婉拒',free:''}[l.rep])+'</p>';
  else h+='<div class="reply"><button class="cbtn" data-act="rep" data-v="'+i+'|warm">💌 溫柔地回信'+(l.k==='invite'?'（赴約）':'')+'</button><button class="cbtn" data-act="rep" data-v="'+i+'|tease">😊 俏皮地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|polite">📜 得體地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|decline">🙅 婉拒</button><button class="cbtn ai" data-act="rep" data-v="'+i+'|free">✍️ 親筆回信</button></div>';
  if(l.k==='invite'&&l.o)h+='<p class="note">約在'+cnum0(Math.max(0,l.o.dd))+'日後'+PERIODS[l.o.per]+'，'+esc(PLACES[l.o.pl].n)+'。</p>';if(l.k==='ask')h+='<p class="note">去'+esc(cn(l.id))+'所在處交談，可替其家人出診。</p>';return h;};
-Panels.act.pOpen=function(id){Sh.tab='p:'+id;Sh.draw();};Panels.act.pBack=function(){Sh.tab='list';Sh.draw();};
+Panels.act.noop=function(){toast('尚未相識——到他常出沒的地方碰碰運氣吧。',2200);};Panels.act.pOpen=function(id){Sh.tab='p:'+id;Sh.draw();};Panels.act.pBack=function(){Sh.tab='list';Sh.draw();};
 Panels.act.letOpen=function(i){Sh.tab='l:'+i;Sh.draw();};Panels.act.letBack=function(){Sh.tab='let';Sh.draw();};
 Panels.act.rep=function(v){var a=v.split('|');var i=+a[0];if(a[1]==='free'){Kb.ask('親筆回信給'+cn(S.letters[i].id),function(t){if(!t.trim())return;Letters.reply(i,'free',t.slice(0,80));toast('✉ 已寄出');Sh.draw();});return;}Letters.reply(i,a[1]);toast('✉ 已寄出回信');Sh.draw();};
 /* ---------- 結局冊 ---------- */

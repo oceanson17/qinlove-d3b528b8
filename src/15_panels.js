@@ -3,7 +3,7 @@ var Sh={tab:''};
 Sh.open=function(title,tabs,render,tab){$('sheet').className='sheet on';$('shT').textContent=title;Sh.render=render;Sh.tabs=tabs||[];Sh.tab=tab||(tabs&&tabs[0]?tabs[0][0]:'');Sh.draw();};
 Sh.draw=function(){var t=$('shTabs');t.innerHTML=Sh.tabs.map(function(x){return '<button data-tab="'+x[0]+'" class="'+(x[0]===Sh.tab||Sh.tab.indexOf(x[0]+':')===0?'on':'')+'">'+x[1]+'</button>';}).join('');var y=$('shB').scrollTop;$('shB').innerHTML=Sh.render(Sh.tab)||'';$('shB').scrollTop=Sh.keep?y:0;Sh.keep=0;};
 Sh.redraw=function(){Sh.keep=1;Sh.draw();};
-Sh.close=function(){$('sheet').className='sheet';Sh.render=null;if(S){UI.hud();UI.badge();if(UI.cur==='map')UI.showMap();}};
+Sh.close=function(){$('sheet').className='sheet';Sh.render=null;if(S){UI.hud();UI.badge();if(UI.cur==='map')UI.showMap();else if(UI.cur==='game'&&UI.sc&&!UI.busyOn&&!$('choices').children.length&&UI.li>=UI.sc.lines.length-1&&$('med').className.indexOf('on')<0)UI.choices(UI.sc.ch&&UI.sc.ch.length?UI.sc.ch:[ch('↩ 返回','place')]);}};
 function bar(n,v,cl,max){max=max||100;return '<span>'+n+'</span><div class="bar '+(cl||'')+'"><i style="width:'+clamp(v/max*100,0,100)+'%"></i></div><span>'+Math.round(v)+'</span>';}
 function seg(key,opts){return '<div class="seg">'+opts.map(function(o){return '<button data-set="'+key+'" data-v="'+o[0]+'" class="'+(String(SET[key])===String(o[0])?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';}
 var Panels={act:{}};
@@ -82,13 +82,20 @@ Panels.act.famTalk=function(id){Sh.close();UI.go('talk',{id:id});};
 Panels.act.famTreat=function(id){Sh.close();UI.go('treat',{id:id});};
 Panels.act.famEdu=function(v){var a=v.split('|');var p=P(a[0]);if(a[1]==='school'){p.school=p.school?0:1;if(p.school&&S.gold<20)toast('學費每年二十兩，記得備好');}else p.teach=p.teach===a[1]?'':a[1];if(a[1]==='med'&&pc().sk.med<30){toast('你的醫術不足以教人（需 30）');p.teach='';}Sh.redraw();};
 /* ---------- 人脈 ---------- */
-Panels.ppl=function(tab){Sh.open('人脈',[['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'list');};
+Panels.ppl=function(tab){Sh.open('人脈',[['rom','心動'],['list','相識'],['let','書信'],['sec','秘密'],['news','大事']],Panels.pplR,tab||'rom');};
 Panels.pplR=function(tab){if(tab&&tab.indexOf('p:')===0)return Panels.pdet(tab.slice(2));if(tab&&tab.indexOf('l:')===0)return Panels.letter(+tab.slice(2));
  if(tab==='let'){if(!S.letters.length)return '<p class="note" style="text-align:center;margin-top:40px">尚無來信。熟絡的人會寄信、邀約、送禮，也可能有人暗中寫信給你。</p>';var h='';for(var i=S.letters.length-1;i>=0;i--){var l=S.letters[i];var anon=l.k==='crush'&&!l.rep;h+='<button class="env'+(l.read?' read':'')+'" data-act="letOpen" data-v="'+i+'"><span class="wax">'+(anon?'？':esc(cn(l.id).slice(0,1)))+'</span><span class="ef"><b>'+(anon?'無署名':esc(cn(l.id)))+'</b>　<small>'+'第'+l.d+'日'+'</small><p>'+esc(l.t.slice(0,24))+'…</p></span>'+(l.read?(l.rep?'<small>已回</small>':''):'<span class="dot"></span>')+'</button>';}return h;}
  if(tab==='sec'){var sec=FW.secretsOf();return (sec.length?sec.map(function(f){var kn=f.kn.filter(function(x){return x!==S.pc;});return '<div class="kv"><b>🔏 '+esc(f.t)+'</b>知情者：'+(kn.map(function(x){return esc(cn(x))+(f.seal[x]?'（託付守秘）':'');}).join('、')||'只有你自己')+(Object.keys(f.rum).length?'<br>聽到風聲：'+Object.keys(f.rum).map(function(x){return esc(cn(x));}).join('、'):'')+'</div>';}).join(''):'<p class="note">你沒有不可告人的秘密。</p>')+'<p class="note">親口告訴某人的秘密，對方會守口如瓶（除非反目、被審問）。秘密只會慢慢傳開（M13／M22）。</p>';}
+ if(tab==='rom')return Panels.romR();
  if(tab==='news'){return '<h4>近期大事（M26）</h4><div class="mem">'+(WS.brief(12).map(esc).join('<br>')||'風平浪靜')+'</div><h4>耳聞</h4><div class="mem">'+esc(History.hint()||'——')+'</div>';}
  var ids=Object.keys(S.ppl).filter(function(id){var p=S.ppl[id];return id!==S.pc&&p.met&&!p.hh;}).sort(function(a,b){var x=P(a),y=P(b);return (y.alive-x.alive)||((y.aff+y.love)-(x.aff+x.love));});
  return '<div class="plist">'+ids.map(function(id){var p=P(id);var w=People.where(id);return '<button class="pcard'+(p.alive?'':' dead')+'" data-act="pOpen" data-v="'+id+'"><span class="fav">'+ART.avatar(p)+'</span><span class="pi"><b>'+esc(p.n)+'</b> <small>'+esc(p.title||JOBS[p.job]||'')+'・'+ageOf(p)+'歲'+(p.spouse===S.pc?'・配偶':(p.lover?'・心上人':''))+'</small><span class="hb">♥'+p.aff+' 信'+p.trust+' 情'+(p.love||0)+'</span><small>'+(p.alive?(w&&PLACES[w]?'📍'+PLACES[w].n:'不知去向'):'已故')+'</small></span></button>';}).join('')+'</div>'+(ids.length?'':'<p class="note">還沒有結識什麼人。</p>');};
+Panels.romR=function(){var h='<p class="note">七段羈絆沒有固定路線：好感、信任、情意到了，相遇時便會翻開下一章。可以同時與幾個人相知，也可以誰都不選。</p><div class="plist">';
+ Rom.CORE.forEach(function(id){var p=P(id);var N=NAMED[id];if(!p)return;var pr=Rom.progress(id);var met=p.met;var dots='';for(var i=0;i<pr.n;i++)dots+=i<pr.s?'●':'○';
+  var at=[];N.at.forEach(function(x,k){if(x&&PLACES[x]&&at.indexOf(PLACES[x].n+'（'+PER_S[k]+'）')<0&&at.length<3)at.push(PLACES[x].n+'（'+PER_S[k]+'）');});
+  var st=!p.alive?'已故':(p.spouse===S.pc?'💍 已成眷屬':(p.lover?'💗 互許心意':(pr.why===''?'💞 下一章「'+pr.next+'」已可觸發':(met?(pr.next?'下一章「'+pr.next+'」：'+pr.why:pr.why):'未相識'))));
+  h+='<button class="pcard'+(p.alive?'':' dead')+'" data-act="'+(met?'pOpen':'noop')+'" data-v="'+id+'"><span class="fav">'+(met?ART.avatar(p):ART.sil({g:p.g,_age:ageOf(p),n:'？',alive:p.alive}))+'</span><span class="pi"><b>'+(met?esc(p.n):'？？？')+'</b> <small>'+esc(N.sub)+'</small><span class="hb">'+dots+'　情'+(p.love||0)+' 好'+p.aff+' 信'+p.trust+'</span><small>'+esc(st)+'</small>'+(p.alive&&!p.hh?'<small>常在：'+esc(at.join('、')||'行蹤不定')+'</small>':'')+'</span></button>';});
+ return h+'</div>';};
 Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();var kn=FW.knows(id).filter(function(f){return !f.pub;}).slice(-5);var ru=FW.rumors(id).slice(-3);
  return '<button class="btn" data-act="pBack">↩ 返回</button><div class="gdet" style="margin-top:8px"><div class="dtop">'+(ART.hasChar(p)?ART.html('char',p.portrait):'<div class="bigav">'+ART.avatar(p)+'</div>')+'<div class="dname">'+esc(p.n)+'<small>'+esc((p.title||JOBS[p.job]||'')+'・'+People.relTo(id))+'</small></div></div>'
   +'<div class="bars">'+bar('好感',p.aff+100,'',200)+bar('信任',p.trust+100,'t',200)+bar('情意',p.love||0)+bar('健康',p.hp,'h')+'</div>'
@@ -101,7 +108,7 @@ Panels.letter=function(i){var l=S.letters[i];if(!l)return '';l.read=1;UI.badge()
  if(l.rep)h+='<p class="note" style="text-align:center">已回信：'+esc(l.rt||{warm:'溫柔',tease:'俏皮',polite:'得體',decline:'婉拒',free:''}[l.rep])+'</p>';
  else h+='<div class="reply"><button class="cbtn" data-act="rep" data-v="'+i+'|warm">💌 溫柔地回信'+(l.k==='invite'?'（赴約）':'')+'</button><button class="cbtn" data-act="rep" data-v="'+i+'|tease">😊 俏皮地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|polite">📜 得體地回信</button><button class="cbtn" data-act="rep" data-v="'+i+'|decline">🙅 婉拒</button><button class="cbtn ai" data-act="rep" data-v="'+i+'|free">✍️ 親筆回信</button></div>';
  if(l.k==='invite'&&l.o)h+='<p class="note">約在'+cnum0(Math.max(0,l.o.dd))+'日後'+PERIODS[l.o.per]+'，'+esc(PLACES[l.o.pl].n)+'。</p>';if(l.k==='ask')h+='<p class="note">去'+esc(cn(l.id))+'所在處交談，可替其家人出診。</p>';return h;};
-Panels.act.pOpen=function(id){Sh.tab='p:'+id;Sh.draw();};Panels.act.pBack=function(){Sh.tab='list';Sh.draw();};
+Panels.act.noop=function(){toast('尚未相識——到他常出沒的地方碰碰運氣吧。',2200);};Panels.act.pOpen=function(id){Sh.tab='p:'+id;Sh.draw();};Panels.act.pBack=function(){Sh.tab='list';Sh.draw();};
 Panels.act.letOpen=function(i){Sh.tab='l:'+i;Sh.draw();};Panels.act.letBack=function(){Sh.tab='let';Sh.draw();};
 Panels.act.rep=function(v){var a=v.split('|');var i=+a[0];if(a[1]==='free'){Kb.ask('親筆回信給'+cn(S.letters[i].id),function(t){if(!t.trim())return;Letters.reply(i,'free',t.slice(0,80));toast('✉ 已寄出');Sh.draw();});return;}Letters.reply(i,a[1]);toast('✉ 已寄出回信');Sh.draw();};
 /* ---------- 結局冊 ---------- */

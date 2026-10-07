@@ -82,6 +82,7 @@ AI.summary=function(){var me=pc(),L=[];
  var pub=S.facts.filter(function(f){return f.pub;}).slice(-5).map(function(f){return f.t;});if(pub.length)L.push('【公開事實】'+pub.join('；'));
  var wl=WS.brief(4);if(wl.length)L.push('【近期大事】'+wl.join('；'));
  if(S.thread&&S.thread.cur&&S.thread.cur.status!=='closed')L.push(Thread.brief());
+ var rc=S.flags.romCtx;if(rc&&rc.d===S.day&&P(rc.id))L.push('【心動場景】主角正與'+cn(rc.id)+'經歷「'+rc.t+'」；請依角色性格與情意('+P(rc.id).love+')回應，可在 fx.ppl 調整 love/aff/trust（單次±8內）。');
  if(S.recent)L.push('【剛說過的對話】'+S.recent.slice(-1800));
  return L.join('\n');};
 AI.userMsg=function(a){var sum=AI.summary();var tag=a.tag||'';var x=a.extra||'';

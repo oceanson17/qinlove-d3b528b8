@@ -1,0 +1,23 @@
+/* v4.1 對X說面板：離線規則、AI mock、iPhone 尺寸 */
+const L=require('./lib');const eng=process.argv[2]||'chromium';
+const SC=(scene,o)=>JSON.stringify(Object.assign({scene,speaker:'',bg:'',time:0,choices:[{text:'再敘片刻'},{text:'告辭'}],fx:{},facts:[],recap:''},o||{}));
+(async()=>{const p=await L.open({eng:L[eng],touch:1,settings:{typer:false,ai:true,key:'k',base:'http://mock.test/v1',model:'m1',preset:'custom'}});
+ const ok=[],fail=[];const A=(c,m)=>{(c?ok:fail).push(m);console.log(c?'ok  ':'FAIL',m);};const Q=[],sent=[];
+ await p.route('http://mock.test/v1/**',async r=>{sent.push(r.request().postData()||'');return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({choices:[{message:{content:Q.shift()||SC('（模擬）')}}]})});});
+ await L.newStd(p);await L.flush(p);
+ await p.evaluate(()=>{People.meet('mengtian');var q=P('mengtian');q.aff=45;q.trust=35;q.here={d:S.day,per:S.per,pl:S.place};UI.go('talk',{id:'mengtian',off:1});});await L.flush(p);
+ const b=await L.btns(p);A(b.some(t=>/對將軍說/.test(t)),'交談選項有「對將軍說」 '+b.join('|').slice(0,80));
+ await L.click(p,/對將軍說/);await p.waitForTimeout(400);
+ const ui=await p.evaluate(()=>({t:document.getElementById('shT').textContent,tp:document.querySelectorAll('[data-act=sayTp]').length,at:document.querySelectorAll('[data-act=sayAt]').length,ta:!!document.getElementById('sayT'),w:document.getElementById('shB').scrollWidth,cw:document.getElementById('shB').clientWidth}));
+ A(ui.t==='對將軍說'&&ui.tp===9&&ui.at===17&&ui.ta,'面板標題／方向／態度 '+JSON.stringify(ui));A(ui.w<=ui.cw+1,'420 寬無橫向溢出');
+ await p.click('[data-act=sayTp][data-v=praise]');await p.click('[data-act=sayAt][data-v=溫柔]');await p.fill('#sayT','李斯大人處事公允。');
+ const go=await p.evaluate(()=>{var r=document.querySelector('[data-act=saySend]').getBoundingClientRect();return r.bottom<=innerHeight&&r.top>0;});A(go,'送出鍵在畫面內');
+ await L.shot(p,'v4_talk');
+ Q.push(SC('蒙恬：「李斯？他的手段，我比你清楚。」\n他按著劍柄，目光沉了沉。',{speaker:'mengtian',fx:{ppl:{mengtian:{aff:30,trust:2}}}}));
+ const b0=await p.evaluate(()=>P('mengtian').aff);await p.click('[data-act=saySend]');await p.waitForTimeout(800);await L.flush(p);
+ const pr=(()=>{try{return JSON.parse(sent[sent.length-1]).messages.map(m=>m.content).join('\n');}catch(e){return '';}})();
+ A(/【對蒙恬說】話題方向：美言；態度：溫柔/.test(pr)&&/性格/.test(pr)&&/【所知】|持久記憶|好感/.test(pr),'AI 提示帶方向、態度、性格、關係');
+ const r=await p.evaluate(()=>({aff:P('mengtian').aff,tx:UI.sc.lines.map(l=>l.t).join('\n')}));A(r.aff-b0<=8&&r.aff>b0,'AI 好感限幅 ±8 '+(r.aff-b0));A(/（蒙恬：好感\+/.test(r.tx)&&/你（溫柔）對將軍說/.test(r.tx),'顯示變化 '+r.tx.replace(/\n/g,' / ').slice(-60));
+ await p.evaluate(()=>{SET.ai=false;UI.go('say',{id:'mengtian',topic:'accuse',att:'諂媚',text:'趙高可疑',off:1});});await L.flush(p);
+ const o=await p.evaluate(()=>UI.sc.lines.map(l=>l.t).join('\n'));A(/（蒙恬：/.test(o),'離線規則回應 '+o.replace(/\n/g,' / ').slice(-50));
+ console.log(eng,'say',ok.length+'/'+(ok.length+fail.length));await p.context().browser().close();process.exit(fail.length?1:0);})().catch(e=>{console.error(e);process.exit(1);});

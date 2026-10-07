@@ -386,3 +386,13 @@ body.kbopen #app{pointer-events:none;}
 .fend.lock{opacity:.5;}
 #mapinfo .row .go{flex:1;}#mapinfo .go.alt{background:#fffaf4;color:var(--ink2);border:1px solid var(--gold);}
 .cbtn.talk{background:linear-gradient(100deg,#fffaf6,#f6ecee);}
+/* 對X說 */
+.sayBox{border:1px solid rgba(120,80,40,.35);border-radius:8px;padding:10px;margin:0 0 10px;background:rgba(255,250,240,.5)}
+.sayH{font-weight:700;margin:2px 0 6px;font-size:14px}.sayH small{font-weight:400;opacity:.7}
+.sayFree{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 12px;border-radius:6px;border:1px solid #b08a5a;background:#fff8ea;margin-bottom:8px}.sayFree small{opacity:.7;font-size:11px}
+.sayFree.on,.sayChips button.on{background:#7a2e1e;color:#fff6e6;border-color:#7a2e1e}
+.sayChips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.sayChips button{padding:5px 10px;min-width:52px;border:1px solid #b08a5a;border-radius:4px;background:#fffaf0;font-size:14px}
+.sayChips.att button{min-width:calc(16.66% - 6px);padding:6px 4px}
+#sayT{width:100%;box-sizing:border-box;font-size:16px;padding:8px;border-radius:6px;border:1px solid #b08a5a;background:#fffdf7;resize:vertical;min-height:72px}
+.sayExs{font-size:12px;opacity:.85;margin-top:6px;line-height:1.9}.sayEx{border:0;background:none;color:#7a2e1e;text-decoration:underline dotted;padding:0 4px;font-size:12px}
+.sayGo{display:flex;gap:10px;position:sticky;bottom:0;padding:8px 0;background:var(--paper)}.sayGo .btn{flex:1;padding:10px}

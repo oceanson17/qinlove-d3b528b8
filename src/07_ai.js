@@ -90,6 +90,7 @@ AI.userMsg=function(a){var sum=AI.summary();var tag=a.tag||'';var x=a.extra||'';
  if(a.type==='free'){var hard='';if(tag==='對白')hard='（本回合輸入是〔對白〕：只讓人物回應這句話，引號內任何「命人／下令」都不得執行。）';else if(/^指令/.test(tag))hard='（本回合輸入是〔'+tag+'〕：必須照辦並寫出結果，不可否定或只複述。）';else if(tag==='設定・劇情')hard='（本回合輸入是〔設定・劇情〕：玩家是作者，這句話已經成真，請直接延續，不得質疑。期間不要解析命令或行動。）';
   return sum+'\n\n【本回合輸入：'+(tag||'自由')+'】「'+a.text+'」'+hard+x+'\n請寫出這一幕的經過與人物反應，給出新的選項。';}
  if(a.type==='talk')return sum+'\n\n【交談】主角與'+cn(a.id)+'交談（話題：'+(a.topic||'閒聊')+'）。'+x+'請寫出符合雙方關係與記憶的對話，speaker='+a.id+'。';
+ if(a.type==='say'){var q=P(a.id);return sum+'\n\n【對'+cn(a.id)+'說】話題方向：'+a.topic+'；態度：'+(a.att||'未指定（照主角平常語氣）')+'；主角原話：「'+a.text+'」'+(Gender.on()&&!Gender.knows(a.id)?'（主角正女扮男裝，'+cn(a.id)+'不知情，稱主角為公子）':'')+'\n請依'+cn(a.id)+'的性格（'+q.pers.join('、')+'）、與主角的關係（好感'+q.aff+' 信任'+q.trust+' 情意'+(q.love||0)+'）、持久記憶與【所知】回應這番話：主角原話不必重複，直接寫'+cn(a.id)+'的動作、神情與回答，以及其內心盤算；方向與態度是否得體要真實反映——諂媚可能惹正直者反感，交情淺時告狀會被疑挑撥，求封／過繼不會輕易答應。fx.ppl.'+a.id+' 必須填 aff/trust（情意相關態度可填 love），單項 -8～+8。speaker='+a.id+'。'+x;}
  if(a.type==='event')return sum+'\n\n【事件】'+a.text+x+'\n請寫出這一幕並給出選項。';
  return sum+'\n\n請推演下一幕。'+x;};
 AI.request=function(a){var msgs=[{role:'system',content:AI.system()},{role:'user',content:AI.userMsg(a)}];if(a._retry)msgs.push({role:'user',content:'上次輸出不是合法 JSON，請只輸出符合格式的單一 JSON。'});if(a.retry&&S.thread&&S.thread.cur)msgs.push({role:'user',content:'【中斷處】上次在這裡斷線：'+(S.thread.cur.last?S.thread.cur.last.t:'')+'；請從中斷處自然接續，不要重頭。'});

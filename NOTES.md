@@ -109,3 +109,10 @@
 - CG：未有 `cg_*` 時用 `ART.cgImg` 合成（模糊背景＋角色色調＋角色立繪＋女主角前景＋金框）；全部缺圖才退回 SVG。
 - 標題畫面後 1.2 秒預載全部圖檔（約 1.9MB），轉場唔會閃。
 - 截圖：`node t/art.js chromium|webkit` → `screenshots/art_<eng>_NN_*.png`。
+
+## v4.1–v4.2（2026-10-07）
+- 女主角新立繪：raw 為全身 16:9，`tools/art.py heroine heroine_m` 只處理指定 id；HALF 只留上 60% 身並放大到 900px 高；FACE heroine(.63,.20)/heroine_m(.50,.27)。測試 t/portrait.js。
+- 「對X說」面板（src/15_say.js）：9 個話題方向、17 種態度、示例；AI 類型 say（fx.ppl 限 ±8），離線用 Say.rule（性格×態度×交情）。全屏 sheet，鍵盤彈出時以 visualViewport 縮高。測試 t/say.js。
+- AI 品質（src/07_ai2.js）：VOICE（語氣／口頭禪／動機）、此刻情緒、文筆要求＋示範、近期劇情摘要、上三幕開頭反重複；與前幕相似度>0.7 或選項空泛會自動重寫一次；maxTok 2600；xAI 預設 grok-4.7。測試 t/aiq.js（mock）。
+- 限制：mock 只驗證提示與重試流程，實際文筆取決於模型；重寫最多一次（多一次請求費用／時間）；相似度用二字詞重疊，粗略。
+- 飢餓：無錢無糧時每三日可向鄰里討粟米（心情−6、名聲−1）。

@@ -1,6 +1,6 @@
 # 美術資源清單（assets/）
 
-## 目前狀態（2026-10-06）
+## 目前狀態（2026-10-07：v2 新增需求見第 5 節）
 已整合正式美術（原圖在 `assets/raw/`，不入 git；由 `tools/art.py` 轉換）：
 
 | 類別 | 檔案 | 處理 |
@@ -91,3 +91,32 @@ photorealistic, 3d render, real person, celebrity likeness, child, loli, modern 
 - `bg_title` 已用於標題畫面（logo 文字由網頁繪製，上下加柔光）。
 - 圖檔大小建議每張 < 400KB（WebP 品質 80–85）。
 - 生成器只出 1280×720 橫向圖：立繪可照用（去背後裁切）；CG 若都係橫向，直向畫面會用 cover 裁走兩側，構圖請將兩人放中間 30% 闊度內。
+
+## 5. v2 新增美術需求（未做；現時以 SVG 背景／剪影印章頭像代替）
+
+共通風格（每條提示詞前面加）：`original anime-style character art, ancient Qin dynasty China setting (fictional), soft cel shading, muted ink-wash palette with warm accents, clean lineart, no text, no watermark` 。全部為原創動漫角色，不描繪真實人物。
+
+檔名 → 用途 → 英文提示詞：
+
+| 檔名 | 用途 | 提示詞 |
+|---|---|---|
+| `char_heroine_doc.webp` | 女主角西醫裝（行醫／手術場景立繪） | half-body portrait of a young woman physician, 19 years old, hair tied up in a simple bun wrapped in a white cloth cap, plain undyed linen robe with tight sleeves bound by cloth straps, a clean white apron, small leather satchel of instruments, calm focused eyes, holding a boiled cloth bandage, transparent background |
+| `char_baby.webp` | 嬰兒開局／族譜子女（0–2 歲） | an infant swaddled in coarse hemp cloth with a small red cord bracelet, sleeping peacefully, simple soft lighting, transparent background |
+| `char_child.webp` | 童年（3–13 歲） | a curious 8-year-old child in a short ancient Chinese tunic and trousers, hair in two small buns, holding a bamboo slip, bright smile, transparent background |
+| `char_elder.webp` | 長者（祖母／老年主角） | a kind elderly woman in her seventies, grey hair pinned with a wooden hairpin, layered brown hemp robes, gentle wrinkles, leaning on a walking stick, transparent background |
+| `bg_farm.webp` | 城郊田舍（農家開局） | a modest Qin-era farmhouse with rammed-earth walls and a thatched roof beside millet fields, the Wei river in the distance, morning mist, wide landscape |
+| `bg_road.webp` | 流放路上（驛道營地） | a desolate exile road across a dry loess wasteland at dusk, a few ragged travellers resting by a small campfire beside an ox cart, distant beacon tower, cold wind, wide landscape |
+| `bg_surgery.webp` | 醫館手術室（西醫處置） | interior of a small ancient clinic converted into a clean treatment room, a wooden table covered with boiled white cloth, copper basins of steaming water, rows of ceramic jars, a distilling apparatus, bright window light |
+| `bg_village.webp` | 邊地里中 | a poor frontier village at the northern border, mud-brick houses, wooden palisade, goats, distant snowy mountains, overcast sky |
+| `bg_field.webp` | 荒地／田（邊地與城郊共用；`bg_farm` 優先用於城郊田舍） | a rocky barren field being cleared for farming at the frontier, simple wooden hoes, piles of stones, wild grass, a small hut, late afternoon light |
+| `bg_hut.webp` | 草棚／邊地的家 | a cramped interior of a straw hut with a clay stove, straw bedding, hanging dried herbs, a single oil lamp, warm dim light |
+| `bg_forest.webp` | 後山林／深山採集 | a dense mountain forest with mossy rocks, mushrooms and wild herbs, shafts of light through pine trees |
+| `bg_river.webp` | 河灘 | a pebbled riverbank with reeds, a simple fish trap, shallow clear water, distant hills |
+| `face_xiawuju.webp`／`char_xiawuju.webp` | 夏無且（宮中侍醫，原創造型） | middle-aged court physician, neat beard, dark official robe with a medicine box on his back, cautious intelligent eyes, transparent background |
+| `face_xufu.webp`／`char_xufu.webp` | 徐福（方士，原創造型） | a mysterious alchemist in flowing grey-blue robes decorated with star patterns, holding a gourd and a bundle of talismans, enigmatic smile, transparent background |
+| `face_zhaogao.webp`／`char_zhaogao.webp` | 趙高（宦官，原創造型） | a pale, soft-spoken palace official in black and crimson robes with a tall hat, narrow smiling eyes, hands folded in sleeves, unsettling aura, transparent background |
+| `face_gaojianli.webp`／`char_gaojianli.webp` | 高漸離（樂師，原創造型） | a lean young musician in simple dark robes carrying a zhu zither wrapped in cloth, melancholy gentle expression, loose hair tied with a ribbon, transparent background |
+
+對應規則：場景先找 `bg_<地點id>`（如 `bg_farm`、`bg_road`），冇就用地點的背景鍵 `bg_<bg>`，再冇就用 SVG。`bg_surgery` 預留給醫館手術室（現暫用 `bg_clinic`）；`char_heroine_doc`、`char_baby/child/elder` 及四位配角立繪需要接駁程式（見 NOTES 已知限制）。
+
+尺寸：立繪 1024×1536（透明 PNG/WebP），背景 1280×720。放入 `assets/` 後 `node build.js` 會自動偵測並取代 SVG。

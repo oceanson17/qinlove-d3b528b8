@@ -2494,7 +2494,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
    AI.run(req).then(function(s2){if(tok!==UI.tok)return;UI.busy(false);S.pend=null;UI.present(s2);},function(e){if(tok!==UI.tok)return;UI.busy(false);AI.fail(e);var s3;
     if(Thread.paused()&&e&&e.kind!=='cancel'){s3=fb();s3.ch=[ch('🔁 重試接續','thRetry'),ch('🗑 放下這件事','thDrop')].concat(s3.ch||[]);}else{s3=fb();S.pend=null;}UI.present(s3);});
    return;}
-  UI.screen('game');UI.sc=sc;UI.li=0;if(sc.bg)UI.setBg((PLACES[sc.bg]||{}).bg||sc.bg);UI.hud();$('choices').innerHTML='';
+  UI.screen('game');UI.sc=sc;UI.li=0;if(sc.bg)UI.setBg(PLACES[sc.bg]&&ART.file('bg_'+sc.bg)?sc.bg:((PLACES[sc.bg]||{}).bg||sc.bg));UI.hud();$('choices').innerHTML='';
   if(!sc.hub){FullLog.add(sc);Recall.ingest(sc);}
   var f0=sc.focus&&P(sc.focus);if(f0&&ART.hasChar(f0))UI.setChar(f0.portrait);else UI.setChar('');
   if(!sc.lines.length){UI.endLines();return;}UI.showLine(0);};

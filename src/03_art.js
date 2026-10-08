@@ -202,7 +202,7 @@ var ART={cache:{}};
  /* 取得圖：回傳 HTML（優先圖檔） */
 /* 背景圖焦點（直向畫面 object-fit:cover 只見約 26% 闊度；值為 object-position x%） */
  /* 立繪臉部中心（圖寬%、圖高%）：用來令臉置中、圖鑑卡裁切 */
- ART.FACE={yingzheng:[42,32],mengtian:[41,27],lisi:[44,29],fusu:[42,31],hanfei:[44,29],jingke:[44,29],xuanye:[37,27],heroine:[66,20],heroine_m:[50,27]};
+ ART.FACE={yingzheng:[50,30],mengtian:[50,30],lisi:[50,30],fusu:[50,30],hanfei:[50,30],jingke:[50,30],xuanye:[50,30],heroine:[50,30],heroine_m:[50,30]};
  ART.BGPOS={clinic:66,palace:50,plum:43,market:43,camp:66,night:39,study:57,tavern:74,title:77};
  ART.html=function(kind,id,expr){
   var key=kind==='bg'?'bg_'+id:(kind==='cg'?'cg_'+id:'char_'+id+(expr&&expr!=='normal'?'_'+expr:''));

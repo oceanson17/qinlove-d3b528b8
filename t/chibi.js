@@ -1,0 +1,26 @@
+/* v5 Q 版立繪／背景顯示 */
+const L=require('./lib');const eng=process.argv[2]||'chromium';const shot=process.argv[3]==='shot';
+(async()=>{const p=await L.open({eng:L[eng],touch:1,settings:{typer:false}});
+ const ok=[],fail=[];const A=(c,m)=>{(c?ok:fail).push(m);console.log(c?'ok  ':'FAIL',m);};
+ const show=async(who,bg)=>{await p.evaluate(({who,bg})=>{S.queue=[];UI.present(Eng.L([[who,'（Q 版）']],who,bg,[{t:'繼續',go:'place'}]));}, {who,bg});await p.waitForTimeout(700);
+  return p.evaluate(()=>{var im=[].slice.call(document.querySelectorAll('img')).filter(i=>i.offsetParent);return im.map(i=>({s:(i.getAttribute('src')||'').replace(/.*\//,''),w:i.naturalWidth,ok:i.complete&&i.naturalWidth>0}));});};
+ await L.newStd(p);await L.flush(p);
+ await p.evaluate(()=>{var me=pc();S.queue=[];UI.present(Eng.L([[me.id,'一身青囊衣裳。']],me.id,'clinic',[{t:'繼續',go:'place'}]));});
+ await p.waitForTimeout(800);
+ const h=await p.evaluate(()=>{var a=[].slice.call(document.querySelectorAll('img')).filter(i=>i.offsetParent&&i.naturalWidth);return a.map(i=>(i.getAttribute('src')||'').split('/').pop());});
+ A(h.some(s=>/char_heroine\.webp/.test(s))&&h.some(s=>/bg_clinic/.test(s)),'女主角＋醫館 '+h.join(','));
+ if(shot)await L.shot(p,'v5_chibi_heroine');
+ await p.evaluate(()=>{People.meet('yingzheng');S.queue=[];UI.present(Eng.L([['yingzheng','寡人在此。']],'yingzheng','palace',[{t:'繼續',go:'place'}]));});
+ await p.waitForTimeout(800);
+ const y=await p.evaluate(()=>[].slice.call(document.querySelectorAll('img')).filter(i=>i.offsetParent&&i.naturalWidth).map(i=>(i.getAttribute('src')||'').split('/').pop()));
+ A(y.some(s=>/char_yingzheng/.test(s))&&y.some(s=>/bg_palace/.test(s)),'嬴政＋宮殿 '+y.join(','));
+ if(shot)await L.shot(p,'v5_chibi_yingzheng');
+ await p.evaluate(()=>{S.queue=[];UI.present(Eng.L(['市井人聲喧鬧。'],'','market',[{t:'繼續',go:'place'}]));});
+ await p.waitForTimeout(700);
+ const m=await p.evaluate(()=>[].slice.call(document.querySelectorAll('img')).filter(i=>i.offsetParent&&i.naturalWidth).map(i=>(i.getAttribute('src')||'').split('/').pop()));
+ A(m.some(s=>/bg_market/.test(s)),'市集背景 '+m.join(','));
+ if(shot)await L.shot(p,'v5_chibi_scene');
+ const all=await p.evaluate(()=>['heroine','heroine_m','yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'].every(id=>ART.file('char_'+id)&&ART.file('face_'+id))&&['palace','clinic','market','tavern','study','camp','plum','night','title'].every(k=>ART.file('bg_'+k)));
+ A(all,'九人立繪頭像＋九背景都在清單');
+ console.log(eng,'chibi',ok.length+'/'+(ok.length+fail.length));await p.context().browser().close();process.exit(fail.length?1:0);
+})().catch(e=>{console.error(e);process.exit(1);});

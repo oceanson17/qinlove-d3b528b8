@@ -11,9 +11,9 @@ from rembg import remove,new_session
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
 # 縮圖方框座標（與 src/03_art.js ART.FACE 同步維護；ART.FACE 用圖寬/圖高 %）
 # 全身圖只保留上半身（佔人物高度比例）
-HALF={'heroine':0.60,'heroine_m':0.60}
+HALF={}  # Q 版保留全身
 ONLY=sys.argv[1:]
-FACE={'yingzheng':(.42,.32),'mengtian':(.41,.25),'lisi':(.44,.29),'fusu':(.42,.31),'hanfei':(.44,.29),'jingke':(.45,.29),'xuanye':(.40,.27),'heroine':(.63,.20),'heroine_m':(.50,.27)}
+FACE={'yingzheng':(.50,.31),'mengtian':(.50,.31),'lisi':(.50,.31),'fusu':(.50,.31),'hanfei':(.50,.31),'jingke':(.50,.31),'xuanye':(.50,.31),'heroine':(.50,.31),'heroine_m':(.50,.31)}
 sess=new_session('isnet-anime')
 for f in sorted(glob.glob('assets/raw/char_*.jpg')):
     cid=os.path.basename(f)[5:-4]
@@ -25,7 +25,7 @@ for f in sorted(glob.glob('assets/raw/char_*.jpg')):
         y1=y0+int((y1-y0)*HALF[cid]);x0,_,x1,_=a.crop((0,y0,im.width,y1)).point(lambda v:255 if v>24 else 0).getbbox()
     x0=max(0,x0-6);x1=min(im.width,x1+6);top=max(0,y0-pad)
     crop=im.crop((x0,top,x1,y1));c=Image.new('RGBA',(x1-x0,crop.height+pad-(y0-top)),(0,0,0,0));c.alpha_composite(crop,(0,c.height-crop.height))
-    if cid in HALF and c.height<900:c=c.resize((int(c.width*900/c.height),900),Image.LANCZOS)  # 原圖人物細，放大
+    if c.height<860:c=c.resize((int(c.width*860/c.height),860),Image.LANCZOS)
     out='assets/char_%s.webp'%cid;q=85
     while True:
         c.save(out,'WEBP',quality=q,method=6)
@@ -34,7 +34,7 @@ for f in sorted(glob.glob('assets/raw/char_*.jpg')):
     print(out,c.size,os.path.getsize(out)//1024,'KB')
     if cid in FACE:
         fx,fy=FACE[cid];w,h=c.size;s=400/max(w,h);ox=(400-w*s)/2
-        cx=(fx*400-ox)/s;cy=(fy-.01)*400/s;side=.40*400/s
+        cx=(fx*400-ox)/s;cy=(fy-.01)*400/s;side=.46*400/s
         b=(int(cx-side/2),int(cy-side/2),int(cx+side/2),int(cy+side/2))
         fc=Image.new('RGBA',(int(side),int(side)),(0,0,0,0));fc.alpha_composite(c.crop((max(0,b[0]),max(0,b[1]),b[2],b[3])),(max(0,-b[0]),max(0,-b[1])))
         fc.resize((192,192),Image.LANCZOS).save('assets/face_%s.webp'%cid,'WEBP',quality=85,method=6)

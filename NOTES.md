@@ -48,6 +48,11 @@
 - monkey.js <engine> <steps> <seed>：亂點＋亂輸入；舊 v1 測試已移至 `t/v1old/`
 - 線上：`node t/live.js <url> chromium`
 
+
+## AI 精修解析（2026-10-09）
+- **根因**：連線測試（短 JSON、`max_tokens` 小）可過，但「AI 精修解析」對 `deepseek-reasoner` 常失敗——reasoner 不支援 temperature／`response_format`，且 `max_tokens` 含推理額度，500 太細會令 `content` 空白；錯誤被 toast 吞成「解析失敗，改用離線」。
+- **修正**（`07_ai`／`13_fate`／`15_panels`）：`AI.msgText` 兼容 chat／reasoner（含 `reasoning_content`、多段 content）；reasoner 預先關 temp／json_object、提高 token 與逾時；`extractJSON` 剝 markdown fence；精修失敗重試一次；toast 顯示 HTTP／片段真正原因。測試：`t/ai_norm.js`。
+
 ## v4（2026-10-07）女扮男裝
 - `src/13_disg.js`：開局頁「☐ 女扮男裝開局」（只限女主角）；在家／客舍／河灘可「🎭 換上男裝／👘 換回女裝」（第一次要一匹布），`/指令 女扮男裝`、`/指令 換回女裝` 都得。易裝沿用同一個秘密（`S.disg.fid`），換回女裝時在場、未知情又見過你嘅人會私下得知。
 - 稱呼：`Gender.call`／`Gender.pcText` 按旁人眼中性別；知情者私下按真實性別。

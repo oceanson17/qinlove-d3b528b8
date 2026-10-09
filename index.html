@@ -1652,18 +1652,37 @@ AI.timeoutFetch=function(url,opts,ms){return new Promise(function(res,rej){var d
  var t=setTimeout(function(){if(done)return;done=true;try{ctrl&&ctrl.abort();}catch(e){}rej({kind:'timeout'});},ms);
  fetch(url,opts).then(function(r){if(done)return;done=true;clearTimeout(t);res(r);},function(e){if(done)return;done=true;clearTimeout(t);rej({kind:'net',e:e});});});};
 AI.quirks={};
+/* reasoner／思考模型：temperature、response_format 常不支援；max_tokens 含推理額度，太小會令 content 空白 */
+AI.isReasoner=function(m){m=String(m!=null?m:SET.model||'');return /reasoner|thinking|-r1\b|o1|o3-mini/i.test(m);};
+AI.snip=function(s,n){s=String(s==null?'':s).replace(/\s+/g,' ').trim();return s?s.slice(0,n||100):'';};
+/* 統一取出 chat／reasoner 的可解析文字（content 字串、多段、或 reasoning_content） */
+AI.msgText=function(msg){if(!msg||typeof msg!=='object')return '';
+ var c=msg.content;
+ if(typeof c==='string'&&c.trim())return c;
+ if(Array.isArray(c)){var parts=[];for(var i=0;i<c.length;i++){var p=c[i];if(typeof p==='string')parts.push(p);else if(p&&typeof p.text==='string')parts.push(p.text);else if(p&&typeof p.content==='string')parts.push(p.content);}var joined=parts.join('\n').trim();if(joined)return joined;}
+ if(typeof msg.reasoning_content==='string'&&msg.reasoning_content.trim())return msg.reasoning_content;
+ if(typeof c==='string')return c;
+ return '';};
 AI.call=function(messages,o){o=o||{};var q=AI.quirks[AI.endpoint()+'|'+SET.model]||(AI.quirks[AI.endpoint()+'|'+SET.model]={});var depth=o.depth||0;
- var body={model:SET.model,messages:messages,stream:false};if(!q.notemp)body.temperature=SET.temp;if(q.mct)body.max_completion_tokens=o.maxTok||SET.maxTok;else body.max_tokens=o.maxTok||SET.maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
+ if(AI.isReasoner()){q.notemp=1;q.nofmt=1;}
+ var maxTok=o.maxTok!=null?o.maxTok:SET.maxTok;if(AI.isReasoner()&&maxTok<2000)maxTok=Math.max(maxTok*5,2500);
+ var toSec=o.timeout!=null?o.timeout:SET.aiTimeout;if(AI.isReasoner()&&toSec<90)toSec=90;
+ var body={model:SET.model,messages:messages,stream:false};if(!q.notemp)body.temperature=SET.temp;if(q.mct)body.max_completion_tokens=maxTok;else body.max_tokens=maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
  var t0=Date.now();
- return AI.timeoutFetch(AI.endpoint(),{method:'POST',headers:AI.headers(),body:JSON.stringify(body)},(o.timeout||SET.aiTimeout)*1000).then(function(r){return r.text().then(function(txt){var j=null;try{j=JSON.parse(txt);}catch(e){}
+ return AI.timeoutFetch(AI.endpoint(),{method:'POST',headers:AI.headers(),body:JSON.stringify(body)},toSec*1000).then(function(r){return r.text().then(function(txt){var j=null;try{j=JSON.parse(txt);}catch(e){}
   if(!r.ok){var ms=String((j&&j.error&&(j.error.message||j.error))||txt.slice(0,160));var again=0;
    if((r.status===400||r.status===422)&&depth<3){if(!q.mct&&/max_completion_tokens/i.test(ms)){q.mct=1;again=1;}else if(!q.notemp&&/temperature/i.test(ms)){q.notemp=1;again=1;}else if(!q.nofmt){q.nofmt=1;again=1;}}
-   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1});throw {kind:'http',status:r.status,msg:ms};}
-  var c=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;if(typeof c!=='string'||!c.trim())throw {kind:'empty'};return {text:c,ms:Date.now()-t0};});});};
+   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1,fmt:o.fmt});throw {kind:'http',status:r.status,msg:ms,raw:txt};}
+  var msg=j&&j.choices&&j.choices[0]&&j.choices[0].message;var c=AI.msgText(msg);
+  if(typeof c!=='string'||!c.trim()){var hint=AI.snip(txt,120);if(AI.isReasoner())hint=(hint||'content 空白')+'（reasoner 推論可能食晒 token，已自動提高額度；可改用 deepseek-chat 或加長逾時）';throw {kind:'empty',raw:txt,hint:hint};}
+  return {text:c,ms:Date.now()-t0,raw:txt};});});};
 AI.listModels=function(){return AI.timeoutFetch(AI.base()+'/models',{method:'GET',headers:AI.headers()},20000).then(function(r){return r.json().then(function(j){var a=(j&&(j.data||j.models))||[];return a.map(function(x){return typeof x==='string'?x:(x.id||x.name||'');}).filter(Boolean).slice(0,80);});});};
-AI.errMsg=function(e){if(!e)return '未知錯誤';if(e.kind==='timeout')return '連線逾時（'+SET.aiTimeout+' 秒）';if(e.kind==='net')return '無法連上 AI 服務（網絡或 CORS）';if(e.kind==='empty')return 'AI 回應為空';if(e.kind==='parse'||e.kind==='schema')return 'AI 回應格式不正確';
- if(e.kind==='http'){if(e.status===402)return '餘額不足（HTTP 402）';if(e.status===401||e.status===403)return 'API Key 無效（HTTP '+e.status+'）';if(e.status===404)return '找不到模型或端點（HTTP 404）';if(e.status===429)return '請求太頻繁（HTTP 429）';return 'AI 請求失敗（HTTP '+e.status+'）';}return String(e.message||e);};
-AI.extractJSON=function(text){var t=String(text).trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;t=t.slice(a,b+1);
+AI.errMsg=function(e){if(!e)return '未知錯誤';if(e.kind==='timeout')return '連線逾時（'+(AI.isReasoner()?Math.max(90,SET.aiTimeout):SET.aiTimeout)+' 秒）'+(AI.isReasoner()?'｜reasoner 較慢，可改 deepseek-chat 或設 120 秒':'');if(e.kind==='net')return '無法連上 AI 服務（網絡或 CORS）';if(e.kind==='empty')return 'AI 回應為空'+(e.hint?'｜'+e.hint:'');if(e.kind==='parse'||e.kind==='schema')return 'AI 回應格式不正確'+(e.raw?'｜'+AI.snip(e.raw,90):'');
+ if(e.kind==='http'){var tail=e.msg?('：'+AI.snip(e.msg,100)):'';if(e.status===402)return '餘額不足（HTTP 402）'+tail;if(e.status===401||e.status===403)return 'API Key 無效（HTTP '+e.status+'）'+tail;if(e.status===404)return '找不到模型或端點（HTTP 404）'+tail;if(e.status===429)return '請求太頻繁（HTTP 429）'+tail;return 'AI 請求失敗（HTTP '+e.status+'）'+tail;}return String(e.message||e);};
+AI.extractJSON=function(text){var t=String(text==null?'':text).trim();
+ var fence=t.match(/```(?:json|JSON)?\s*([\s\S]*?)```/);if(fence)t=fence[1].trim();
+ else t=t.replace(/^```(?:json|JSON)?\s*/i,'').replace(/\s*```$/,'');
+ var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;t=t.slice(a,b+1);
  try{return JSON.parse(t);}catch(e){}try{return JSON.parse(t.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(t.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
 /* M15：修復殘缺 JSON（只在含 "scene" 時）；缺選項補 3 個 */
 AI.repairJSON=function(raw){raw=String(raw||'');if(raw.indexOf('"scene"')<0)return null;var j=AI.extractJSON(raw);if(j&&j.scene)return j;
@@ -1742,7 +1761,7 @@ AI.fail=function(e){if(e&&e.kind==='cancel')return;var m=AI.errMsg(e);var st=e&&
  if(S){S.aiFails=(S.aiFails||0)+1;if(perm||S.aiFails>=3)S.aiPaused=1;}
  if(perm){AI.block(m);m+='。AI 已暫停，改用離線劇情；到設定修正後按「測試連線」。';}else if(st===429){AI.cool=Date.now()+60000;m+='（60 秒內改用離線）';}else if(S&&S.aiPaused)m+='。連續失敗，AI 已暫停。';else m+='（已改用離線劇情）';
  AI.lastErr=m;try{toast('⚠ '+m,3600);}catch(x){}};
-AI.test=function(){return AI.call([{role:'system',content:'只輸出JSON'},{role:'user',content:'回傳 {"ok":true}'}],{maxTok:60,timeout:Math.min(45,SET.aiTimeout)}).then(function(r){AI.unblock();return {ok:true,msg:'連線成功（'+r.ms+' ms）'};},function(e){return {ok:false,msg:AI.errMsg(e)};});};
+AI.test=function(){var tok=AI.isReasoner()?800:60;var to=AI.isReasoner()?Math.min(90,Math.max(45,SET.aiTimeout)):Math.min(45,SET.aiTimeout);return AI.call([{role:'system',content:'只輸出JSON'},{role:'user',content:'回傳 {"ok":true}'}],{maxTok:tok,timeout:to}).then(function(r){AI.unblock();return {ok:true,msg:'連線成功（'+SET.model+'・'+r.ms+' ms）'};},function(e){return {ok:false,msg:AI.errMsg(e)};});};
 /* 套用 AI 效果 */
 AI.applyFx=function(fx,sp){if(!fx)return;var me=pc();
  if(fx.me){for(var k in fx.me){var v=fx.me[k];if(!v)continue;if(k==='gold')Inv.gold(v);else if(k==='fame'){S.fam.fame=clamp(S.fam.fame+v,0,999);UI.popP('fame',v);}else if(me.sk[k]!==undefined){me.sk[k]=clamp(me.sk[k]+v,0,100);UI.popP(k,v);}else{me[k]=clamp(me[k]+v,0,100);UI.popP(k,v);}}}
@@ -2728,7 +2747,7 @@ Origin.apply=function(o){if(!o)return;var me=pc();S.origin={raw:o.raw,lines:[],g
  if(o.disg)Gender.start(me.g==='f'?'m':'f');if(o.goal)S.origin.lines.push('你的心願：'+o.goal+'。');
  FW.add(me.n+'的身世：'+o.raw.slice(0,60),[S.pc],S.pc,{secret:1,k:'originRaw'});addLog('〔身世〕'+o.raw.slice(0,40),'身');};
 Origin.refine=function(text){var msgs=[{role:'system',content:'你是古代人生模擬遊戲的設定解析器。把玩家寫的身世解析成 JSON：{"birth":"exile|farm|merchant|gentry|tradoc|orphan 或空","g":"m|f 或空","age":數字或null,"secrets":[{"t":"秘密一句","kw":["關鍵字"]}],"poison":{"n":"毒名","lv":1-3}或null,"foe":"仇人名或空","goal":"志向或空","skills":{"med|mart|lit|trade|farm|craft":15},"gold":數字或null,"disg":true/false,"master":true/false}。只輸出 JSON。'},{role:'user',content:text}];
- return AI.call(msgs,{maxTok:600}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse'};var o=Origin.parse(text);if(j.birth&&BIRTHS.some(function(b){return b.k===j.birth;})&&!o.birth){o.birth=j.birth;o.items.push('出身（AI）：'+BIRTHS.filter(function(b){return b.k===j.birth;})[0].n);}
+ var tok=AI.isReasoner()?Math.max(2500,SET.maxTok||2600):800;var to=AI.isReasoner()?Math.max(90,SET.aiTimeout||60):Math.max(45,SET.aiTimeout||60);return AI.call(msgs,{maxTok:tok,timeout:to}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};var o=Origin.parse(text);if(j.birth&&BIRTHS.some(function(b){return b.k===j.birth;})&&!o.birth){o.birth=j.birth;o.items.push('出身（AI）：'+BIRTHS.filter(function(b){return b.k===j.birth;})[0].n);}
   (j.secrets||[]).slice(0,3).forEach(function(s){if(s&&s.t&&!o.secrets.some(function(x){return x.t===s.t;})){o.secrets.push({t:String(s.t).slice(0,60),kw:(s.kw||[]).slice(0,4)});o.items.push('秘密（AI）：'+s.t);}});
   if(j.poison&&j.poison.n&&!o.poison){o.poison={n:String(j.poison.n).slice(0,6),lv:clamp(j.poison.lv|0||2,1,3)};o.items.push('舊毒（AI）：'+o.poison.n);}if(j.foe&&!o.foe){o.foe=String(j.foe).slice(0,4);o.items.push('仇人（AI）：'+o.foe);}if(j.goal&&!o.goal){o.goal=String(j.goal).slice(0,14);o.items.push('志向（AI）：'+o.goal);}
   if(j.skills)for(var k in j.skills)if(ME_K[k]&&!o.skills[k]){o.skills[k]=clamp(j.skills[k]|0,0,20);o.items.push('專長（AI）：'+k);}if(j.master&&o.tags.indexOf('master')<0){o.tags.push('master');o.items.push('曾隨隱士學醫（AI）');}if(j.disg&&!o.disg){o.disg=1;o.items.push('易裝（AI）');}
@@ -2903,14 +2922,17 @@ Origin.deep=function(raw,o){var t=Origin.norm(raw);var F={},m,N='(\\d{1,2}|[一�
 (function(){var op=Origin.parse;Origin.parse=function(text){var o=op(text);if(!o.raw)return o;o.items=o.items.filter(function(x){return x.indexOf('未能解析')<0;});Origin.deep(o.raw,o);if(!o.items.length)o.items.push('（未能解析出具體設定；將作為背景敘述保留，AI 會參考）');return o;};})();
 /* AI 精修：在離線結果上補欄位 */
 (function(){var orf=Origin.refine;Origin.refine=function(text){var msgs=[{role:'system',content:'你是古代人生模擬遊戲的設定解析器。玩家寫的身世可能有錯字，請按語意理解。只輸出 JSON：{"g":"m|f 或空","age":數字或null,"mother":"生母稱號或空","father":"生父名或空","fatherUnknown":true/false（主角是否不知道生父身分）,"poisoner":"mother|其他人名|空","target":"任務要殺的人或空","monthly":true/false,"senses":true/false,"mad":true/false,"framer":true/false,"blamed":"生母誤以為的兇手或空","alias":"化名或空","dest":"前往之地或空","typos":["錯字→正字"]}'},{role:'user',content:text}];
- return AI.call(msgs,{maxTok:500}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse'};var o=Origin.parse(text);var F=o.fate||{};var add=[];
+ var tok=AI.isReasoner()?Math.max(2500,SET.maxTok||2600):800;var to=AI.isReasoner()?Math.max(90,SET.aiTimeout||60):Math.max(45,SET.aiTimeout||60);
+ function merge(j){var o=Origin.parse(text);var F=o.fate||{};var add=[];
   function s(v,n){return v?String(v).replace(/[「」"]/g,'').slice(0,n||8):'';}
   if(j.mother&&!F.mother){F.mother=s(j.mother);add.push('生母（AI）：'+F.mother);}if(j.father&&!F.father){F.father=s(j.father,4);add.push('生父（AI）：'+F.father+'【秘密】');}
   if(j.fatherUnknown&&!F.unknown&&F.father){F.unknown=F.father;add.push('生父身分主角不知（AI）');}if(j.poisoner&&!F.poisoner){F.poisoner=/母|mother/.test(j.poisoner)?'mother':s(j.poisoner,4);add.push('下毒者（AI）：'+(F.poisoner==='mother'?'生母':F.poisoner));}
   if(j.target&&!F.target){F.target=s(j.target,4);add.push('任務（AI）：殺死'+F.target);}if(j.monthly&&!F.monthly){F.monthly=1;add.push('每月解藥（AI）');}if(j.senses&&!F.senses){F.senses=1;add.push('五感漸失（AI）');}if(j.mad&&!F.mad){F.mad=1;add.push('最終痴傻（AI）');}
   if(j.framer&&!F.framer){F.framer=1;add.push('幕後有心人（AI）');}if(j.blamed&&!F.blamed){F.blamed=s(j.blamed,4);}if(j.alias&&!F.alias){F.alias=s(j.alias,4);add.push('化名（AI）：'+F.alias);}
   if(j.age&&o.age==null){o.age=clamp(j.age|0,10,60);add.push('年齡（AI）：'+o.age);}if(j.g&&!o.g)o.g=j.g==='m'?'m':'f';if(j.typos&&j.typos.length){F.typo=1;add.push('錯字（AI）：'+j.typos.slice(0,3).join('；'));}
-  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;return o;});};})();
+  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;return o;}
+ function once(extra){var m=msgs;if(extra)m=msgs.concat([{role:'user',content:extra}]);return AI.call(m,{maxTok:tok,timeout:to}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};return merge(j);});}
+ return once().then(null,function(e){if(e&&(e.kind==='parse'||e.kind==='empty'))return once('上次輸出不是合法 JSON，請只輸出一個 JSON 物件，不要 markdown、不要解釋。').then(null,function(e2){throw e2.raw?e2:{kind:e2.kind||'parse',raw:e.raw||e2.raw||''};});throw e;});};})();
 /* 落實 */
 Fate.apply=function(o){var F=o&&o.fate;if(!F)return;var me=pc();if(o.age!=null){me.born=S.day-o.age*DPY-rnd(DPY);}
  var fa=F.father?People.idByName(F.father):'';var tg=F.target?People.idByName(F.target):'';
@@ -3198,7 +3220,7 @@ Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
 Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
 Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.g,baby:u.baby});Sh.redraw();};
 Panels.act.suParse=function(){var u=Panels.su;u.ctext=$('suText').value;u.cname=($('suName')||{}).value||'';u.parsed=Origin.parse(u.ctext);Sh.redraw();};
-Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);toast('AI 解析失敗，改用離線解析');u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
+Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,AI.isReasoner()?'解析身世中（reasoner 較慢）…':'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);var det=AI.errMsg(e);AI.lastErr=det;toast('AI 解析失敗：'+det+' → 改用離線解析',4500);u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
 Panels.act.suGo=function(){var u=Panels.su;var first;START_BC=(ERAS[u.era]||ERAS.y10).bc;
  if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}

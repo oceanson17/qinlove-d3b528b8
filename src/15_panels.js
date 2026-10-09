@@ -29,7 +29,7 @@ Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
 Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
 Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.g,baby:u.baby});Sh.redraw();};
 Panels.act.suParse=function(){var u=Panels.su;u.ctext=$('suText').value;u.cname=($('suName')||{}).value||'';u.parsed=Origin.parse(u.ctext);Sh.redraw();};
-Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);toast('AI 解析失敗，改用離線解析');u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
+Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,AI.isReasoner()?'解析身世中（reasoner 較慢）…':'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);var det=AI.errMsg(e);AI.lastErr=det;toast('AI 解析失敗：'+det+' → 改用離線解析',4500);u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
 Panels.act.suGo=function(){var u=Panels.su;var first;START_BC=(ERAS[u.era]||ERAS.y10).bc;
  if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}

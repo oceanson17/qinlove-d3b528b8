@@ -122,88 +122,172 @@ var Idn={
   Idn.react(c);Fam.tierCalc();if(typeof UI!=='undefined')UI.hud();return '';},
  react:function(c){if(c.k!=='appoint'&&c.k!=='medoff'&&c.k!=='harem'&&c.k!=='promote')return;for(var id in S.ppl){var p=S.ppl[id];if(!p.alive||!p.met||id===S.pc||p.hh)continue;if(p.pers.indexOf('善妒')>=0||id==='xiawuju'){p.aff=clamp(p.aff-4,-100,100);People.note(id,'妒忌'+pc().n+'得勢');}else if(p.pers.indexOf('貪財')>=0||p.pers.indexOf('狡猾')>=0){p.aff=clamp(p.aff+3,-100,100);People.note(id,'想巴結得勢的'+pc().n);}}}
 };
-/* ===== 約定／交易（Deal：醫好→租館等；離線亦可兌現） ===== */
+/* ===== 約定／交易（Deal：即時履約／醫好→租館；AI 劇情同步） ===== */
 var Deal={};
 (function(){
  Deal.list=function(){if(!S.deals)S.deals=[];return S.deals;};
  Deal.open=function(){return Deal.list().filter(function(d){return d.status==='open';});};
  Deal.byId=function(id){for(var i=0;i<Deal.list().length;i++)if(S.deals[i].id===id)return S.deals[i];return null;};
  Deal.seq=function(){S.dseq=(S.dseq||0)+1;return 'd'+S.dseq;};
- Deal.ACK=/一言為定|就這麼辦|就依你|依你所言|成交|可以|好說|好吧|好的|便是|便依|准了|應允|答應|說定|就這樣|依你|成全你|成全|算你說得|這條件|我答應|我應了|公道|公平|兩清/;
- Deal.REFUSE=/休想|不行|拒絕|辦不到|別做夢|豈有此理|妄想|免談|不可能租|不租/;
+ Deal.ACK=/一言為定|就這麼辦|就依你|依你所言|成交|可以|好說|好吧|好的|便是|便依|准了|應允|答應|說定|就這樣|依你|成全你|成全|算你說得|這條件|我答應|我應了|公道|公平|兩清|租給你了|就租|便租|收了這|收下這|就這價|這價公道|准你租|醫館歸你/;
+ Deal.REFUSE=/休想|不行|拒絕|辦不到|別做夢|豈有此理|妄想|免談|不可能租|不租|銀兩不夠|錢不夠/;
  Deal.BYE=/告辭|改日再來|改日再談|先回罷|先回去|不送了|慢走|請回|就此別過|事辦妥了|事情了結|兩清了|兩訖|說完了|我就告辭|你且去|你先去醫|去醫罷|去治罷|去吧/;
- Deal.THEN_N={rent_clinic:'租下醫館',pay_gold:'付銀',gift:'贈禮',favor:'人情'};
+ Deal.THEN_N={rent_clinic:'租下醫館',pay_gold:'付銀',gift:'贈禮',favor:'人情',hire:'收徒',move:'遷移'};
+ Deal.CN={零:0,〇:0,一:1,二:2,兩:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10,百:100};
+ Deal.parseCnNum=function(s){s=String(s||'');if(!s)return NaN;if(/^\d+$/.test(s))return +s;var n=0,t=0;for(var i=0;i<s.length;i++){var c=Deal.CN[s[i]];if(c==null)return NaN;if(c===10||c===100){if(t===0)t=1;n+=t*c;t=0;}else t=c;}return n+t;};
+ Deal.parsePrice=function(text,def){text=String(text||'');var m=text.match(/(\d{1,4})\s*[兩元銀]/);if(m)return +m[1];
+  m=text.match(/([一二兩三四五六七八九十百零〇]{1,6})\s*[兩元銀]/);if(m){var n=Deal.parseCnNum(m[1]);if(!isNaN(n)&&n>0)return n;}
+  return def!=null?def:60;};
+ Deal.isImmediate=function(iff){iff=String(iff==null?'':iff).trim();return !iff||iff==='now'||iff==='immediate'||iff==='none'||iff==='即'||iff==='即時'||iff==='立刻'||iff==='當場'||iff==='直接'||iff==='成交';};
  Deal.brief=function(){var L=Deal.open();if(!L.length){var done=Deal.list().filter(function(d){return d.status==='done';}).slice(-3);if(!done.length)return '';return '【已履約約定】'+done.map(function(d){return cn(d.with)+'：'+Deal.str(d)+'（已兌現）';}).join('；');}
-  return '【未了約定・必須兌現】'+L.map(function(d){return Deal.str(d)+'（status=open）';}).join('；')+'。條件一旦達成，必須立刻履約並在敘事中承認，不得當作沒發生過、不得再提同一請求。';};
- Deal.str=function(d){var ifs=d.if==='heal_grandson'?'醫好'+(d.who||'孫子'):(d.if==='heal'||d.if==='cure'?'醫好'+(d.who||d.pid&&cn(d.pid)||'病人'):(d.if||'條件'));
-  var th=Deal.THEN_N[d.then]||d.then;if(d.then==='rent_clinic')th='用'+(d.price||60)+'兩租醫館給主角';else if(d.then==='pay_gold')th='付'+(d.price||0)+'兩';return cn(d.with)+'與主角約定：若'+ifs+'，則'+th;};
+  return '【未了約定・必須兌現】'+L.map(function(d){return Deal.str(d)+'（status=open）';}).join('；')+'。條件一旦達成必須立刻履約；if=now 的當場交易當幕必須扣銀／改狀態，不得只寫在敘事裡。';};
+ Deal.str=function(d){var th=Deal.THEN_N[d.then]||d.then;if(d.then==='rent_clinic')th='用'+(d.price||60)+'兩租醫館給主角';else if(d.then==='pay_gold')th='付'+(d.price||0)+'兩';
+  if(Deal.isImmediate(d.if))return cn(d.with)+'與主角約定：立刻'+th;
+  var ifs=d.if==='heal_grandson'?'醫好'+(d.who||'孫子'):(d.if==='heal'||d.if==='cure'?'醫好'+(d.who||(d.pid&&cn(d.pid))||'病人'):(d.if||'條件'));
+  return cn(d.with)+'與主角約定：若'+ifs+'，則'+th;};
  Deal.dup=function(o){return Deal.list().some(function(d){return d.status==='open'&&d.with===o.with&&d.then===o.then&&d.if===o.if&&(d.who||'')===(o.who||'')&&(d.price|0)===(o.price|0);});};
- Deal.add=function(o,force){if(!o||!o.with||!P(o.with)||o.with===S.pc)return null;if(!force&&Deal.dup(o))return Deal.open().filter(function(d){return d.with===o.with&&d.then===o.then;})[0]||null;
-  var d={id:Deal.seq(),type:'deal',with:o.with,if:o.if||'heal',then:o.then||'rent_clinic',price:clamp(o.price|0||60,1,500),status:o.status||'open',who:String(o.who||'').slice(0,8),pid:o.pid&&P(o.pid)?o.pid:'',text:String(o.text||'').slice(0,80),d:S.day,src:o.src||''};
+ Deal.add=function(o,force){if(!o||!o.with||!P(o.with)||o.with===S.pc)return null;
+  if(!force&&Deal.dup(o)){var ex=Deal.open().filter(function(d){return d.with===o.with&&d.then===o.then;})[0]||null;if(ex&&Deal.isImmediate(ex.if)&&ex.status==='open')Deal.fulfill(ex);return ex;}
+  var iff=o.if;if(iff==null||iff==='')iff='now';
+  var d={id:Deal.seq(),type:'deal',with:o.with,if:iff,then:o.then||'rent_clinic',price:clamp((o.price|0)||60,1,500),status:o.status||'open',who:String(o.who||'').slice(0,8),pid:o.pid&&P(o.pid)?o.pid:'',text:String(o.text||'').slice(0,80),d:S.day,src:o.src||''};
   Deal.list().push(d);if(S.deals.length>40){var j=S.deals.findIndex(function(x){return x.status!=='open';});S.deals.splice(j<0?0:j,1);}
   if(d.status==='open'){FW.add(Deal.str(d),[d.with],S.pc,{src:'deal'});People.note(d.with,'與'+pc().n+'約定：'+Deal.str(d).replace(cn(d.with)+'與主角約定：',''),'crit');
    if(typeof Bond!=='undefined'){var b=Bond.get(d.with);b.cond=Deal.str(d).replace(/^.*?約定：/,'');}addLog('〔約定〕'+Deal.str(d),'約');try{toast('📜 約定已記下');}catch(e){}}
+  if(d.status==='open'&&Deal.isImmediate(d.if))Deal.fulfill(d);
   return d;};
- /* 從對白／設定抽出「醫好 X → 租館／付銀」 */
- Deal.parseOffer=function(text,npcId){text=String(text||'');if(!text||text.length<4)return null;var price=60,who='',iff='heal',then='rent_clinic';
-  var m=text.match(/(\d{1,4})\s*兩/);if(m)price=+m[1];
-  var hasRent=/租|借.?給|讓.?我.?用|交給我.{0,4}醫館|醫館.{0,6}給我/.test(text)&&/醫館|舖面|鋪面|診所/.test(text);
+ Deal.parseOffer=function(text,npcId){text=String(text||'');if(!text||text.length<3)return null;if(!npcId||!P(npcId))return null;
+  var price=Deal.parsePrice(text,60),who='',iff='heal',then='rent_clinic';
+  var hasRent=(/租|借.?給|讓.?我.?用|交給我.{0,4}醫館|醫館.{0,6}給我|開.?醫館|舖面|鋪面/.test(text))&&(/醫館|舖面|鋪面|診所|舖|鋪/.test(text)||/租/.test(text));
   var hasHeal=/醫好|治好|救好|治活|救治|治癒|治愈/.test(text);
-  if(!hasHeal)return null;if(!hasRent&&!/付|給你|酬|謝|銀/.test(text))return null;
-  if(hasRent)then='rent_clinic';else if(/付|酬謝|謝禮|給你.{0,4}兩/.test(text))then='pay_gold';
-  if(/孫子|孫女|外孫/.test(text)){who=(text.match(/孫子|孫女|外孫/)||['孫子'])[0];iff='heal_grandson';}
-  else{m=text.match(/(?:醫好|治好|救好|治活|救治)(?:了)?(?:我的|他的|她的|你家的|他家的)?([\u4e00-\u9fff]{1,4}?)(?:就|便|後|，|。|的病|病|再用|用)/);if(m){who=m[1];iff='heal';}}
-  if(!npcId||!P(npcId))return null;
-  return {with:npcId,if:iff,then:then,price:price,who:who,text:text.slice(0,80),src:'speech'};};
- Deal.fromAI=function(arr,sp){if(!Array.isArray(arr))return;arr.slice(0,3).forEach(function(x){if(!x||typeof x!=='object')return;
-  var wid=x.with||x.npc||sp;if(wid==='me'||wid==='p')return;if(!P(wid))wid=People.idByName(String(wid))||sp;if(!P(wid)||wid===S.pc)return;
-  var st=x.status==='done'?'done':(x.status==='broken'?'broken':'open');
-  if(st==='done'||st==='broken'){var ex=Deal.open().filter(function(d){return d.with===wid&&(!x.then||d.then===x.then);})[0];if(ex){ex.status=st;return;}return;}
-  var iff=String(x.if||x.cond||'heal');if(/孫/.test(iff)||/孫/.test(String(x.who||'')))iff='heal_grandson';else if(/醫|治|癒|cure|heal/.test(iff))iff=/孫/.test(String(x.who||x.text||''))?'heal_grandson':'heal';
-  var then=String(x.then||x.reward||'');if(/租|醫館|clinic/.test(then)||then==='rent_clinic')then='rent_clinic';else if(/金|銀|兩|pay|gold/.test(then))then='pay_gold';else if(!then)then='rent_clinic';
-  Deal.add({with:wid,if:iff,then:then,price:x.price|0||60,who:String(x.who||x.patient||'').slice(0,8),pid:P(x.pid)?x.pid:'',text:String(x.text||'').slice(0,80),status:'open',src:'ai'});});};
- /* AI 回合：玩家提案＋AI 應允 → 入庫；AI JSON deals；禁止憑空發明（只在玩家或 AI 明確同意時） */
- Deal.ingestTurn=function(a,r){Deal._settled=null;var npc=r.speaker||a.id||'';
-  if(Array.isArray(r.deals))Deal.fromAI(r.deals,npc);
-  var offer=null;if(a&&a.text&&(a.tag==='對白'||a.tag==='設定・劇情'||a.tag==='選擇'||a.type==='say'||a.type==='free'))offer=Deal.parseOffer(a.text,npc||a.id);
+  var immRent=hasRent&&(/用.{0,8}[兩元].{0,6}租|租.{0,8}[兩元]|[兩元].{0,4}租|當場|立刻|即刻|現在就|就租|便租|直接租|成交|說定.{0,8}租|答應.{0,8}租|准你租|准了.{0,6}租|租給你|租下/.test(text));
+  if(hasHeal){
+   if(!hasRent&&!/付|給你|酬|謝|銀/.test(text))return null;
+   if(hasRent)then='rent_clinic';else if(/付|酬謝|謝禮|給你.{0,4}[兩元]/.test(text))then='pay_gold';
+   if(/孫子|孫女|外孫/.test(text)){who=(text.match(/孫子|孫女|外孫/)||['孫子'])[0];iff='heal_grandson';}
+   else{var m=text.match(/(?:醫好|治好|救好|治活|救治)(?:了)?(?:我的|他的|她的|你家的|他家的)?([\u4e00-\u9fff]{1,4}?)(?:就|便|後|，|。|的病|病|再用|用)/);if(m){who=m[1];iff='heal';}}
+   return {with:npcId,if:iff,then:then,price:price,who:who,text:text.slice(0,80),src:'speech'};
+  }
+  if(immRent||(hasRent&&/[兩元]/.test(text)))return {with:npcId,if:'now',then:'rent_clinic',price:price,who:'',text:text.slice(0,80),src:'speech'};
+  return null;};
+ Deal.fromAI=function(arr,sp){if(!Array.isArray(arr))return [];var out=[];
+  arr.slice(0,3).forEach(function(x){if(!x||typeof x!=='object')return;
+   var wid=x.with||x.npc||sp;if(wid==='me'||wid==='p')return;if(!P(wid))wid=People.idByName(String(wid))||sp;if(!P(wid)||wid===S.pc)return;
+   var st=x.status==='done'?'done':(x.status==='broken'?'broken':'open');
+   if(st==='done'||st==='broken'){var ex=Deal.open().filter(function(d){return d.with===wid&&(!x.then||d.then===x.then);})[0];if(ex)ex.status=st;return;}
+   var rawIf=x.if!=null?x.if:(x.cond!=null?x.cond:'');
+   var iff;if(Deal.isImmediate(rawIf))iff='now';
+   else{iff=String(rawIf||'heal');if(/孫/.test(iff)||/孫/.test(String(x.who||'')))iff='heal_grandson';
+    else if(/醫|治|癒|cure|heal/.test(iff))iff=/孫/.test(String(x.who||x.text||''))?'heal_grandson':'heal';
+    else if(!iff||iff==='null'||iff==='undefined')iff='now';}
+   var then=String(x.then||x.reward||'');if(/租|醫館|clinic/.test(then)||then==='rent_clinic')then='rent_clinic';
+   else if(/金|銀|兩|元|pay|gold/.test(then))then='pay_gold';else if(!then)then='rent_clinic';
+   var price=x.price|0;if(!price)price=Deal.parsePrice(String(x.text||'')+' '+String(x.then||''),60);
+   var d=Deal.add({with:wid,if:iff,then:then,price:price,who:String(x.who||x.patient||'').slice(0,8),pid:P(x.pid)?x.pid:'',text:String(x.text||'').slice(0,80),status:'open',src:'ai'});
+   if(d)out.push(d);});
+  return out;};
+ Deal.parseSceneRent=function(scene,npcId){scene=String(scene||'');if(!scene||!npcId||!P(npcId))return null;
+  if(Deal.REFUSE.test(scene)&&!Deal.ACK.test(scene))return null;
+  if(!/租|醫館|舖面|鋪面/.test(scene))return null;
+  var okPrice=/(?:用|以|收(?:了|下)?|交(?:了|給)?|付(?:了)?).{0,6}\d{1,4}\s*[兩元]/.test(scene)
+   ||/(?:用|以).{0,4}[一二兩三四五六七八九十百零〇]{1,6}\s*[兩元]/.test(scene)
+   ||/[兩元].{0,6}(?:租|押)/.test(scene)||/租.{0,10}[兩元]/.test(scene)
+   ||/成交|一言為定|說定|准了|便租|就租|租給你|醫館歸你|木牌可挂/.test(scene);
+  if(!okPrice)return null;
+  return {with:npcId,if:'now',then:'rent_clinic',price:Deal.parsePrice(scene,50),who:'',text:scene.replace(/\s+/g,' ').slice(0,80),src:'scene'};};
+ Deal.ingestTurn=function(a,r){Deal._settled=null;Deal._settleMsg='';var npc=(r&&r.speaker)||(a&&a.id)||'';
+  if(r&&Array.isArray(r.deals))Deal.fromAI(r.deals,npc);
+  var offer=null;
+  if(a&&a.text&&(a.tag==='對白'||a.tag==='設定・劇情'||a.tag==='選擇'||a.type==='say'||a.type==='free'))offer=Deal.parseOffer(a.text,npc||a.id);
   if(a&&a._dealOffer)offer=a._dealOffer;
-  if(offer){if(a.tag==='設定・劇情'||Deal.ACK.test(r.scene||'')||(r.deals&&r.deals.length)){if(!Deal.REFUSE.test(r.scene||''))Deal.add(offer);}
-   else if(!Deal.REFUSE.test(r.scene||'')){S.dealPend=offer;} /* 等下一幕應允 */
-  }else if(S.dealPend&&npc&&(npc===S.dealPend.with||!r.speaker)){if(Deal.ACK.test(r.scene||'')&&!Deal.REFUSE.test(r.scene||'')){Deal.add(S.dealPend);S.dealPend=null;}else if(Deal.REFUSE.test(r.scene||''))S.dealPend=null;}
-  /* 從 bond.cond 補記（AI 寫了未了條件且像約定） */
-  if(r.fx&&r.fx.bond){for(var id in r.fx.bond){var c=r.fx.bond[id]&&r.fx.bond[id].cond;if(typeof c==='string'&&/醫|治|租|兩/.test(c)){var o2=Deal.parseOffer(c,id);if(o2)Deal.add(o2);}}}
+  if(offer){
+   var ok=a.tag==='設定・劇情'||Deal.ACK.test((r&&r.scene)||'')||(r&&r.deals&&r.deals.length);
+   if(ok&&!Deal.REFUSE.test((r&&r.scene)||''))Deal.add(offer);
+   else if(!Deal.REFUSE.test((r&&r.scene)||''))S.dealPend=offer;
+  }else if(S.dealPend&&npc&&(npc===S.dealPend.with||!(r&&r.speaker))){
+   if(Deal.ACK.test((r&&r.scene)||'')&&!Deal.REFUSE.test((r&&r.scene)||'')){Deal.add(S.dealPend);S.dealPend=null;}
+   else if(Deal.REFUSE.test((r&&r.scene)||''))S.dealPend=null;
+  }
+  if(!S.fam.clinic.open&&npc&&P(npc)){
+   var sr=Deal.parseSceneRent((r&&r.scene)||'',npc);
+   if(sr&&(Deal.ACK.test((r&&r.scene)||'')||/租給你|醫館歸你|木牌可挂|收了.{0,6}[兩元]|成交/.test((r&&r.scene)||''))){
+    var already=Deal.open().some(function(d){return d.then==='rent_clinic'&&Deal.isImmediate(d.if);})
+     ||Deal.list().some(function(d){return d.status==='done'&&d.then==='rent_clinic'&&d.d===S.day;});
+    if(!already)Deal.add(sr);
+   }
+  }
+  if(r&&r.fx&&r.fx.bond){for(var id in r.fx.bond){var c=r.fx.bond[id]&&r.fx.bond[id].cond;if(typeof c==='string'&&/醫|治|租|兩|元/.test(c)){var o2=Deal.parseOffer(c,id);if(o2)Deal.add(o2);}}}
+  Deal.reconcile();
+  if(typeof PlotSync!=='undefined')PlotSync.fromTurn(a,r);
  };
- Deal.isGrandchild=function(pp,elderId){if(!pp||!elderId)return false;var pars=pp.par||[];for(var i=0;i<pars.length;i++){var pa=P(pars[i]);if(!pa)continue;if(pars[i]===elderId)return false;if((pa.par||[]).indexOf(elderId)>=0)return true;if(pa.n&&elderId&&cn(elderId)&&pa.notes&&String(pa.notes.declRel||'').indexOf('父')>=0){}}
+ Deal.isGrandchild=function(pp,elderId){if(!pp||!elderId)return false;var pars=pp.par||[];
+  for(var i=0;i<pars.length;i++){var pa=P(pars[i]);if(!pa)continue;if(pars[i]===elderId)return false;if((pa.par||[]).indexOf(elderId)>=0)return true;}
   if(/孫/.test(pp.n||'')||/孫/.test(pp.rel||'')||/孫/.test(pp.title||''))return true;return false;};
  Deal.matchCure=function(d,m){if(!d||d.status!=='open')return false;if(d.if!=='heal'&&d.if!=='heal_grandson'&&d.if!=='cure')return false;
   if(d.pid&&m.pid&&d.pid===m.pid)return true;
   var pp=m.pid?P(m.pid):null;
   if(pp&&d.who){if(pp.n.indexOf(d.who)>=0||d.who.indexOf(pp.n)>=0)return true;if(/孫/.test(d.who)&&Deal.isGrandchild(pp,d.with))return true;}
   if(d.if==='heal_grandson'&&pp&&Deal.isGrandchild(pp,d.with))return true;
-  if(pp&&d.who&&/孫/.test(d.who)&&ageOf(pp)<18)return true; /* 年幼病人＋孫子約定 */
-  if(!d.pid&&!d.who&&pp&&(pp.notes&&pp.notes.dealWith===d.with))return true;
+  if(pp&&d.who&&/孫/.test(d.who)&&ageOf(pp)<18)return true;
+  if(!d.pid&&!d.who&&pp&&pp.notes&&pp.notes.dealWith===d.with)return true;
   return false;};
- Deal.applyThen=function(d){var msg='';if(d.then==='rent_clinic'){var price=d.price||60;
-   if(S.fam.clinic.open){msg=cn(d.with)+'依約把醫館繼續交你經營（先前已開館）；雙方再確認押租'+(S.fam.clinic.rentPrice||price)+'兩之約。';S.fam.clinic.rentFrom=d.with;S.fam.clinic.rentPrice=S.fam.clinic.rentPrice||price;}
-   else{if(S.gold<price){msg=cn(d.with)+'依約准你租下醫館，但你銀兩不足（需'+price+'兩，現有'+S.gold+'）。對方寬限你籌錢——約定仍有效。';d._waitPay=1;return msg;}
+ Deal.applyThen=function(d){var msg='';
+  if(d.then==='rent_clinic'){
+   var price=d.price||60;
+   if(S.fam.clinic.open){
+    msg=cn(d.with)+'依約把醫館繼續交你經營（先前已開館）；雙方再確認押租'+(S.fam.clinic.rentPrice||price)+'兩之約。';
+    S.fam.clinic.rentFrom=d.with;S.fam.clinic.rentPrice=S.fam.clinic.rentPrice||price;
+   }else{
+    if(S.gold<price){msg=cn(d.with)+'依約准你租下醫館，但你銀兩不足（需'+price+'兩，現有'+S.gold+'）。對方寬限你籌錢——約定仍有效，可在醫館「履行約定」付清。';d._waitPay=1;return msg;}
     Inv.gold(-price);S.fam.clinic.open=1;S.fam.clinic.lv=S.fam.clinic.lv||0;S.fam.clinic.d0=S.day;S.fam.clinic.rentFrom=d.with;S.fam.clinic.rentPrice=price;
-    FW.add(pc().n+'以'+price+'兩從'+cn(d.with)+'處租下醫館',[d.with],S.pc,{pub:1});WS.log(pc().n+'租下城南醫館','起因：與'+cn(d.with)+'約定履約','你所為');
-    msg=cn(d.with)+'依約把醫館租給你，收了'+price+'兩。木牌可挂了。';}
+    FW.add(pc().n+'以'+price+'兩從'+cn(d.with)+'處租下醫館',[d.with],S.pc,{pub:1});
+    WS.log(pc().n+'租下城南醫館','起因：與'+cn(d.with)+'約定履約','你所為');
+    msg=cn(d.with)+'依約把醫館租給你，收了'+price+'兩。木牌可挂了。';
+   }
   }else if(d.then==='pay_gold'){var g=d.price||30;Inv.gold(g);msg=cn(d.with)+'依約付你'+g+'兩。';}
   else msg=cn(d.with)+'依約履行了「'+(Deal.THEN_N[d.then]||d.then)+'」。';
   return msg;};
  Deal.fulfill=function(d,m){if(!d||d.status!=='open')return '';var msg=Deal.applyThen(d);
-  if(d._waitPay){/* 仍 open，等湊錢 */}else{d.status='done';d.doneD=S.day;if(typeof Bond!=='undefined'){var b=Bond.get(d.with);if(b.cond)b.cond='';}
+  if(d._waitPay){/* keep open */}else{d.status='done';d.doneD=S.day;if(typeof Bond!=='undefined'){var b=Bond.get(d.with);if(b.cond)b.cond='';}
    People.note(d.with,'履約：'+Deal.str(d).replace(/^.*?約定：/,'')+'——已兌現','crit');People.rel(d.with,{aff:8,trust:10},pc().n+'兌現了約定');
    addLog('〔約定〕已兌現：'+Deal.str(d),'約');FW.add('約定已履行：'+Deal.str(d),[d.with],S.pc,{pub:1,src:'deal'});}
-  Deal._settled=d;try{toast('✅ 約定兌現');}catch(e){}return msg;};
+  Deal._settled=d;Deal._settleMsg=msg;try{toast(d._waitPay?'⏳ 約定待付銀':'✅ 約定兌現');}catch(e){}return msg;};
  Deal.onCure=function(m,r){if(!m||!r||(r.out!=='cure'&&r.out!=='better'))return [];var msgs=[];
   Deal.open().forEach(function(d){if(Deal.matchCure(d,m)){var msg=Deal.fulfill(d,m);if(msg)msgs.push(msg);}});
-  /* 湊夠錢的租館欠款 */
   Deal.open().forEach(function(d){if(d.then==='rent_clinic'&&d._waitPay&&S.gold>=(d.price||60)){delete d._waitPay;var msg=Deal.fulfill(d,m);if(msg)msgs.push(msg);}});
   return msgs;};
- Deal.tryPayRent=function(){var msgs=[];Deal.open().forEach(function(d){if(d.then==='rent_clinic'&&d._waitPay&&S.gold>=(d.price||60)){delete d._waitPay;msgs.push(Deal.fulfill(d));}});return msgs;};
+ Deal.tryPayRent=function(){var msgs=[];Deal.open().forEach(function(d){if(d.then==='rent_clinic'&&(d._waitPay||Deal.isImmediate(d.if))&&S.gold>=(d.price||60)){delete d._waitPay;var msg=Deal.fulfill(d);if(msg)msgs.push(msg);}});return msgs;};
+ Deal.reconcile=function(){var msgs=[];Deal.open().forEach(function(d){if(d.then!=='rent_clinic')return;if(Deal.isImmediate(d.if)||d._waitPay){var msg=Deal.fulfill(d);if(msg)msgs.push(msg);}});return msgs;};
+ Deal.openRent=function(){return Deal.open().filter(function(d){return d.then==='rent_clinic';})[0]||null;};
+ Deal.rentLabel=function(){var d=Deal.openRent();if(!d)return '';var p=d.price||60;if(d._waitPay||Deal.isImmediate(d.if))return '履行約定：付'+p+'兩開館（約自'+cn(d.with)+'）';return '履約開館（'+p+'兩・待條件）';};
  Deal.sceneResolved=function(scene){scene=String(scene||'');if(Deal.BYE.test(scene))return true;if(Deal._settled)return true;if(/約定.*(兌現|履行|兩清)|依約|木牌可挂|租給你了|醫館歸你/.test(scene))return true;return false;};
  Deal.forNpc=function(id){return Deal.list().filter(function(d){return d.with===id;}).slice(-6);};
- Deal.aiRule=function(){return '【約定・Deal】'+Deal.brief()+' 若本幕雙方明確談成新約定，請在 JSON 加 deals:[{"with":"人物id","if":"heal_grandson|heal","then":"rent_clinic|pay_gold","price":60,"who":"孫子","status":"open"}]；不可虛構玩家未提的約定。已 closed／done 的約定禁止當成沒發生、禁止再求同一件事。條件達成時敘事必須承認履約。\n【事件收束】若本幕已是一個完整小節（談妥約定、病人已癒、道別、告一段落），請設 "done":true，並給出可結束的選項；不要無限延續同一事件。同一請求成功後禁止再重複提出。';};
+ Deal.aiRule=function(){return '【約定・Deal】'+Deal.brief()+' 若本幕雙方明確談成新約定，請在 JSON 加 deals。條件型：{"with":"人物id","if":"heal_grandson|heal","then":"rent_clinic|pay_gold","price":60,"who":"孫子","status":"open"}；當場現金租館（無醫好條件）：{"with":"人物id","if":"now","then":"rent_clinic","price":50,"status":"open"}——談妥當幕遊戲會立刻扣銀開館，敘事必須寫出收錢／挂牌，且 fx.me.gold 不要再重複扣（系統已扣）。不可虛構玩家未提的約定。已 closed／done 禁止當成沒發生。\n【劇情同步・硬規則】敘事寫「已經付了／租了／收了／開館／搬走／收徒」等完成態時，必須同時在 fx 或 deals 寫出對應數值變化；禁止只寫「已經…」而遊戲狀態不變。銀兩單位兩＝元。\n【事件收束】完整小節結束時設 "done":true；不要無限延續同一事件。';};
+})();
+/* ===== AI 劇情→遊戲狀態同步（敘事已發生的交易／開館／遷徙等） ===== */
+var PlotSync={};
+(function(){
+ PlotSync.msgs=[];
+ PlotSync.fromTurn=function(a,r){if(!r)return [];PlotSync.msgs=[];var scene=String(r.scene||'');var fx=r.fx||{};
+  /* 1) fx 已帶的 gold／move／change 由 AI.applyFx 處理；此處補敘事漏寫的結構化結果 */
+  /* 當場開館敘事但 clinic 未開、且本幕 deals 未履約成功 → 再嘗試 scene rent（Deal 已處理）；此處補「掛牌／開館」無價錢句 */
+  if(!S.fam.clinic.open&&/木牌可挂|掛上.{0,6}木牌|青囊醫館.{0,4}開|開了醫館|醫館開張/.test(scene)){
+   var d=typeof Deal!=='undefined'?Deal.openRent():null;var price=d?d.price:(S.fam.clinic.rentPrice||Deal.parsePrice(scene,50));
+   if(d)Deal.fulfill(d);else if(S.gold>=price){Inv.gold(-price);S.fam.clinic.open=1;S.fam.clinic.lv=S.fam.clinic.lv||0;S.fam.clinic.d0=S.day;S.fam.clinic.rentPrice=price;PlotSync.msgs.push('（同步）開館，扣'+price+'兩。');addLog('〔同步〕敘事開館，扣'+price+'兩','約');}
+  }
+  /* 付銀／收銀：若敘事明確「付了／交了 N 兩」且 fx.me.gold 未反映，補扣（僅當無 Deal 已扣） */
+  if(!(fx.me&&fx.me.gold)){
+   var pay=scene.match(/(?:付(?:了|出)?|交(?:了)?|奉上|奉上了|花(?:了)?|耗去|用去)(?:銀)?\s*(\d{1,4})\s*[兩元]/);
+   var got=scene.match(/(?:收(?:了|下|到)?|得(?:了)?|獲(?:了)?|賜(?:了)?)(?:銀)?\s*(\d{1,4})\s*[兩元]/);
+   if(pay&&!Deal._settled){var n=+pay[1];if(n>0&&n<=500&&S.gold>=n&&!/租|醫館|押租/.test(scene)){Inv.gold(-n);PlotSync.msgs.push('（同步）敘事付銀'+n+'兩。');}}
+   else if(got&&!Deal._settled){var g=+got[1];if(g>0&&g<=500&&!/租|醫館|押租/.test(scene)){Inv.gold(g);PlotSync.msgs.push('（同步）敘事得銀'+g+'兩。');}}
+  }
+  /* 遷徙：敘事「前往／來到」某地且 fx.move 空 */
+  if(!fx.move){for(var pl in PLACES){if(PLACES[pl].r===S.region&&pl!==S.place&&new RegExp('(?:來到|前往|去了|走到|抵達)'+PLACES[pl].n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(scene)){S.place=pl;PlotSync.msgs.push('（同步）來到'+PLACES[pl].n+'。');break;}}}
+  /* 收徒 */
+  if(/收(?:下|了).{0,4}(?:為徒|做學徒|作學徒)|拜入.{0,6}門下/.test(scene)){
+   var here=People.present().filter(function(id){return id!==S.pc&&ageOf(P(id))<25;});
+   if(here.length&&S.fam.clinic.apps.indexOf(here[0])<0){S.fam.clinic.apps.push(here[0]);P(here[0]).title='學徒';People.note(here[0],'拜入'+pc().n+'門下學醫','crit');PlotSync.msgs.push('（同步）收'+cn(here[0])+'為徒。');}
+  }
+  if(PlotSync.msgs.length&&Deal){Deal._settleMsg=(Deal._settleMsg?Deal._settleMsg+' ':'')+PlotSync.msgs.join(' ');}
+  return PlotSync.msgs;};
 })();

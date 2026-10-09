@@ -147,8 +147,8 @@ Decl.apply=function(t){var out={lines:[],focus:''};var x=t.replace(/^[\/／]?(�
  m=x.match(/^(.{1,8}?)(?:答應|約定|說好|允諾)(?:了)?(?:：|，|：)?(.{4,60})$/);
  if(m&&typeof Deal!=='undefined'){id=People.idByName(m[1]);var body=m[2];if(!id){var o0=Deal.parseOffer(x,S.focus);if(o0){Deal.add(o0);say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o0));return out;}}
   if(id&&id!==S.pc){var o1=Deal.parseOffer(body,id)||Deal.parseOffer(x,id);if(o1){o1.src='decl';Deal.add(o1);out.focus=id;say('（作者設定）你與'+cn(id)+'說定：'+Deal.str(Deal.open().filter(function(d){return d.with===id;}).slice(-1)[0]||o1)+'。');return out;}}}
- m=x.match(/(?:醫好|治好).{0,12}(?:租|讓).{0,6}醫館/);
- if(m&&typeof Deal!=='undefined'){var nid=S.focus&&P(S.focus)?S.focus:(People.present()[0]||'');var o2=Deal.parseOffer(x,nid);if(o2){o2.src='decl';Deal.add(o2);out.focus=nid;say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o2));return out;}}
+ m=x.match(/(?:醫好|治好).{0,12}(?:租|讓).{0,6}醫館|(?:用|以)?.{0,6}\d{0,4}[兩元].{0,8}租.{0,6}(?:醫館|舖面|鋪面)|租下?.{0,6}(?:醫館|舖面|鋪面).{0,8}[兩元]|[兩元].{0,4}租.{0,6}(?:醫館|舖面|鋪面)/);
+ if(m&&typeof Deal!=='undefined'){var nid=S.focus&&P(S.focus)?S.focus:(People.present()[0]||'');var o2=Deal.parseOffer(x,nid);if(o2){o2.src='decl';var d2=Deal.add(o2);out.focus=nid;var msg='（作者設定）約定已成：'+Deal.str(d2||o2)+(S.fam.clinic.open?'（已開館）':'');say(msg);return out;}}
  FW.add(x,[],S.pc,{pub:1});say('（作者設定，從此成為事實）'+x);return out;};
 Decl.NEG=/莫非|荒唐|不可能|錯覺|並非如此|只是幻想|只是個夢|胡思亂想|不過是想像/;
 Decl.verify=function(r,d){if(SET.decld===false&&!Decl.NEG.test(r.scene))return null;if(Decl.NEG.test(r.scene))return d.off();return null;};

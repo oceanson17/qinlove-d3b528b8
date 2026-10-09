@@ -50,6 +50,10 @@
 
 
 ## AI 精修解析（2026-10-09）
+## AI 精修再修（2026-10-09 b）
+- reasoner／部分模型會回英文「We need…」規劃句而非 JSON。精修強制 `AI.fastModel`→`deepseek-chat`（劇情仍用 reasoner）；提示禁止英文；`extractJSON` 括號配對跳過英文前綴；失敗用帶範例嘅嚴格重試。
+- 微信跳轉：設定說明內網址改全形句點防系統自動連成連結；微信 UA 唔載 Google Fonts；點擊攔截 `weixin://` 與外站 `<a>`。
+
 - **根因**：連線測試（短 JSON、`max_tokens` 小）可過，但「AI 精修解析」對 `deepseek-reasoner` 常失敗——reasoner 不支援 temperature／`response_format`，且 `max_tokens` 含推理額度，500 太細會令 `content` 空白；錯誤被 toast 吞成「解析失敗，改用離線」。
 - **修正**（`07_ai`／`13_fate`／`15_panels`）：`AI.msgText` 兼容 chat／reasoner（含 `reasoning_content`、多段 content）；reasoner 預先關 temp／json_object、提高 token 與逾時；`extractJSON` 剝 markdown fence；精修失敗重試一次；toast 顯示 HTTP／片段真正原因。測試：`t/ai_norm.js`。
 

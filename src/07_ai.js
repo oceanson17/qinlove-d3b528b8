@@ -15,7 +15,13 @@ AI.timeoutFetch=function(url,opts,ms){return new Promise(function(res,rej){var d
 AI.quirks={};
 /* reasoner／思考模型：temperature、response_format 常不支援；max_tokens 含推理額度，太小會令 content 空白 */
 AI.isReasoner=function(m){m=String(m!=null?m:SET.model||'');return /reasoner|thinking|-r1\b|o1|o3-mini/i.test(m);};
+/* 精修／短 JSON 任務改用快模型（reasoner 常吐英文規劃句） */
+AI.fastModel=function(m){m=String(m!=null?m:SET.model||'');
+ if(/deepseek-reasoner/i.test(m))return m.replace(/deepseek-reasoner/ig,'deepseek-chat');
+ if(AI.isReasoner(m)){var P0=typeof PRESETS!=='undefined'?PRESETS[SET.preset]:null;if(P0&&P0.models){for(var i=0;i<P0.models.length;i++)if(!AI.isReasoner(P0.models[i]))return P0.models[i];}if(P0&&P0.model&&!AI.isReasoner(P0.model))return P0.model;}
+ return m;};
 AI.snip=function(s,n){s=String(s==null?'':s).replace(/\s+/g,' ').trim();return s?s.slice(0,n||100):'';};
+AI.looksLikeMeta=function(t){t=String(t||'');if(/[{[]/.test(t)&&AI.extractJSON(t))return false;return /^\s*(We need|I need|Let me|The user|Okay|Ok[,.]|Sure[,.]|Here(?:'s| is)|I(?:'ll| will)|Need to|First[,]|To (?:parse|produce|answer)|As an AI)/i.test(t)||/\bNeed (?:to |parse |produce |understand)\b/i.test(t);};
 /* 統一取出 chat／reasoner 的可解析文字（content 字串、多段、或 reasoning_content） */
 AI.msgText=function(msg){if(!msg||typeof msg!=='object')return '';
  var c=msg.content;
@@ -24,27 +30,29 @@ AI.msgText=function(msg){if(!msg||typeof msg!=='object')return '';
  if(typeof msg.reasoning_content==='string'&&msg.reasoning_content.trim())return msg.reasoning_content;
  if(typeof c==='string')return c;
  return '';};
-AI.call=function(messages,o){o=o||{};var q=AI.quirks[AI.endpoint()+'|'+SET.model]||(AI.quirks[AI.endpoint()+'|'+SET.model]={});var depth=o.depth||0;
- if(AI.isReasoner()){q.notemp=1;q.nofmt=1;}
- var maxTok=o.maxTok!=null?o.maxTok:SET.maxTok;if(AI.isReasoner()&&maxTok<2000)maxTok=Math.max(maxTok*5,2500);
- var toSec=o.timeout!=null?o.timeout:SET.aiTimeout;if(AI.isReasoner()&&toSec<90)toSec=90;
- var body={model:SET.model,messages:messages,stream:false};if(!q.notemp)body.temperature=SET.temp;if(q.mct)body.max_completion_tokens=maxTok;else body.max_tokens=maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
+AI.call=function(messages,o){o=o||{};var model=o.model||SET.model;var q=AI.quirks[AI.endpoint()+'|'+model]||(AI.quirks[AI.endpoint()+'|'+model]={});var depth=o.depth||0;
+ var reason=AI.isReasoner(model);if(reason){q.notemp=1;q.nofmt=1;}
+ var maxTok=o.maxTok!=null?o.maxTok:SET.maxTok;if(reason&&maxTok<2000)maxTok=Math.max(maxTok*5,2500);
+ var toSec=o.timeout!=null?o.timeout:SET.aiTimeout;if(reason&&toSec<90)toSec=90;
+ var body={model:model,messages:messages,stream:false};if(!q.notemp)body.temperature=(o.temp!=null?o.temp:SET.temp);if(q.mct)body.max_completion_tokens=maxTok;else body.max_tokens=maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
  var t0=Date.now();
  return AI.timeoutFetch(AI.endpoint(),{method:'POST',headers:AI.headers(),body:JSON.stringify(body)},toSec*1000).then(function(r){return r.text().then(function(txt){var j=null;try{j=JSON.parse(txt);}catch(e){}
   if(!r.ok){var ms=String((j&&j.error&&(j.error.message||j.error))||txt.slice(0,160));var again=0;
    if((r.status===400||r.status===422)&&depth<3){if(!q.mct&&/max_completion_tokens/i.test(ms)){q.mct=1;again=1;}else if(!q.notemp&&/temperature/i.test(ms)){q.notemp=1;again=1;}else if(!q.nofmt){q.nofmt=1;again=1;}}
-   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1,fmt:o.fmt});throw {kind:'http',status:r.status,msg:ms,raw:txt};}
+   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1,fmt:o.fmt,model:o.model,temp:o.temp});throw {kind:'http',status:r.status,msg:ms,raw:txt};}
   var msg=j&&j.choices&&j.choices[0]&&j.choices[0].message;var c=AI.msgText(msg);
-  if(typeof c!=='string'||!c.trim()){var hint=AI.snip(txt,120);if(AI.isReasoner())hint=(hint||'content 空白')+'（reasoner 推論可能食晒 token，已自動提高額度；可改用 deepseek-chat 或加長逾時）';throw {kind:'empty',raw:txt,hint:hint};}
-  return {text:c,ms:Date.now()-t0,raw:txt};});});};
+  if(typeof c!=='string'||!c.trim()){var hint=AI.snip(txt,120);if(reason)hint=(hint||'content 空白')+'（reasoner 推論可能食晒 token，已自動提高額度；可改用 deepseek-chat 或加長逾時）';throw {kind:'empty',raw:txt,hint:hint};}
+  return {text:c,ms:Date.now()-t0,raw:txt,model:model};});});};
 AI.listModels=function(){return AI.timeoutFetch(AI.base()+'/models',{method:'GET',headers:AI.headers()},20000).then(function(r){return r.json().then(function(j){var a=(j&&(j.data||j.models))||[];return a.map(function(x){return typeof x==='string'?x:(x.id||x.name||'');}).filter(Boolean).slice(0,80);});});};
 AI.errMsg=function(e){if(!e)return '未知錯誤';if(e.kind==='timeout')return '連線逾時（'+(AI.isReasoner()?Math.max(90,SET.aiTimeout):SET.aiTimeout)+' 秒）'+(AI.isReasoner()?'｜reasoner 較慢，可改 deepseek-chat 或設 120 秒':'');if(e.kind==='net')return '無法連上 AI 服務（網絡或 CORS）';if(e.kind==='empty')return 'AI 回應為空'+(e.hint?'｜'+e.hint:'');if(e.kind==='parse'||e.kind==='schema')return 'AI 回應格式不正確'+(e.raw?'｜'+AI.snip(e.raw,90):'');
  if(e.kind==='http'){var tail=e.msg?('：'+AI.snip(e.msg,100)):'';if(e.status===402)return '餘額不足（HTTP 402）'+tail;if(e.status===401||e.status===403)return 'API Key 無效（HTTP '+e.status+'）'+tail;if(e.status===404)return '找不到模型或端點（HTTP 404）'+tail;if(e.status===429)return '請求太頻繁（HTTP 429）'+tail;return 'AI 請求失敗（HTTP '+e.status+'）'+tail;}return String(e.message||e);};
 AI.extractJSON=function(text){var t=String(text==null?'':text).trim();
  var fence=t.match(/```(?:json|JSON)?\s*([\s\S]*?)```/);if(fence)t=fence[1].trim();
  else t=t.replace(/^```(?:json|JSON)?\s*/i,'').replace(/\s*```$/,'');
- var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;t=t.slice(a,b+1);
- try{return JSON.parse(t);}catch(e){}try{return JSON.parse(t.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(t.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
+ /* 跳過前綴英文／說明，用括號配對取出第一個物件（字串內括號不計） */
+ function sliceObj(s){var start=s.indexOf('{');if(start<0)return null;var depth=0,inStr=0,esc=0;for(var i=start;i<s.length;i++){var ch=s.charAt(i);if(inStr){if(esc){esc=0;continue;}if(ch==='\\'){esc=1;continue;}if(ch==='"')inStr=0;continue;}if(ch==='"'){inStr=1;continue;}if(ch==='{')depth++;else if(ch==='}'){depth--;if(depth===0)return s.slice(start,i+1);}}var end=s.lastIndexOf('}');return end>start?s.slice(start,end+1):null;}
+ var cand=sliceObj(t);if(!cand)return null;
+ try{return JSON.parse(cand);}catch(e){}try{return JSON.parse(cand.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(cand.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
 /* M15：修復殘缺 JSON（只在含 "scene" 時）；缺選項補 3 個 */
 AI.repairJSON=function(raw){raw=String(raw||'');if(raw.indexOf('"scene"')<0)return null;var j=AI.extractJSON(raw);if(j&&j.scene)return j;
  var m=raw.match(/"scene"\s*:\s*"((?:[^"\\]|\\.)*)/);if(!m)return null;var sc=m[1];try{sc=JSON.parse('"'+sc.replace(/\\$/,'')+'"');}catch(e){sc=sc.replace(/\\n/g,'\n').replace(/\\"/g,'"');}

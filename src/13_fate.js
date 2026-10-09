@@ -34,9 +34,16 @@ Origin.deep=function(raw,o){var t=Origin.norm(raw);var F={},m,N='(\\d{1,2}|[一�
  if(F.typo)it.push('已容錯：錯字按語意理解（如「卻像人救了」→「卻被人救了」、「情素」→「情愫」、「山涯」→「山崖」）');
  o.items=it.concat(o.items.filter(function(x){return !/^性別|^年齡/.test(x);}));return o;};
 (function(){var op=Origin.parse;Origin.parse=function(text){var o=op(text);if(!o.raw)return o;o.items=o.items.filter(function(x){return x.indexOf('未能解析')<0;});Origin.deep(o.raw,o);if(!o.items.length)o.items.push('（未能解析出具體設定；將作為背景敘述保留，AI 會參考）');return o;};})();
-/* AI 精修：在離線結果上補欄位 */
-(function(){var orf=Origin.refine;Origin.refine=function(text){var msgs=[{role:'system',content:'你是古代人生模擬遊戲的設定解析器。玩家寫的身世可能有錯字，請按語意理解。只輸出 JSON：{"g":"m|f 或空","age":數字或null,"mother":"生母稱號或空","father":"生父名或空","fatherUnknown":true/false（主角是否不知道生父身分）,"poisoner":"mother|其他人名|空","target":"任務要殺的人或空","monthly":true/false,"senses":true/false,"mad":true/false,"framer":true/false,"blamed":"生母誤以為的兇手或空","alias":"化名或空","dest":"前往之地或空","typos":["錯字→正字"]}'},{role:'user',content:text}];
- var tok=AI.isReasoner()?Math.max(2500,SET.maxTok||2600):800;var to=AI.isReasoner()?Math.max(90,SET.aiTimeout||60):Math.max(45,SET.aiTimeout||60);
+/* AI 精修：在離線結果上補欄位（強制用 fast chat，避免 reasoner 吐英文規劃） */
+(function(){var orf=Origin.refine;Origin.refine=function(text){
+ var EX='{"g":"f","age":16,"mother":"齊國公主","father":"呂不韋","fatherUnknown":true,"poisoner":"mother","target":"呂不韋","monthly":true,"senses":true,"mad":true,"framer":true,"blamed":"呂不韋","alias":"女神醫","dest":"秦國","typos":["情素→情愫"]}';
+ var SYS='你是古代人生模擬遊戲的設定解析器。硬性規則：\n'
+  +'1) 整段回覆只能是一個原始 JSON 物件：第一個非空白字元必須是 {，最後一個必須是 }。\n'
+  +'2) 禁止任何英文說明、思考過程、markdown、程式碼圍欄；禁止 We need／Need to／Let me／I will 等句子。\n'
+  +'3) 字串欄位值用繁體中文（人名、稱號、地名）；鍵名用英文如下例。\n'
+  +'4) 範例（只示範格式）：'+EX;
+ var msgs=[{role:'system',content:SYS},{role:'user',content:'解析下列身世（可能有錯字，按語意理解）：\n'+String(text||'')+'\n\n只輸出 JSON，不要其他字。'}];
+ var useModel=AI.fastModel(SET.model);var tok=900;var to=Math.max(45,SET.aiTimeout||60);
  function merge(j){var o=Origin.parse(text);var F=o.fate||{};var add=[];
   function s(v,n){return v?String(v).replace(/[「」"]/g,'').slice(0,n||8):'';}
   if(j.mother&&!F.mother){F.mother=s(j.mother);add.push('生母（AI）：'+F.mother);}if(j.father&&!F.father){F.father=s(j.father,4);add.push('生父（AI）：'+F.father+'【秘密】');}
@@ -44,9 +51,11 @@ Origin.deep=function(raw,o){var t=Origin.norm(raw);var F={},m,N='(\\d{1,2}|[一�
   if(j.target&&!F.target){F.target=s(j.target,4);add.push('任務（AI）：殺死'+F.target);}if(j.monthly&&!F.monthly){F.monthly=1;add.push('每月解藥（AI）');}if(j.senses&&!F.senses){F.senses=1;add.push('五感漸失（AI）');}if(j.mad&&!F.mad){F.mad=1;add.push('最終痴傻（AI）');}
   if(j.framer&&!F.framer){F.framer=1;add.push('幕後有心人（AI）');}if(j.blamed&&!F.blamed){F.blamed=s(j.blamed,4);}if(j.alias&&!F.alias){F.alias=s(j.alias,4);add.push('化名（AI）：'+F.alias);}
   if(j.age&&o.age==null){o.age=clamp(j.age|0,10,60);add.push('年齡（AI）：'+o.age);}if(j.g&&!o.g)o.g=j.g==='m'?'m':'f';if(j.typos&&j.typos.length){F.typo=1;add.push('錯字（AI）：'+j.typos.slice(0,3).join('；'));}
-  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;return o;}
- function once(extra){var m=msgs;if(extra)m=msgs.concat([{role:'user',content:extra}]);return AI.call(m,{maxTok:tok,timeout:to}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};return merge(j);});}
- return once().then(null,function(e){if(e&&(e.kind==='parse'||e.kind==='empty'))return once('上次輸出不是合法 JSON，請只輸出一個 JSON 物件，不要 markdown、不要解釋。').then(null,function(e2){throw e2.raw?e2:{kind:e2.kind||'parse',raw:e.raw||e2.raw||''};});throw e;});};})();
+  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;o.parseModel=useModel;return o;}
+ function once(extra){var m=msgs;if(extra)m=msgs.concat([{role:'user',content:extra}]);
+  return AI.call(m,{maxTok:tok,timeout:to,model:useModel,temp:0.2,fmt:true}).then(function(r){var j=AI.extractJSON(r.text);if(j)return merge(j);var e={kind:'parse',raw:r.text};if(AI.looksLikeMeta(r.text))e.meta=1;throw e;});}
+ var repair='錯誤：你剛才沒有輸出合法 JSON（可能寫了英文說明）。現在立刻只輸出下面這種單一 JSON 物件，鍵名勿改、值按身世填繁中，不要任何其他文字：\n'+EX;
+ return once().then(null,function(e){if(e&&(e.kind==='parse'||e.kind==='empty'||e.meta))return once(repair).then(null,function(e2){throw e2.raw?e2:{kind:e2.kind||'parse',raw:(e&&e.raw)||(e2&&e2.raw)||''};});throw e;});};})();
 /* 落實 */
 Fate.apply=function(o){var F=o&&o.fate;if(!F)return;var me=pc();if(o.age!=null){me.born=S.day-o.age*DPY-rnd(DPY);}
  var fa=F.father?People.idByName(F.father):'';var tg=F.target?People.idByName(F.target):'';

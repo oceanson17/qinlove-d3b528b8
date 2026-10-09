@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="青囊·秦心">
-<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="telephone=no,email=no,address=no">
 <meta name="theme-color" content="#f6ebe4">
 <title>青囊·秦心</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='10' fill='%23b8323a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23fbf3ee' font-family='serif'%3E囊%3C/text%3E%3C/svg%3E">
@@ -421,7 +421,7 @@ body.kbopen #app{pointer-events:none;}
 
 </style>
 </head>
-<body>
+<body x-apple-data-detectors="false">
 <div id="app">
  <!-- 標題 -->
  <section id="title" class="scr on">
@@ -718,12 +718,12 @@ var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-c
  firewall:true,wsane:true,decld:true,ncmd:true,actd:true,seald:true,bondd:true,memd:'high',afx:true,aflauto:false,autoEat:true,aiEnd:true};
 var SET={};
 var PRESETS={
- deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。下方可選 deepseek-chat（快）或 deepseek-reasoner（強・較慢）。'},
- xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-4.7',models:['grok-4.7','grok-4.6','grok-4.3','grok-4.20-0309-non-reasoning','grok-latest'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
- openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform.openai.com 建立 API Key。'},
- openrouter:{n:'OpenRouter',base:'https://openrouter.ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter.ai 建立 Key；模型名寫成「廠商/模型」。'},
- gemini:{n:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',models:['gemini-2.5-flash','gemini-2.5-pro'],key:'到 aistudio.google.com 取得 API Key。'},
- groq:{n:'Groq',base:'https://api.groq.com/openai/v1',model:'llama-3.3-70b-versatile',models:['llama-3.3-70b-versatile','qwen/qwen3-32b'],key:'到 console.groq.com 建立 API Key。'},
+ deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform．deepseek．com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。下方可選 deepseek-chat（快）或 deepseek-reasoner（強・較慢）。'},
+ xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-4.7',models:['grok-4.7','grok-4.6','grok-4.3','grok-4.20-0309-non-reasoning','grok-latest'],key:'到 console．x．ai 建立 API Key（Grok App 訂閱不能用）。'},
+ openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform．openai．com 建立 API Key。'},
+ openrouter:{n:'OpenRouter',base:'https://openrouter．ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter．ai 建立 Key；模型名寫成「廠商/模型」。'},
+ gemini:{n:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',models:['gemini-2.5-flash','gemini-2.5-pro'],key:'到 aistudio．google．com 取得 API Key。'},
+ groq:{n:'Groq',base:'https://api.groq.com/openai/v1',model:'llama-3.3-70b-versatile',models:['llama-3.3-70b-versatile','qwen/qwen3-32b'],key:'到 console．groq．com 建立 API Key。'},
  custom:{n:'自訂（OpenAI 相容）',base:'',model:'',models:[],key:'自行填入 Base URL、模型名與 Key（本機 Ollama／LM Studio 可不填 Key）。'}
 };
 var PRESET_ORDER=['deepseek','xai','openai','openrouter','gemini','groq','custom'];
@@ -1654,7 +1654,13 @@ AI.timeoutFetch=function(url,opts,ms){return new Promise(function(res,rej){var d
 AI.quirks={};
 /* reasoner／思考模型：temperature、response_format 常不支援；max_tokens 含推理額度，太小會令 content 空白 */
 AI.isReasoner=function(m){m=String(m!=null?m:SET.model||'');return /reasoner|thinking|-r1\b|o1|o3-mini/i.test(m);};
+/* 精修／短 JSON 任務改用快模型（reasoner 常吐英文規劃句） */
+AI.fastModel=function(m){m=String(m!=null?m:SET.model||'');
+ if(/deepseek-reasoner/i.test(m))return m.replace(/deepseek-reasoner/ig,'deepseek-chat');
+ if(AI.isReasoner(m)){var P0=typeof PRESETS!=='undefined'?PRESETS[SET.preset]:null;if(P0&&P0.models){for(var i=0;i<P0.models.length;i++)if(!AI.isReasoner(P0.models[i]))return P0.models[i];}if(P0&&P0.model&&!AI.isReasoner(P0.model))return P0.model;}
+ return m;};
 AI.snip=function(s,n){s=String(s==null?'':s).replace(/\s+/g,' ').trim();return s?s.slice(0,n||100):'';};
+AI.looksLikeMeta=function(t){t=String(t||'');if(/[{[]/.test(t)&&AI.extractJSON(t))return false;return /^\s*(We need|I need|Let me|The user|Okay|Ok[,.]|Sure[,.]|Here(?:'s| is)|I(?:'ll| will)|Need to|First[,]|To (?:parse|produce|answer)|As an AI)/i.test(t)||/\bNeed (?:to |parse |produce |understand)\b/i.test(t);};
 /* 統一取出 chat／reasoner 的可解析文字（content 字串、多段、或 reasoning_content） */
 AI.msgText=function(msg){if(!msg||typeof msg!=='object')return '';
  var c=msg.content;
@@ -1663,27 +1669,29 @@ AI.msgText=function(msg){if(!msg||typeof msg!=='object')return '';
  if(typeof msg.reasoning_content==='string'&&msg.reasoning_content.trim())return msg.reasoning_content;
  if(typeof c==='string')return c;
  return '';};
-AI.call=function(messages,o){o=o||{};var q=AI.quirks[AI.endpoint()+'|'+SET.model]||(AI.quirks[AI.endpoint()+'|'+SET.model]={});var depth=o.depth||0;
- if(AI.isReasoner()){q.notemp=1;q.nofmt=1;}
- var maxTok=o.maxTok!=null?o.maxTok:SET.maxTok;if(AI.isReasoner()&&maxTok<2000)maxTok=Math.max(maxTok*5,2500);
- var toSec=o.timeout!=null?o.timeout:SET.aiTimeout;if(AI.isReasoner()&&toSec<90)toSec=90;
- var body={model:SET.model,messages:messages,stream:false};if(!q.notemp)body.temperature=SET.temp;if(q.mct)body.max_completion_tokens=maxTok;else body.max_tokens=maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
+AI.call=function(messages,o){o=o||{};var model=o.model||SET.model;var q=AI.quirks[AI.endpoint()+'|'+model]||(AI.quirks[AI.endpoint()+'|'+model]={});var depth=o.depth||0;
+ var reason=AI.isReasoner(model);if(reason){q.notemp=1;q.nofmt=1;}
+ var maxTok=o.maxTok!=null?o.maxTok:SET.maxTok;if(reason&&maxTok<2000)maxTok=Math.max(maxTok*5,2500);
+ var toSec=o.timeout!=null?o.timeout:SET.aiTimeout;if(reason&&toSec<90)toSec=90;
+ var body={model:model,messages:messages,stream:false};if(!q.notemp)body.temperature=(o.temp!=null?o.temp:SET.temp);if(q.mct)body.max_completion_tokens=maxTok;else body.max_tokens=maxTok;if(o.fmt!==false&&!q.nofmt)body.response_format={type:'json_object'};
  var t0=Date.now();
  return AI.timeoutFetch(AI.endpoint(),{method:'POST',headers:AI.headers(),body:JSON.stringify(body)},toSec*1000).then(function(r){return r.text().then(function(txt){var j=null;try{j=JSON.parse(txt);}catch(e){}
   if(!r.ok){var ms=String((j&&j.error&&(j.error.message||j.error))||txt.slice(0,160));var again=0;
    if((r.status===400||r.status===422)&&depth<3){if(!q.mct&&/max_completion_tokens/i.test(ms)){q.mct=1;again=1;}else if(!q.notemp&&/temperature/i.test(ms)){q.notemp=1;again=1;}else if(!q.nofmt){q.nofmt=1;again=1;}}
-   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1,fmt:o.fmt});throw {kind:'http',status:r.status,msg:ms,raw:txt};}
+   if(again)return AI.call(messages,{maxTok:o.maxTok,timeout:o.timeout,depth:depth+1,fmt:o.fmt,model:o.model,temp:o.temp});throw {kind:'http',status:r.status,msg:ms,raw:txt};}
   var msg=j&&j.choices&&j.choices[0]&&j.choices[0].message;var c=AI.msgText(msg);
-  if(typeof c!=='string'||!c.trim()){var hint=AI.snip(txt,120);if(AI.isReasoner())hint=(hint||'content 空白')+'（reasoner 推論可能食晒 token，已自動提高額度；可改用 deepseek-chat 或加長逾時）';throw {kind:'empty',raw:txt,hint:hint};}
-  return {text:c,ms:Date.now()-t0,raw:txt};});});};
+  if(typeof c!=='string'||!c.trim()){var hint=AI.snip(txt,120);if(reason)hint=(hint||'content 空白')+'（reasoner 推論可能食晒 token，已自動提高額度；可改用 deepseek-chat 或加長逾時）';throw {kind:'empty',raw:txt,hint:hint};}
+  return {text:c,ms:Date.now()-t0,raw:txt,model:model};});});};
 AI.listModels=function(){return AI.timeoutFetch(AI.base()+'/models',{method:'GET',headers:AI.headers()},20000).then(function(r){return r.json().then(function(j){var a=(j&&(j.data||j.models))||[];return a.map(function(x){return typeof x==='string'?x:(x.id||x.name||'');}).filter(Boolean).slice(0,80);});});};
 AI.errMsg=function(e){if(!e)return '未知錯誤';if(e.kind==='timeout')return '連線逾時（'+(AI.isReasoner()?Math.max(90,SET.aiTimeout):SET.aiTimeout)+' 秒）'+(AI.isReasoner()?'｜reasoner 較慢，可改 deepseek-chat 或設 120 秒':'');if(e.kind==='net')return '無法連上 AI 服務（網絡或 CORS）';if(e.kind==='empty')return 'AI 回應為空'+(e.hint?'｜'+e.hint:'');if(e.kind==='parse'||e.kind==='schema')return 'AI 回應格式不正確'+(e.raw?'｜'+AI.snip(e.raw,90):'');
  if(e.kind==='http'){var tail=e.msg?('：'+AI.snip(e.msg,100)):'';if(e.status===402)return '餘額不足（HTTP 402）'+tail;if(e.status===401||e.status===403)return 'API Key 無效（HTTP '+e.status+'）'+tail;if(e.status===404)return '找不到模型或端點（HTTP 404）'+tail;if(e.status===429)return '請求太頻繁（HTTP 429）'+tail;return 'AI 請求失敗（HTTP '+e.status+'）'+tail;}return String(e.message||e);};
 AI.extractJSON=function(text){var t=String(text==null?'':text).trim();
  var fence=t.match(/```(?:json|JSON)?\s*([\s\S]*?)```/);if(fence)t=fence[1].trim();
  else t=t.replace(/^```(?:json|JSON)?\s*/i,'').replace(/\s*```$/,'');
- var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;t=t.slice(a,b+1);
- try{return JSON.parse(t);}catch(e){}try{return JSON.parse(t.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(t.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
+ /* 跳過前綴英文／說明，用括號配對取出第一個物件（字串內括號不計） */
+ function sliceObj(s){var start=s.indexOf('{');if(start<0)return null;var depth=0,inStr=0,esc=0;for(var i=start;i<s.length;i++){var ch=s.charAt(i);if(inStr){if(esc){esc=0;continue;}if(ch==='\\'){esc=1;continue;}if(ch==='"')inStr=0;continue;}if(ch==='"'){inStr=1;continue;}if(ch==='{')depth++;else if(ch==='}'){depth--;if(depth===0)return s.slice(start,i+1);}}var end=s.lastIndexOf('}');return end>start?s.slice(start,end+1):null;}
+ var cand=sliceObj(t);if(!cand)return null;
+ try{return JSON.parse(cand);}catch(e){}try{return JSON.parse(cand.replace(/,\s*([}\]])/g,'$1').replace(/[\u201c\u201d]/g,'"'));}catch(e2){}try{return JSON.parse(cand.replace(/[\r\n]+/g,'\\n'));}catch(e3){}return null;};
 /* M15：修復殘缺 JSON（只在含 "scene" 時）；缺選項補 3 個 */
 AI.repairJSON=function(raw){raw=String(raw||'');if(raw.indexOf('"scene"')<0)return null;var j=AI.extractJSON(raw);if(j&&j.scene)return j;
  var m=raw.match(/"scene"\s*:\s*"((?:[^"\\]|\\.)*)/);if(!m)return null;var sc=m[1];try{sc=JSON.parse('"'+sc.replace(/\\$/,'')+'"');}catch(e){sc=sc.replace(/\\n/g,'\n').replace(/\\"/g,'"');}
@@ -2747,7 +2755,7 @@ Origin.apply=function(o){if(!o)return;var me=pc();S.origin={raw:o.raw,lines:[],g
  if(o.disg)Gender.start(me.g==='f'?'m':'f');if(o.goal)S.origin.lines.push('你的心願：'+o.goal+'。');
  FW.add(me.n+'的身世：'+o.raw.slice(0,60),[S.pc],S.pc,{secret:1,k:'originRaw'});addLog('〔身世〕'+o.raw.slice(0,40),'身');};
 Origin.refine=function(text){var msgs=[{role:'system',content:'你是古代人生模擬遊戲的設定解析器。把玩家寫的身世解析成 JSON：{"birth":"exile|farm|merchant|gentry|tradoc|orphan 或空","g":"m|f 或空","age":數字或null,"secrets":[{"t":"秘密一句","kw":["關鍵字"]}],"poison":{"n":"毒名","lv":1-3}或null,"foe":"仇人名或空","goal":"志向或空","skills":{"med|mart|lit|trade|farm|craft":15},"gold":數字或null,"disg":true/false,"master":true/false}。只輸出 JSON。'},{role:'user',content:text}];
- var tok=AI.isReasoner()?Math.max(2500,SET.maxTok||2600):800;var to=AI.isReasoner()?Math.max(90,SET.aiTimeout||60):Math.max(45,SET.aiTimeout||60);return AI.call(msgs,{maxTok:tok,timeout:to}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};var o=Origin.parse(text);if(j.birth&&BIRTHS.some(function(b){return b.k===j.birth;})&&!o.birth){o.birth=j.birth;o.items.push('出身（AI）：'+BIRTHS.filter(function(b){return b.k===j.birth;})[0].n);}
+ var useModel=AI.fastModel(SET.model);var tok=900;var to=Math.max(45,SET.aiTimeout||60);return AI.call(msgs,{maxTok:tok,timeout:to,model:useModel,temp:0.2,fmt:true}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};var o=Origin.parse(text);if(j.birth&&BIRTHS.some(function(b){return b.k===j.birth;})&&!o.birth){o.birth=j.birth;o.items.push('出身（AI）：'+BIRTHS.filter(function(b){return b.k===j.birth;})[0].n);}
   (j.secrets||[]).slice(0,3).forEach(function(s){if(s&&s.t&&!o.secrets.some(function(x){return x.t===s.t;})){o.secrets.push({t:String(s.t).slice(0,60),kw:(s.kw||[]).slice(0,4)});o.items.push('秘密（AI）：'+s.t);}});
   if(j.poison&&j.poison.n&&!o.poison){o.poison={n:String(j.poison.n).slice(0,6),lv:clamp(j.poison.lv|0||2,1,3)};o.items.push('舊毒（AI）：'+o.poison.n);}if(j.foe&&!o.foe){o.foe=String(j.foe).slice(0,4);o.items.push('仇人（AI）：'+o.foe);}if(j.goal&&!o.goal){o.goal=String(j.goal).slice(0,14);o.items.push('志向（AI）：'+o.goal);}
   if(j.skills)for(var k in j.skills)if(ME_K[k]&&!o.skills[k]){o.skills[k]=clamp(j.skills[k]|0,0,20);o.items.push('專長（AI）：'+k);}if(j.master&&o.tags.indexOf('master')<0){o.tags.push('master');o.items.push('曾隨隱士學醫（AI）');}if(j.disg&&!o.disg){o.disg=1;o.items.push('易裝（AI）');}
@@ -2920,9 +2928,16 @@ Origin.deep=function(raw,o){var t=Origin.norm(raw);var F={},m,N='(\\d{1,2}|[一�
  if(F.typo)it.push('已容錯：錯字按語意理解（如「卻像人救了」→「卻被人救了」、「情素」→「情愫」、「山涯」→「山崖」）');
  o.items=it.concat(o.items.filter(function(x){return !/^性別|^年齡/.test(x);}));return o;};
 (function(){var op=Origin.parse;Origin.parse=function(text){var o=op(text);if(!o.raw)return o;o.items=o.items.filter(function(x){return x.indexOf('未能解析')<0;});Origin.deep(o.raw,o);if(!o.items.length)o.items.push('（未能解析出具體設定；將作為背景敘述保留，AI 會參考）');return o;};})();
-/* AI 精修：在離線結果上補欄位 */
-(function(){var orf=Origin.refine;Origin.refine=function(text){var msgs=[{role:'system',content:'你是古代人生模擬遊戲的設定解析器。玩家寫的身世可能有錯字，請按語意理解。只輸出 JSON：{"g":"m|f 或空","age":數字或null,"mother":"生母稱號或空","father":"生父名或空","fatherUnknown":true/false（主角是否不知道生父身分）,"poisoner":"mother|其他人名|空","target":"任務要殺的人或空","monthly":true/false,"senses":true/false,"mad":true/false,"framer":true/false,"blamed":"生母誤以為的兇手或空","alias":"化名或空","dest":"前往之地或空","typos":["錯字→正字"]}'},{role:'user',content:text}];
- var tok=AI.isReasoner()?Math.max(2500,SET.maxTok||2600):800;var to=AI.isReasoner()?Math.max(90,SET.aiTimeout||60):Math.max(45,SET.aiTimeout||60);
+/* AI 精修：在離線結果上補欄位（強制用 fast chat，避免 reasoner 吐英文規劃） */
+(function(){var orf=Origin.refine;Origin.refine=function(text){
+ var EX='{"g":"f","age":16,"mother":"齊國公主","father":"呂不韋","fatherUnknown":true,"poisoner":"mother","target":"呂不韋","monthly":true,"senses":true,"mad":true,"framer":true,"blamed":"呂不韋","alias":"女神醫","dest":"秦國","typos":["情素→情愫"]}';
+ var SYS='你是古代人生模擬遊戲的設定解析器。硬性規則：\n'
+  +'1) 整段回覆只能是一個原始 JSON 物件：第一個非空白字元必須是 {，最後一個必須是 }。\n'
+  +'2) 禁止任何英文說明、思考過程、markdown、程式碼圍欄；禁止 We need／Need to／Let me／I will 等句子。\n'
+  +'3) 字串欄位值用繁體中文（人名、稱號、地名）；鍵名用英文如下例。\n'
+  +'4) 範例（只示範格式）：'+EX;
+ var msgs=[{role:'system',content:SYS},{role:'user',content:'解析下列身世（可能有錯字，按語意理解）：\n'+String(text||'')+'\n\n只輸出 JSON，不要其他字。'}];
+ var useModel=AI.fastModel(SET.model);var tok=900;var to=Math.max(45,SET.aiTimeout||60);
  function merge(j){var o=Origin.parse(text);var F=o.fate||{};var add=[];
   function s(v,n){return v?String(v).replace(/[「」"]/g,'').slice(0,n||8):'';}
   if(j.mother&&!F.mother){F.mother=s(j.mother);add.push('生母（AI）：'+F.mother);}if(j.father&&!F.father){F.father=s(j.father,4);add.push('生父（AI）：'+F.father+'【秘密】');}
@@ -2930,9 +2945,11 @@ Origin.deep=function(raw,o){var t=Origin.norm(raw);var F={},m,N='(\\d{1,2}|[一�
   if(j.target&&!F.target){F.target=s(j.target,4);add.push('任務（AI）：殺死'+F.target);}if(j.monthly&&!F.monthly){F.monthly=1;add.push('每月解藥（AI）');}if(j.senses&&!F.senses){F.senses=1;add.push('五感漸失（AI）');}if(j.mad&&!F.mad){F.mad=1;add.push('最終痴傻（AI）');}
   if(j.framer&&!F.framer){F.framer=1;add.push('幕後有心人（AI）');}if(j.blamed&&!F.blamed){F.blamed=s(j.blamed,4);}if(j.alias&&!F.alias){F.alias=s(j.alias,4);add.push('化名（AI）：'+F.alias);}
   if(j.age&&o.age==null){o.age=clamp(j.age|0,10,60);add.push('年齡（AI）：'+o.age);}if(j.g&&!o.g)o.g=j.g==='m'?'m':'f';if(j.typos&&j.typos.length){F.typo=1;add.push('錯字（AI）：'+j.typos.slice(0,3).join('；'));}
-  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;return o;}
- function once(extra){var m=msgs;if(extra)m=msgs.concat([{role:'user',content:extra}]);return AI.call(m,{maxTok:tok,timeout:to}).then(function(r){var j=AI.extractJSON(r.text);if(!j)throw {kind:'parse',raw:r.text};return merge(j);});}
- return once().then(null,function(e){if(e&&(e.kind==='parse'||e.kind==='empty'))return once('上次輸出不是合法 JSON，請只輸出一個 JSON 物件，不要 markdown、不要解釋。').then(null,function(e2){throw e2.raw?e2:{kind:e2.kind||'parse',raw:e.raw||e2.raw||''};});throw e;});};})();
+  if(F.target&&F.father&&F.target===F.father)F.patricide=1;if(Object.keys(F).length)o.fate=F;o.items=o.items.concat(add);o.ai=1;o.parseModel=useModel;return o;}
+ function once(extra){var m=msgs;if(extra)m=msgs.concat([{role:'user',content:extra}]);
+  return AI.call(m,{maxTok:tok,timeout:to,model:useModel,temp:0.2,fmt:true}).then(function(r){var j=AI.extractJSON(r.text);if(j)return merge(j);var e={kind:'parse',raw:r.text};if(AI.looksLikeMeta(r.text))e.meta=1;throw e;});}
+ var repair='錯誤：你剛才沒有輸出合法 JSON（可能寫了英文說明）。現在立刻只輸出下面這種單一 JSON 物件，鍵名勿改、值按身世填繁中，不要任何其他文字：\n'+EX;
+ return once().then(null,function(e){if(e&&(e.kind==='parse'||e.kind==='empty'||e.meta))return once(repair).then(null,function(e2){throw e2.raw?e2:{kind:e2.kind||'parse',raw:(e&&e.raw)||(e2&&e2.raw)||''};});throw e;});};})();
 /* 落實 */
 Fate.apply=function(o){var F=o&&o.fate;if(!F)return;var me=pc();if(o.age!=null){me.born=S.day-o.age*DPY-rnd(DPY);}
  var fa=F.father?People.idByName(F.father):'';var tg=F.target?People.idByName(F.target):'';
@@ -3208,7 +3225,7 @@ Panels.suRender=function(){var u=Panels.su;var h='<h4>開局方式</h4><div clas
  if(u.mode==='std'){h+='<h4>'+(u.g==='m'?'西醫':'女西醫')+'</h4><p class="note">'+(u.g==='m'?'他':'她')+'在隱世山谷隨師父青囊子學了十二年西方醫術——解剖、縫合、消毒、退燒、接骨、藥理、聽診——今日學成下山，來到咸陽。</p><label class="field">姓名（2–4 字）<input id="suName" maxlength="6" value="'+esc(u.name)+'" autocomplete="off"></label><div class="row">'+(u.g==='m'?DEF_NAMES_M:DEF_NAMES).map(function(n){return '<button class="btn" data-act="suNm" data-v="'+esc(n)+'">'+esc(n)+'</button>';}).join('')+'</div>';}
  else if(u.mode==='rand'){var r=u.r;var B=BIRTHS.filter(function(b){return b.k===r.birth;})[0];h+='<h4>隨機身世</h4><div class="rcard"><div class="rav">'+ART.sil({id:'pv',n:r.sur+r.gn,gn:r.gn,g:r.g,born:S?0:0,look:{hair:'#2a2020'},kind:'pc',alive:1,_age:r.age})+'</div><div><b>'+esc(r.sur+r.gn)+'</b>（'+(r.g==='f'?'女':'男')+'，'+(r.baby?'初生嬰兒':r.age+'歲')+'）<br>'+esc(B.n)+'——'+esc(B.d)+'<br>天賦：'+r.tal.map(function(t){return {med:'醫',mart:'武',lit:'文',trade:'商',farm:'農',craft:'工'}[t];}).join('、')+'；體'+r.at.con+' 智'+r.at.wit+' 貌'+r.at.look+'<br>'+(r.genes.length?'隱約有「'+r.genes.map(function(g){return GENES[g].n;}).join('、')+'」之相':'未見特殊稟賦')+(r.birth==='exile'?'<br>罪名：'+esc(r.crime)+'；流放'+esc(EXILE_DEST.filter(function(d){return d.k===r.dest;})[0].n):'')+'<br>兄弟姊妹 '+r.sibs+' 人'+(r.grand?'、祖母同住':'')+'</div></div>';
   h+='<div class="row"><button class="btn pri" data-act="suRoll">🎲 重抽</button><button class="btn'+(u.baby?' on':'')+'" data-act="suBaby">'+(u.baby?'☑':'☐')+' 從嬰兒開始</button></div><label class="field">指定出身<select id="suBirth"><option value="">隨機</option>'+BIRTHS.map(function(b){return '<option value="'+b.k+'"'+(u.birth===b.k?' selected':'')+'>'+b.n+'</option>';}).join('')+'</select></label><p class="note">流放之家：要護著家人走完流放路、在邊地開荒搭屋，或許還會在深山遇見傳授西醫的奇人。</p>';}
- else{h+='<label class="field">姓名（2–4 字，留空隨機）<input id="suName" maxlength="6" value="'+esc(u.cname||'')+'" autocomplete="off"></label><h4>自設身世（M14）</h4><label class="field">寫下你的身世（可含出身、年齡、秘密、仇人、舊毒、志向、專長、易裝…）<textarea id="suText" rows="5" maxlength="400" placeholder="例：我是罪臣之女，十七歲，女扮男裝；親生父親其實是李斯；身中寒毒；仇人是趙高；立志為家族翻案；擅長醫術。">'+esc(u.ctext)+'</textarea></label><div class="row"><button class="btn" data-act="suParse">🔍 解析預覽</button>'+(AI.ready()&&!AI.manual()?'<button class="btn" data-act="suRefine">✨ AI 精修解析</button>':'')+'</div>';
+ else{h+='<label class="field">姓名（2–4 字，留空隨機）<input id="suName" maxlength="6" value="'+esc(u.cname||'')+'" autocomplete="off"></label><h4>自設身世（M14）</h4><label class="field">寫下你的身世（可含出身、年齡、秘密、仇人、舊毒、志向、專長、易裝…）<textarea id="suText" rows="5" maxlength="400" placeholder="例：我是罪臣之女，十七歲，女扮男裝；親生父親其實是李斯；身中寒毒；仇人是趙高；立志為家族翻案；擅長醫術。">'+esc(u.ctext)+'</textarea></label><div class="row"><button class="btn" data-act="suParse">🔍 解析預覽</button>'+(AI.ready()&&!AI.manual()?'<button class="btn" data-act="suRefine">✨ AI 精修解析</button>':'')+'</div>'+(AI.ready()&&!AI.manual()&&AI.isReasoner(SET.model)&&AI.fastModel(SET.model)!==SET.model?'<p class="note">精修解析會暫時改用 '+esc(AI.fastModel(SET.model))+'（較穩）；劇情對白仍用 '+esc(SET.model)+'。</p>':'');
   if(u.parsed)h+='<div class="kv" id="suPrev"><b>解析結果'+(u.parsed.ai?'（AI 精修）':'（離線）')+'</b>'+(u.parsed.g&&u.parsed.g!==u.g?'<p class="note">⚠ 身世寫的是'+(u.parsed.g==='m'?'男':'女')+'，開局頁選了'+(u.g==='m'?'男':'女')+'——以開局頁為準。</p>':'')+(u.parsed.base==='std'?'<p class="note">以「下山的西醫」為底（保留標準開局的醫術、器具、師父）。</p>':'')+'<div class="mem">'+esc(Origin.preview(u.parsed)).replace(/\n/g,'<br>')+'</div></div>';}
  h+='<div class="row" style="margin-top:14px"><button class="btn pri big" data-act="suGo">踏入此生</button></div>';return h;};
 Panels.act.suMode=function(v){Panels.su.mode=v;Sh.draw();};Panels.act.suWorld=function(v){Panels.su.world=v;Sh.redraw();};
@@ -3220,7 +3237,7 @@ Panels.act.suNm=function(v){Panels.su.name=v;Sh.redraw();};
 Panels.act.suRoll=function(){var u=Panels.su;var b=$('suBirth');if(b)u.birth=b.value;u.r=rollBirth({birth:u.birth||'',baby:u.baby,g:u.g});Sh.redraw();};
 Panels.act.suBaby=function(){var u=Panels.su;u.baby=!u.baby;u.r=rollBirth({birth:u.r.birth,g:u.g,baby:u.baby});Sh.redraw();};
 Panels.act.suParse=function(){var u=Panels.su;u.ctext=$('suText').value;u.cname=($('suName')||{}).value||'';u.parsed=Origin.parse(u.ctext);Sh.redraw();};
-Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,AI.isReasoner()?'解析身世中（reasoner 較慢）…':'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);var det=AI.errMsg(e);AI.lastErr=det;toast('AI 解析失敗：'+det+' → 改用離線解析',4500);u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
+Panels.act.suRefine=function(){var u=Panels.su;u.ctext=$('suText').value;UI.busy(true,AI.isReasoner(SET.model)&&AI.fastModel(SET.model)!==SET.model?'解析身世中（精修改用 '+AI.fastModel(SET.model)+'）…':'解析身世中…');Origin.refine(u.ctext).then(function(o){UI.busy(false);u.parsed=o;Sh.redraw();},function(e){UI.busy(false);var det=AI.errMsg(e);AI.lastErr=det;toast('AI 解析失敗：'+det+' → 改用離線解析',4500);u.parsed=Origin.parse(u.ctext);Sh.redraw();});};
 Panels.act.suGo=function(){var u=Panels.su;var first;START_BC=(ERAS[u.era]||ERAS.y10).bc;
  if(u.mode==='std'){var nm=(($('suName')||{}).value||u.name).replace(/\s/g,'').slice(0,6)||DEF_NAMES[0];first=Start.std({name:nm,world:u.world,g:u.g});}
  else if(u.mode==='rand'){first=Start.rand(u.r,{world:u.world});}
@@ -3430,9 +3447,14 @@ NODES.sayOpen=function(a){setTimeout(function(){Say.open(a.id);},60);return Eng.
 /* ---- 99_boot.js ---- */
 /* ===== 啟動 ===== */
 (function(){
- function boot(){loadSettings();try{if(location.protocol==='https:'&&navigator.onLine!==false){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Ma+Shan+Zheng&text='+encodeURIComponent('青囊秦心浮生');
+ function boot(){loadSettings();
+ /* 微信內建瀏覽器唔載 Google Fonts（易被攔截／異常跳轉）；並攔截 weixin:// 與頁內自動產生的外連 */
+ try{var ua=navigator.userAgent||'';var inWX=/MicroMessenger/i.test(ua);
+  if(!inWX&&location.protocol==='https:'&&navigator.onLine!==false){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Ma+Shan+Zheng&text='+encodeURIComponent('青囊秦心浮生');document.head.appendChild(l);
    var l2=document.createElement('link');l2.rel='stylesheet';l2.href='https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap';document.head.appendChild(l2);
-   var l3=document.createElement('link');l3.rel='stylesheet';l3.href='https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap&text='+encodeURIComponent('青囊秦心·');document.head.appendChild(l3);}}catch(e){}
+   var l3=document.createElement('link');l3.rel='stylesheet';l3.href='https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap&text='+encodeURIComponent('青囊秦心·');document.head.appendChild(l3);}
+  document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var h=String(a.getAttribute('href')||'');if(/^(weixin:|wechat:|wxwork:)/i.test(h)||(/^https?:/i.test(h)&&!/oceanson17\.github\.io/i.test(h)&&a.hostname&&a.hostname!==location.hostname)){e.preventDefault();e.stopPropagation();try{toast('已攔截外連／微信跳轉',2200);}catch(x){}}},true);
+ }catch(e){}
   VV.init();UI.bind();Med.bind();Kb.init();applyLook();UI.screen('title');
   window.addEventListener('pagehide',function(){if(S)saveSlot('auto',true);});
   document.addEventListener('visibilitychange',function(){if(document.hidden&&S)saveSlot('auto',true);});}

@@ -1900,6 +1900,7 @@ var Med={cur:null};
   var h='<div class="pat"><div class="pav">'+(pp?ART.avatar(pp,40):'🧑‍🦱')+'</div><div><b style="font-size:16px">'+esc(pp?(pp.id===S.pc?'你自己':pp.n)+'（'+ (pp.ill.length?Ill.str(pp):d.dx.slice(0,4))+'）':d.p)+'</b><div class="note">'+esc(d.c)+'　醫術 '+me.sk.med+'</div></div></div>';
   if(m.step==='done'){var r=m.res;h+='<div class="mres"><div class="stamp">'+r.stamp+'</div><div class="note">診斷 '+(m.dxOk?'✔ ':'✘ 應為「'+esc(d.dx)+'」 ')+'｜處置 '+Math.round(r.q*100)+'%｜理想次序：'+d.seq.map(function(t){return TECHS[t].n;}).join('→')+'</div><div class="note" style="margin-top:6px">'+esc(r.msg)+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起刀圭</button></div>';}
   else{h+='<h4>生命徵象與檢查 <small class="note">（至少三項）</small></h4><div class="vgrid">'+EXAM.map(function(e){var k=e[0];var got=m.rev[k];var v=got?(d.vit[k]||d.ex[k]):'';return '<button class="vbtn'+(got?' done':'')+'" data-ex="'+k+'"><i>'+e[1]+'</i><b>'+e[2]+'</b>'+(got?'<span>'+esc(v)+'</span>':'')+'</button>';}).join('')+'</div>';
+   if(m.step==='exam'&&Med.revealed()<EXAM.length)h+='<div class="row" style="margin:4px 0 6px"><button class="btn pri" id="mdExamAll" style="width:100%;letter-spacing:.2em">⚡ 一鍵完成</button></div><div class="note" style="text-align:center;margin:0 0 8px">不懂怎麼查？一鍵做齊七項</div>';
    if(m.step==='exam'&&Med.revealed()>=3)h+='<h4>診斷</h4><div class="opts">'+m.dxOpts.map(function(x){return '<button class="cbtn" data-dx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';
    if(m.step==='exam'&&Med.revealed()>=3||m.step==='proc'){h+='<div class="row" style="margin:8px 0"><button class="btn pri" id="mdGen">✨ 一鍵生成醫術</button></div>';if(m.plan)h+=Med.planHtml(m.plan,m.planSrc);}
    if(m.step==='proc'){h+='<h4>處置次序 <small class="note">依序點選，耗用藥材</small></h4><div class="sym">'+(m.seq.length?m.seq.map(function(t,i){return '<span>'+(i+1)+'. '+TECHS[t].n+'</span>';}).join(''):'<span class="note" style="border:0;background:none">尚未處置</span>')+'</div>';
@@ -1907,6 +1908,8 @@ var Med={cur:null};
     h+='<div class="opts" style="flex-direction:row"><button class="btn" id="mdUndo">撤回一步</button><button class="cbtn" id="mdFin" style="flex:1">完成處置</button></div>';}}
   $('mdB').innerHTML=h;};
  Med.exam=function(k){var m=Med.cur;if(!m||m.rev[k])return;if(k==='listen'&&!Inv.has('steth')){m.rev[k]=1;m.d=JSON.parse(JSON.stringify(m.d));m.d.ex.listen=pc().sk.med>=50?'（貼耳細聽）'+m.d.ex.listen:'沒有聽診筒，聽不真切';}else m.rev[k]=1;Med.draw();};
+ /* 一鍵完成：把剩餘檢查全做齊（至少三項門檻／新手） */
+ Med.examAll=function(){var m=Med.cur;if(!m||m.step!=='exam')return;var n=0;EXAM.forEach(function(e){var k=e[0];if(m.rev[k])return;if(k==='listen'&&!Inv.has('steth')){m.rev[k]=1;m.d=JSON.parse(JSON.stringify(m.d));m.d.ex.listen=pc().sk.med>=50?'（貼耳細聽）'+m.d.ex.listen:'沒有聽診筒，聽不真切';}else m.rev[k]=1;n++;});if(!n){toast('檢查已齊');return;}Med.draw();toast('已完成全部檢查，可選診斷或一鍵生成醫術',2800);};
  Med.dx=function(x){var m=Med.cur;m.dxOk=x===m.d.dx;m.step='proc';if(!m.dxOk&&pc().sk.med>=55&&rand()<0.5)toast('（直覺告訴你，似乎哪裡不對……）');Med.draw();};
  Med.tc=function(t){var m=Med.cur;if(!m||m.step!=='proc')return;var ok=Med.techOk(t);if(!ok.ok)return;
   if(t==='amput'){UI.dialog('截肢抉擇','病人的家人撲上來哭喊：「求求你，留他全屍！」<br>截去肢體能保住性命，但他從此殘廢；不截，壞疽上延便是死路。',[{t:'截！保命要緊',f:function(){Med.push(t);}},{t:'再想想',f:function(){}}]);return;}
@@ -1937,7 +1940,7 @@ var Med={cur:null};
  /* 自動看診（歲月流轉／醫館學徒）：回傳結果 */
  Med.auto=function(ci,sk,useInv){var d=CASES[ci];var ok=d.seq.every(function(t){var c=useInv?Med.techOk(t):{ok:!!S.fam.tech[t]};return c.ok;});var p=(sk/100)*0.8+(ok?0.25:-0.2)-0.12*(d.lv-1);var good=rand()<p;if(useInv&&ok)d.seq.forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);});return {ok:good,fee:good?d.fee:0,d:d};};
  Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;var a;
-  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();else if(b.id==='mdGen'||b.id==='mdRePlan')Med.genAI();else if(b.id==='mdUsePlan')Med.usePlan();else if(b.id==='mdCmdPlan')Med.toCmd();});};
+  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();else if(b.id==='mdExamAll')Med.examAll();else if(b.id==='mdGen'||b.id==='mdRePlan')Med.genAI();else if(b.id==='mdUsePlan')Med.usePlan();else if(b.id==='mdCmdPlan')Med.toCmd();});};
 })();
 /* ===== 製藥 ===== */
 var Craft={

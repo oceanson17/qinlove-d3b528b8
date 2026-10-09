@@ -5,7 +5,7 @@ var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-c
  firewall:true,wsane:true,decld:true,ncmd:true,actd:true,seald:true,bondd:true,memd:'high',afx:true,aflauto:false,autoEat:true,aiEnd:true};
 var SET={};
 var PRESETS={
- deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。建議用 deepseek-chat。'},
+ deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。下方可選 deepseek-chat（快）或 deepseek-reasoner（強・較慢）。'},
  xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-4.7',models:['grok-4.7','grok-4.6','grok-4.3','grok-4.20-0309-non-reasoning','grok-latest'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
  openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform.openai.com 建立 API Key。'},
  openrouter:{n:'OpenRouter',base:'https://openrouter.ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter.ai 建立 Key；模型名寫成「廠商/模型」。'},

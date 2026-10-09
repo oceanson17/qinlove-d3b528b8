@@ -54,7 +54,10 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
  if(S.per>=4||me.sta<30)A('💤 就寢','sleep');else A('⏳ 歇一個時辰','wait');
  A('⏩ 歲月流轉','skipMenu');if(S.region!=='road')A('🗺 地圖','map');
  return c;};
-NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
+NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();
+ if(typeof Thread!=='undefined'&&Thread.open){var tc=Thread.open();if(tc&&(tc.status==='held'||tc.status==='paused'||(tc.status==='active'&&tc.snap)))chs.unshift(ch('▶ 繼續「'+tc.title+'」','thResume'));}
+ if(S.evcur)chs.unshift(ch('▶ 繼續事件','ev',{id:S.evcur}));
+ return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
 NODES.map=function(){if(S.region==='road')return NODES.place();if(S.flags.held)return NODES.place();return {screen:'map'};};
 NODES.go=function(a){var pl=PLACES[a.pl];if(!pl)return NODES.place();if(pl.need==='palace'&&!S.flags.palace&&!pc().office)return Eng.L(['宮門侍衛橫戟攔住你：「無詔不得入。」'],'',S.place,[ch('↩ 返回','map')]);
  if(pl.need==='prison'&&!(pc().medoff||pc().office||S.fam.fame>=10))return Eng.L(['獄卒攔在門外：「無官職醫憑，或名聲不夠，不得入內。」'],'',S.place,[ch('↩ 返回','map')]);

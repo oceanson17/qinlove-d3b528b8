@@ -139,34 +139,47 @@ AI.post=function(r,a){r=Nom.check(r);r=FW.check(r);r.scene=Gender.fixText(r.scen
  if(resolved){Thread.ok(r,a);Thread.close();
   var L=Input.backCh(sp);
   if(sp&&P(sp))L.unshift({t:'💬 再與'+cn(sp)+'說幾句',go:'talk',a:{id:sp}});
-  L.unshift({t:'✅ 告一段落',go:'place',sys:1});
+  L.unshift({t:'✅ 告一段落',go:'place',sys:1,forceLeave:1});
   sc.ch=L;sc.beatEnd=1;
  }else{
   sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});
-  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1});
-  sc.ch.push({t:'↩ 返回',go:'place',sys:1});
-  Thread.ok(r,a);
+  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1,forceLeave:1});
+  sc.ch.push({t:'↩ 暫離（可繼續）',go:'aiHold',a:{id:sp},sys:1,forceLeave:1});
+  Thread.ok(r,a);Thread.snap(sc);
  }
  return sc;};
 /* ===== 事件線程（M15） ===== */
 var Thread={
  get:function(){if(!S.thread)S.thread={seq:0,cur:null,done:[]};return S.thread;},
+ open:function(){var c=S&&S.thread&&S.thread.cur;return (c&&c.status!=='closed')?c:null;},
+ snap:function(sc){var c=Thread.get().cur;if(!c||!sc||sc.beatEnd)return;
+  c.snap={lines:(sc.lines||[]).slice(-6).map(function(l){return {sp:l.sp||'',t:String(l.t||'').slice(0,200)};}),
+   ch:(sc.ch||[]).map(function(x){return {t:x.t,go:x.go,a:x.a||{},ai:!!x.ai,sys:!!x.sys,forceLeave:!!x.forceLeave};}),
+   focus:sc.focus||'',bg:sc.bg||S.place,ai:!!sc.ai,ev:sc.ev||''};try{saveSlot('auto',true);}catch(e){}},
+ hold:function(){var c=Thread.open();if(!c)return;if(UI.sc)Thread.snap(UI.sc);c.status='held';try{saveSlot('auto',true);}catch(e){}},
  begin:function(a){var T=Thread.get();var here=People.present().slice(0,4);var c=T.cur;
-  if(c&&c.status!=='closed'&&(c.place!==S.place||S.day-c.d1>2)&&!a.retry){Thread.close();c=null;}
-  if(!c||c.status==='closed'){T.seq++;c=T.cur={id:'t'+T.seq,title:String(a.text||a.topic||'事件').slice(0,16),npcs:here,place:S.place,d0:S.day,d1:S.day,turns:[],last:null,status:'active',inflight:0,pend:null,err:'',mem:{},raw:'',prevCh:[]};}
+  if(c&&c.status!=='closed'){if(!(a.retry||a.resume||c.status==='held'||c.status==='paused')&&(c.place!==S.place||S.day-c.d1>2)){Thread.close();c=null;}}
+  if(!c||c.status==='closed'){T.seq++;c=T.cur={id:'t'+T.seq,title:String(a.text||a.topic||'事件').slice(0,16),npcs:here,place:S.place,d0:S.day,d1:S.day,turns:[],last:null,status:'active',inflight:0,pend:null,err:'',mem:{},raw:'',prevCh:[],snap:null};}
+  else{c.status='active';c.place=S.place;}
   c.inflight=1;c.pend={type:a.type,text:a.text||'',tag:a.tag||'',id:a.id||'',topic:a.topic||''};c.d1=S.day;here.forEach(function(id){if(c.npcs.indexOf(id)<0)c.npcs.push(id);});try{saveSlot('auto',true);}catch(e){}},
  ok:function(r,a){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.err='';c.raw='';c.pend=null;c.turns.push({in:String(a.text||a.topic||'').slice(0,80),out:r.scene.slice(0,600),d:S.day});if(c.turns.length>30)c.turns.shift();
   c.prevCh=r.choices.map(function(x){return x.text;});c.last={t:r.scene.slice(-300),sp:r.speaker,ch:c.prevCh};
   r.scene.split('\n').forEach(function(l){var m=l.match(/^([^：「]{1,8})[：:]\s*(.*)$/);if(!m)return;var id=People.idByName(m[1]);if(!id||id===S.pc)return;var L=c.mem[id]||(c.mem[id]=[]);L.push({d:S.day,t:m[2].slice(0,60)});if(L.length>8)L.shift();});
   if(r.recap)FW.add(r.recap,c.npcs.slice(),S.pc,{src:'thread'});try{saveSlot('auto',true);}catch(e){}},
  bad:function(e){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='paused';c.err=AI.errMsg(e);if(e&&e.raw){c.raw=String(e.raw).slice(0,3000);var dg=AI.digest(e.raw);if(dg){c.turns.push({in:c.pend?c.pend.text:'',out:'（殘稿）'+dg,d:S.day});c.npcs.forEach(function(id){Nom.add(id,'（中斷的事件）'+dg.slice(0,50),'n');});}}try{saveSlot('auto',true);}catch(x){}},
- fixLast:function(sc){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.pend=null;var t=sc.lines.map(function(l){return l.t;}).join(' ');c.last={t:t.slice(-300),ch:(sc.ch||[]).map(function(x){return x.t;})};c.prevCh=c.last.ch;c.turns.push({in:'（系統改寫）',out:t.slice(0,400),d:S.day});},
+ fixLast:function(sc){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.pend=null;var t=sc.lines.map(function(l){return l.t;}).join(' ');c.last={t:t.slice(-300),ch:(sc.ch||[]).map(function(x){return x.t;})};c.prevCh=c.last.ch;c.turns.push({in:'（系統改寫）',out:t.slice(0,400),d:S.day});if(sc)Thread.snap(sc);},
  close:function(){var T=Thread.get();if(!T.cur)return;T.cur.status='closed';T.done.push({id:T.cur.id,title:T.cur.title,d0:T.cur.d0,d1:T.cur.d1,n:T.cur.turns.length});if(T.done.length>10)T.done.shift();T.cur=null;},
  paused:function(){var c=S&&S.thread&&S.thread.cur;return !!(c&&c.status==='paused');},
  brief:function(){var c=S.thread.cur;var t='【事件線程：'+c.title+'】'+c.turns.slice(-4).map(function(x){return (x.in?'主角：'+x.in+'→':'')+x.out.slice(0,140);}).join('／');
   var m=Object.keys(c.mem).map(function(id){return cn(id)+'記得：'+c.mem[id].slice(-2).map(function(x){return x.t;}).join('／');}).join('；');if(m)t+='\n【各人對此事的記憶】'+m;if(c.last&&c.last.ch&&c.last.ch.length)t+='\n【上一幕選項（已過時，不可照抄）】'+c.last.ch.join('／');return t;},
  pausedScene:function(){var c=S.thread.cur;var ls=['（事件「'+c.title+'」中斷了'+(c.err?'：'+c.err:'')+'。）'];if(c.last)ls.push('上回說到：'+c.last.t.slice(-90));
-  return Eng.L(ls,'',S.place,[ch('🔁 重試接續','thRetry'),ch('📖 以離線劇情接續','thOffline'),ch('🗑 放下這件事','thDrop'),ch('↩ 行動選單','place')]);},
+  return Eng.L(ls,'',S.place,[ch('🔁 重試接續','thRetry'),ch('📖 以離線劇情接續','thOffline'),ch('🗑 放下這件事','thDrop',{},{forceLeave:1}),ch('↩ 行動選單','place',{},{forceLeave:1})]);},
+ resumeScene:function(){var c=Thread.open();if(!c)return null;if(c.status==='paused')return Thread.pausedScene();c.status='active';
+  if(c.snap&&c.snap.ch&&c.snap.ch.length){var lines=(c.snap.lines&&c.snap.lines.length)?c.snap.lines.slice():[{sp:'',t:'（接續事件「'+c.title+'」。）'}];
+   if(c.last&&c.last.t)lines=[{sp:'',t:'你回過神來。上回說到：'+c.last.t.slice(-100)}].concat(lines.slice(-2));
+   return {lines:lines,focus:c.snap.focus||'',bg:c.snap.bg||c.place||S.place,ch:c.snap.ch,ai:1};}
+  var id=(c.npcs&&c.npcs[0])||'';var ls=['你回過神來，繼續方才的事'+(c.title?'「'+c.title+'」':'')+'。'];if(c.last&&c.last.t)ls.push('上回說到：'+c.last.t.slice(-100));
+  return Eng.L(ls,id,S.place,[ch('✦ 請繼續','aiNext',{text:'請從中斷處繼續',id:id},{ai:1}),ch('✅ 此事告一段落','aiClose',{id:id},{sys:1,forceLeave:1})]);},
  quote:function(id){var c=S.thread;var p=P(id);if(!p)return '';if(S.day-((p.notes||{}).quote||-99)<8)return '';var L=Nom.list(id,12).filter(function(x){return x.k==='recent'&&x.t.indexOf('對我說')>=0;});if(!L.length)return '';p.notes.quote=S.day;var t=L[L.length-1].t.replace(/^.*對我說：/,'');return '「你上次說過'+t+'——我記著呢。」';}
 };
 function ch(t,go,a,o){var c={t:t,go:go,a:a||{}};if(o)for(var k in o)c[k]=o[k];return c;}

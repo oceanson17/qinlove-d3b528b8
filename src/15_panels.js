@@ -132,7 +132,7 @@ MenuUI.open=function(tab){Sh.open('選單',[['main','總覽'],['save','存檔'],
 MenuUI.render=function(tab){if(tab==='save'||tab==='load')return MenuUI.slots(tab);if(tab==='set')return MenuUI.settings();if(tab==='log')return MenuUI.log();if(tab==='full')return MenuUI.full();
  return '<div class="mgrid"><button class="mbtn" data-m="save"><i>💾</i>存檔</button><button class="mbtn" data-m="load"><i>📂</i>讀檔</button><button class="mbtn" data-m="set"><i>⚙</i>設定</button><button class="mbtn" data-m="log"><i>📜</i>回顧</button><button class="mbtn" data-m="alb"><i>📖</i>結局冊</button><button class="mbtn" data-m="title"><i>🏮</i>標題</button></div>'
   +(S?'<div class="kv"><b>本生</b>'+esc(pc().n+'・'+Fam.name()+'第'+S.fam.gen+'代・'+Eng.dateStr())+'；看診'+S.stats.pat+'、治癒'+S.stats.cure+'</div><div class="row"><button class="btn" data-act="endLife">🕯 結束這一生</button></div>':'')
-  +'<p class="note">AI：'+(SET.ai?(AI.ready()?'已啟用（'+(SET.aiSrc==='manual'?'手動貼上':(PRESETS[SET.preset]||{}).n||SET.preset)+'）':'已啟用但暫停／未設定 Key → 離線劇情'+(AI.lastErr?'｜'+esc(AI.lastErr):'')):'離線模式（事件庫）')+'</p>';};
+  +'<p class="note">AI：'+(SET.ai?(AI.ready()?'已啟用（'+(SET.aiSrc==='manual'?'手動貼上':(PRESETS[SET.preset]||{}).n||SET.preset)+(SET.preset==='deepseek'&&SET.model?' · '+SET.model:'')+'）':'已啟用但暫停／未設定 Key → 離線劇情'+(AI.lastErr?'｜'+esc(AI.lastErr):'')):'離線模式（事件庫）')+'</p>';};
 MenuUI.slots=function(mode){var h='';['auto',1,2,3].forEach(function(s){var i=slotInfo(s);if(mode==='save'&&s==='auto')return;
  h+='<div class="slot"><div class="si"><b>'+slotName(s)+'</b><br>'+(i?esc(i.name)+'・第'+(i.gen||1)+'代・第'+i.day+'日<br><small>'+new Date(i.t).toLocaleString()+'</small>':'（空）')+'</div>'+(mode==='save'?'<button class="pri" data-sv="'+s+'">存入</button>':(i?'<button class="pri" data-ld="'+s+'">讀取</button>':''))+'</div>';});
  return h+'<p class="note">每日清晨自動存檔。存檔保存在此瀏覽器。結局冊跨存檔保留。</p>';};
@@ -143,7 +143,7 @@ MenuUI.settings=function(){var P0=PRESETS[SET.preset]||PRESETS.custom;
   +'<label class="field">來源'+seg('aiSrc',[['api','API 直連'],['manual','手動貼上（Grok App 等）']])+'</label>'
   +'<label class="field">服務商<select id="sPreset">'+PRESET_ORDER.map(function(k){return '<option value="'+k+'"'+(k===SET.preset?' selected':'')+'>'+PRESETS[k].n+'</option>';}).join('')+'</select></label><p class="note">'+esc(P0.key)+'</p>'
   +'<label class="field">Base URL<input id="sBase" value="'+esc(SET.base)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
-  +'<label class="field">模型<input id="sModel" list="mdl" value="'+esc(SET.model)+'" autocapitalize="off" autocorrect="off" spellcheck="false"><datalist id="mdl">'+(MenuUI.models||P0.models||[]).map(function(m){return '<option value="'+esc(m)+'">';}).join('')+'</datalist></label>'
+  +(SET.preset==='deepseek'?'<label class="field">模型'+seg('model',[['deepseek-chat','deepseek-chat（快）'],['deepseek-reasoner','deepseek-reasoner（強・較慢）']])+'</label><p class="note">reasoner 較慢、較費額度，適合複雜醫案與長劇情；日常用 chat 即可。</p>':'<label class="field">模型<input id="sModel" list="mdl" value="'+esc(SET.model)+'" autocapitalize="off" autocorrect="off" spellcheck="false"><datalist id="mdl">'+(MenuUI.models||P0.models||[]).map(function(m){return '<option value="'+esc(m)+'">';}).join('')+'</datalist></label>')
   +'<label class="field">API Key（只存在本機）<input id="sKey" type="password" value="'+esc(SET.key)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
   +'<label class="field">額外標頭（選填，Header: 值）<input id="sHdr" value="'+esc(SET.hdr)+'" autocapitalize="off" spellcheck="false"></label>'
   +'<div class="row"><button class="btn pri" id="sSave">儲存</button><button class="btn" id="sTest">測試連線</button><button class="btn" id="sList">列出模型</button></div><div id="sMsg" class="note"></div>'
@@ -167,7 +167,7 @@ Panels.bind=function(){$('shX').onclick=Sh.close;
   if((a=t.getAttribute('data-sv'))){saveSlot(a==='auto'?'auto':+a);Sh.draw();return;}
   if((a=t.getAttribute('data-ld'))){UI.loadGame(a==='auto'?'auto':+a);return;}
   if((a=t.getAttribute('data-set'))){var v=t.getAttribute('data-v');var dv=DEFSET[a];SET[a]=typeof dv==='boolean'?v==='true':(typeof dv==='number'?+v:v);saveSettings();applyLook();Sh.redraw();return;}
-  if(t.id==='sSave'||t.id==='sTest'||t.id==='sList'){SET.base=$('sBase').value.trim();SET.model=$('sModel').value.trim();SET.key=$('sKey').value.trim();SET.hdr=$('sHdr').value.trim();saveSettings();
+  if(t.id==='sSave'||t.id==='sTest'||t.id==='sList'){SET.base=$('sBase').value.trim();if($('sModel'))SET.model=$('sModel').value.trim();SET.key=$('sKey').value.trim();SET.hdr=$('sHdr').value.trim();saveSettings();
    if(t.id==='sSave'){toast('已儲存設定');return;}var m=$('sMsg');
    if(t.id==='sList'){m.textContent='讀取模型清單…';AI.listModels().then(function(L){MenuUI.models=L;Sh.redraw();var m2=$('sMsg');if(m2)m2.textContent=L.length?'✅ 找到 '+L.length+' 個模型：'+L.slice(0,12).join('、'):'（服務商沒有回傳模型清單）';},function(e){var m2=$('sMsg');if(m2)m2.textContent='❌ '+AI.errMsg(e);});return;}
    m.textContent='測試中…';AI.test().then(function(r){var m2=$('sMsg');if(m2)m2.textContent=(r.ok?'✅ ':'❌ ')+r.msg;});return;}

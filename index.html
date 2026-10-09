@@ -718,7 +718,7 @@ var DEFSET={ai:false,key:'',base:'https://api.deepseek.com/v1',model:'deepseek-c
  firewall:true,wsane:true,decld:true,ncmd:true,actd:true,seald:true,bondd:true,memd:'high',afx:true,aflauto:false,autoEat:true,aiEnd:true};
 var SET={};
 var PRESETS={
- deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。建議用 deepseek-chat。'},
+ deepseek:{n:'DeepSeek',base:'https://api.deepseek.com/v1',model:'deepseek-chat',models:['deepseek-chat','deepseek-reasoner'],key:'到 platform.deepseek.com 建立 API Key 並儲值（餘額為 0 會回 HTTP 402）。下方可選 deepseek-chat（快）或 deepseek-reasoner（強・較慢）。'},
  xai:{n:'xAI Grok',base:'https://api.x.ai/v1',model:'grok-4.7',models:['grok-4.7','grok-4.6','grok-4.3','grok-4.20-0309-non-reasoning','grok-latest'],key:'到 console.x.ai 建立 API Key（Grok App 訂閱不能用）。'},
  openai:{n:'OpenAI',base:'https://api.openai.com/v1',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini'],key:'到 platform.openai.com 建立 API Key。'},
  openrouter:{n:'OpenRouter',base:'https://openrouter.ai/api/v1',model:'deepseek/deepseek-chat',models:['deepseek/deepseek-chat','x-ai/grok-4-fast','openai/gpt-4o-mini','google/gemini-2.5-flash'],key:'到 openrouter.ai 建立 Key；模型名寫成「廠商/模型」。'},
@@ -1694,34 +1694,47 @@ AI.post=function(r,a){r=Nom.check(r);r=FW.check(r);r.scene=Gender.fixText(r.scen
  if(resolved){Thread.ok(r,a);Thread.close();
   var L=Input.backCh(sp);
   if(sp&&P(sp))L.unshift({t:'💬 再與'+cn(sp)+'說幾句',go:'talk',a:{id:sp}});
-  L.unshift({t:'✅ 告一段落',go:'place',sys:1});
+  L.unshift({t:'✅ 告一段落',go:'place',sys:1,forceLeave:1});
   sc.ch=L;sc.beatEnd=1;
  }else{
   sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});
-  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1});
-  sc.ch.push({t:'↩ 返回',go:'place',sys:1});
-  Thread.ok(r,a);
+  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1,forceLeave:1});
+  sc.ch.push({t:'↩ 暫離（可繼續）',go:'aiHold',a:{id:sp},sys:1,forceLeave:1});
+  Thread.ok(r,a);Thread.snap(sc);
  }
  return sc;};
 /* ===== 事件線程（M15） ===== */
 var Thread={
  get:function(){if(!S.thread)S.thread={seq:0,cur:null,done:[]};return S.thread;},
+ open:function(){var c=S&&S.thread&&S.thread.cur;return (c&&c.status!=='closed')?c:null;},
+ snap:function(sc){var c=Thread.get().cur;if(!c||!sc||sc.beatEnd)return;
+  c.snap={lines:(sc.lines||[]).slice(-6).map(function(l){return {sp:l.sp||'',t:String(l.t||'').slice(0,200)};}),
+   ch:(sc.ch||[]).map(function(x){return {t:x.t,go:x.go,a:x.a||{},ai:!!x.ai,sys:!!x.sys,forceLeave:!!x.forceLeave};}),
+   focus:sc.focus||'',bg:sc.bg||S.place,ai:!!sc.ai,ev:sc.ev||''};try{saveSlot('auto',true);}catch(e){}},
+ hold:function(){var c=Thread.open();if(!c)return;if(UI.sc)Thread.snap(UI.sc);c.status='held';try{saveSlot('auto',true);}catch(e){}},
  begin:function(a){var T=Thread.get();var here=People.present().slice(0,4);var c=T.cur;
-  if(c&&c.status!=='closed'&&(c.place!==S.place||S.day-c.d1>2)&&!a.retry){Thread.close();c=null;}
-  if(!c||c.status==='closed'){T.seq++;c=T.cur={id:'t'+T.seq,title:String(a.text||a.topic||'事件').slice(0,16),npcs:here,place:S.place,d0:S.day,d1:S.day,turns:[],last:null,status:'active',inflight:0,pend:null,err:'',mem:{},raw:'',prevCh:[]};}
+  if(c&&c.status!=='closed'){if(!(a.retry||a.resume||c.status==='held'||c.status==='paused')&&(c.place!==S.place||S.day-c.d1>2)){Thread.close();c=null;}}
+  if(!c||c.status==='closed'){T.seq++;c=T.cur={id:'t'+T.seq,title:String(a.text||a.topic||'事件').slice(0,16),npcs:here,place:S.place,d0:S.day,d1:S.day,turns:[],last:null,status:'active',inflight:0,pend:null,err:'',mem:{},raw:'',prevCh:[],snap:null};}
+  else{c.status='active';c.place=S.place;}
   c.inflight=1;c.pend={type:a.type,text:a.text||'',tag:a.tag||'',id:a.id||'',topic:a.topic||''};c.d1=S.day;here.forEach(function(id){if(c.npcs.indexOf(id)<0)c.npcs.push(id);});try{saveSlot('auto',true);}catch(e){}},
  ok:function(r,a){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.err='';c.raw='';c.pend=null;c.turns.push({in:String(a.text||a.topic||'').slice(0,80),out:r.scene.slice(0,600),d:S.day});if(c.turns.length>30)c.turns.shift();
   c.prevCh=r.choices.map(function(x){return x.text;});c.last={t:r.scene.slice(-300),sp:r.speaker,ch:c.prevCh};
   r.scene.split('\n').forEach(function(l){var m=l.match(/^([^：「]{1,8})[：:]\s*(.*)$/);if(!m)return;var id=People.idByName(m[1]);if(!id||id===S.pc)return;var L=c.mem[id]||(c.mem[id]=[]);L.push({d:S.day,t:m[2].slice(0,60)});if(L.length>8)L.shift();});
   if(r.recap)FW.add(r.recap,c.npcs.slice(),S.pc,{src:'thread'});try{saveSlot('auto',true);}catch(e){}},
  bad:function(e){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='paused';c.err=AI.errMsg(e);if(e&&e.raw){c.raw=String(e.raw).slice(0,3000);var dg=AI.digest(e.raw);if(dg){c.turns.push({in:c.pend?c.pend.text:'',out:'（殘稿）'+dg,d:S.day});c.npcs.forEach(function(id){Nom.add(id,'（中斷的事件）'+dg.slice(0,50),'n');});}}try{saveSlot('auto',true);}catch(x){}},
- fixLast:function(sc){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.pend=null;var t=sc.lines.map(function(l){return l.t;}).join(' ');c.last={t:t.slice(-300),ch:(sc.ch||[]).map(function(x){return x.t;})};c.prevCh=c.last.ch;c.turns.push({in:'（系統改寫）',out:t.slice(0,400),d:S.day});},
+ fixLast:function(sc){var c=Thread.get().cur;if(!c)return;c.inflight=0;c.status='active';c.pend=null;var t=sc.lines.map(function(l){return l.t;}).join(' ');c.last={t:t.slice(-300),ch:(sc.ch||[]).map(function(x){return x.t;})};c.prevCh=c.last.ch;c.turns.push({in:'（系統改寫）',out:t.slice(0,400),d:S.day});if(sc)Thread.snap(sc);},
  close:function(){var T=Thread.get();if(!T.cur)return;T.cur.status='closed';T.done.push({id:T.cur.id,title:T.cur.title,d0:T.cur.d0,d1:T.cur.d1,n:T.cur.turns.length});if(T.done.length>10)T.done.shift();T.cur=null;},
  paused:function(){var c=S&&S.thread&&S.thread.cur;return !!(c&&c.status==='paused');},
  brief:function(){var c=S.thread.cur;var t='【事件線程：'+c.title+'】'+c.turns.slice(-4).map(function(x){return (x.in?'主角：'+x.in+'→':'')+x.out.slice(0,140);}).join('／');
   var m=Object.keys(c.mem).map(function(id){return cn(id)+'記得：'+c.mem[id].slice(-2).map(function(x){return x.t;}).join('／');}).join('；');if(m)t+='\n【各人對此事的記憶】'+m;if(c.last&&c.last.ch&&c.last.ch.length)t+='\n【上一幕選項（已過時，不可照抄）】'+c.last.ch.join('／');return t;},
  pausedScene:function(){var c=S.thread.cur;var ls=['（事件「'+c.title+'」中斷了'+(c.err?'：'+c.err:'')+'。）'];if(c.last)ls.push('上回說到：'+c.last.t.slice(-90));
-  return Eng.L(ls,'',S.place,[ch('🔁 重試接續','thRetry'),ch('📖 以離線劇情接續','thOffline'),ch('🗑 放下這件事','thDrop'),ch('↩ 行動選單','place')]);},
+  return Eng.L(ls,'',S.place,[ch('🔁 重試接續','thRetry'),ch('📖 以離線劇情接續','thOffline'),ch('🗑 放下這件事','thDrop',{},{forceLeave:1}),ch('↩ 行動選單','place',{},{forceLeave:1})]);},
+ resumeScene:function(){var c=Thread.open();if(!c)return null;if(c.status==='paused')return Thread.pausedScene();c.status='active';
+  if(c.snap&&c.snap.ch&&c.snap.ch.length){var lines=(c.snap.lines&&c.snap.lines.length)?c.snap.lines.slice():[{sp:'',t:'（接續事件「'+c.title+'」。）'}];
+   if(c.last&&c.last.t)lines=[{sp:'',t:'你回過神來。上回說到：'+c.last.t.slice(-100)}].concat(lines.slice(-2));
+   return {lines:lines,focus:c.snap.focus||'',bg:c.snap.bg||c.place||S.place,ch:c.snap.ch,ai:1};}
+  var id=(c.npcs&&c.npcs[0])||'';var ls=['你回過神來，繼續方才的事'+(c.title?'「'+c.title+'」':'')+'。'];if(c.last&&c.last.t)ls.push('上回說到：'+c.last.t.slice(-100));
+  return Eng.L(ls,id,S.place,[ch('✦ 請繼續','aiNext',{text:'請從中斷處繼續',id:id},{ai:1}),ch('✅ 此事告一段落','aiClose',{id:id},{sys:1,forceLeave:1})]);},
  quote:function(id){var c=S.thread;var p=P(id);if(!p)return '';if(S.day-((p.notes||{}).quote||-99)<8)return '';var L=Nom.list(id,12).filter(function(x){return x.k==='recent'&&x.t.indexOf('對我說')>=0;});if(!L.length)return '';p.notes.quote=S.day;var t=L[L.length-1].t.replace(/^.*對我說：/,'');return '「你上次說過'+t+'——我記著呢。」';}
 };
 function ch(t,go,a,o){var c={t:t,go:go,a:a||{}};if(o)for(var k in o)c[k]=o[k];return c;}
@@ -2125,7 +2138,10 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
  if(S.per>=4||me.sta<30)A('💤 就寢','sleep');else A('⏳ 歇一個時辰','wait');
  A('⏩ 歲月流轉','skipMenu');if(S.region!=='road')A('🗺 地圖','map');
  return c;};
-NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
+NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();
+ if(typeof Thread!=='undefined'&&Thread.open){var tc=Thread.open();if(tc&&(tc.status==='held'||tc.status==='paused'||(tc.status==='active'&&tc.snap)))chs.unshift(ch('▶ 繼續「'+tc.title+'」','thResume'));}
+ if(S.evcur)chs.unshift(ch('▶ 繼續事件','ev',{id:S.evcur}));
+ return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
 NODES.map=function(){if(S.region==='road')return NODES.place();if(S.flags.held)return NODES.place();return {screen:'map'};};
 NODES.go=function(a){var pl=PLACES[a.pl];if(!pl)return NODES.place();if(pl.need==='palace'&&!S.flags.palace&&!pc().office)return Eng.L(['宮門侍衛橫戟攔住你：「無詔不得入。」'],'',S.place,[ch('↩ 返回','map')]);
  if(pl.need==='prison'&&!(pc().medoff||pc().office||S.fam.fame>=10))return Eng.L(['獄卒攔在門外：「無官職醫憑，或名聲不夠，不得入內。」'],'',S.place,[ch('↩ 返回','map')]);
@@ -2917,6 +2933,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
     if(Thread.paused()&&e&&e.kind!=='cancel'){s3=fb();s3.ch=[ch('🔁 重試接續','thRetry'),ch('🗑 放下這件事','thDrop')].concat(s3.ch||[]);}else{s3=fb();S.pend=null;}UI.present(s3);});
    return;}
   UI.screen('game');UI.sc=sc;UI.li=0;if(sc.bg)UI.setBg(PLACES[sc.bg]&&ART.file('bg_'+sc.bg)?sc.bg:((PLACES[sc.bg]||{}).bg||sc.bg));UI.hud();$('choices').innerHTML='';
+  if(sc.ai&&!sc.beatEnd&&typeof Thread!=='undefined'&&Thread.snap)Thread.snap(sc);
   if(!sc.hub){FullLog.add(sc);Recall.ingest(sc);}
   var f0=sc.focus&&P(sc.focus);if(f0&&ART.hasChar(f0))UI.setChar(f0.portrait);else UI.setChar('');
   if(!sc.lines.length){UI.endLines();return;}UI.showLine(0);};
@@ -2942,7 +2959,13 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  UI.choices=function(list){var box=$('choices');box.innerHTML='';box.className=list.length>6?'many':'';
   list.forEach(function(c,i){var b=document.createElement('button');var sys=c.sys||/^(🗺|↩|⏳|⏩|💤|🍚)/.test(c.t)||/^(繼續|告辭)$/.test(c.t);b.className='cbtn'+(c.ai?' ai':'')+(sys?' sys':'')+(/^💬/.test(c.t)?' talk':'');b.textContent=c.t;b.style.animationDelay=(i*0.03)+'s';
    b.addEventListener('click',function(ev){ev.stopPropagation();UI.pick(c);});box.appendChild(b);});box.scrollTop=0;};
- UI.pick=function(c){if(UI.busyOn)return;$('choices').innerHTML='';if(c.ai&&c.t){S.back.push({sp:'p',t:c.t.replace(/^✦ /,'')});}UI.go(c.go,c.a);};
+ UI.NAV_LEAVE={map:1,place:1,go:1,travel:1,skip:1,skipMenu:1,wait:1,sleep:1,title:1};
+ UI.eventBusy=function(){if(!S||UI.busyOn)return false;if(S.evcur&&UI.sc&&UI.sc.ev)return true;var c=typeof Thread!=='undefined'&&Thread.open&&Thread.open();return !!(c&&UI.sc&&!UI.sc.hub&&!UI.sc.beatEnd&&(UI.sc.ai||c.status==='active'||c.status==='paused'));};
+ UI.confirmLeave=function(done){UI.dialog('離開事件','此事尚未告一段落。暫離後可在行動選單用「繼續」接回。',[
+  ['留下',null],['暫離（可繼續）',function(){if(typeof Thread!=='undefined'&&Thread.open())Thread.hold();done('hold');}],
+  ['結束此事','pri',function(){if(typeof Thread!=='undefined')Thread.close();S.evcur='';S.pend=null;done('close');}]]);};
+ UI.pick=function(c){if(UI.busyOn)return;var go=function(){$('choices').innerHTML='';if(c.ai&&c.t){S.back.push({sp:'p',t:c.t.replace(/^✦ /,'')});}UI.go(c.go,c.a);};
+  if(!c.forceLeave&&UI.eventBusy()&&UI.NAV_LEAVE[c.go]){UI.confirmLeave(function(mode){if(mode)go();});return;}go();};
  /* ---------- HUD ---------- */
  var MET=[['food','飽'],['sta','體'],['hp','健'],['mood','心']];
  UI.hud=function(){if(!S)return;var me=pc();$('hDay').textContent=SEASONS[Eng.season()];$('hPer').textContent=PER_S[S.per];$('hCh').textContent=Eng.dateStr(true);
@@ -3008,7 +3031,8 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   $('send').onclick=function(e){e.stopPropagation();if(Kb.on()&&!$('free').value){Kb.show();return;}UI.submitFree();};
   $('free').addEventListener('keydown',function(e){if(e.isComposing||e.keyCode===229)return;if(e.key==='Enter'){e.preventDefault();UI.submitFree();}});
   tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!S||UI.busyOn)return;var t=b.getAttribute('data-t');
-   if(t==='map')UI.go('map');else if(t==='bag')Panels.bag();else if(t==='fam')Panels.fam();else if(t==='ppl')Panels.ppl();else MenuUI.open();});
+   var go=function(){if(t==='map')UI.go('map');else if(t==='bag')Panels.bag();else if(t==='fam')Panels.fam();else if(t==='ppl')Panels.ppl();else MenuUI.open();};
+   if(t==='map'&&UI.eventBusy()){UI.confirmLeave(function(mode){if(mode)go();});return;}go();});
   $('hSeal').onclick=function(){if(S)Panels.bag('st');};
   $('pins').addEventListener('click',function(e){var b=e.target.closest('.pin');if(!b)return;var pl=b.getAttribute('data-pl');if(mapSel===pl&&!UI.locked(pl)){UI.go('go',{pl:pl});return;}UI.mapInfo(pl);});
   $('mapinfo').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b){UI.go('go',{pl:b.getAttribute('data-go')});return;}if(e.target.closest('[data-travel]'))UI.go('travel');});
@@ -3048,9 +3072,12 @@ var Kb={open:false};
 /* 線程按鈕節點（M15） */
 NODES.thRetry=function(){var c=S.thread&&S.thread.cur;if(!c||!c.pend)return NODES.place();var a={type:c.pend.type||'free',text:c.pend.text,tag:c.pend.tag,id:c.pend.id,topic:c.pend.topic,retry:1};return {async:a,fb:function(){return Thread.pausedScene();}};};
 NODES.thOffline=function(){var c=S.thread.cur;c.status='active';c.inflight=0;var t=c.pend?c.pend.text:'';c.pend=null;var id=People.present()[0]||'';var L=['（離線接續）'+(t?'你方才'+(c.pend&&c.pend.tag==='對白'?'說：「'+t+'」':'的「'+t+'」')+'，':'')+'事情就這樣暫且告一段落。'];if(id)L.push([id,Speak.reply(id,t||'……')]);return Eng.L(L,id,S.place,Input.backCh(id));};
-NODES.thDrop=function(){Thread.close();S.pend=null;return Eng.L(['你把這件事放下了。'],'',S.place,[ch('繼續','place')]);};
+NODES.thDrop=function(){Thread.close();S.pend=null;return Eng.L(['你把這件事放下了。'],'',S.place,[ch('繼續','place',{},{forceLeave:1})]);};
+NODES.thResume=function(){if(typeof Thread==='undefined'||!Thread.open())return NODES.place();return Thread.resumeScene()||NODES.place();};
+NODES.aiHold=function(a){if(typeof Thread!=='undefined')Thread.hold();var id=a&&a.id&&P(a.id)?a.id:'';
+ return Eng.L(['你暫時退開一步。此事尚未了結——可隨時回來繼續。'],id,S.place,[ch('▶ 繼續','thResume',{},{forceLeave:1}),ch('🗺 地圖','map',{},{sys:1,forceLeave:1}),ch('↩ 行動選單','place',{},{sys:1,forceLeave:1})]);};
 NODES.aiNext=function(a){var id=a.id&&P(a.id)&&People.present().indexOf(a.id)>=0?a.id:(People.present()[0]||'');if(!AI.ready())return Eng.L([ '你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));return {async:{type:'free',text:a.text,tag:'選擇',id:id},fb:function(){return Eng.L(['你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));}};};
-NODES.aiClose=function(a){if(typeof Thread!=='undefined')Thread.close();S.pend=null;var id=a&&a.id&&P(a.id)?a.id:'';var L=['你拱手告退，這一幕便到此為止。'];if(typeof Deal!=='undefined'&&Deal._settled){L.push('（約定已記下／已兌現，可在人脈頁查看。）');Deal._settled=null;}return Eng.L(L,id,S.place,Input.backCh(id));};
+NODES.aiClose=function(a){if(typeof Thread!=='undefined')Thread.close();S.pend=null;S.evcur='';var id=a&&a.id&&P(a.id)?a.id:'';var L=['你拱手告退，這一幕便到此為止。'];if(typeof Deal!=='undefined'&&Deal._settled){L.push('（約定已記下／已兌現，可在人脈頁查看。）');Deal._settled=null;}return Eng.L(L,id,S.place,Input.backCh(id));};
 
 /* ---- 15_panels.js ---- */
 /* ===== 面板：開局設定、行囊、買賣、家族（族譜）、人脈（心態卡／記憶／書信）、結局冊、選單與設定 ===== */
@@ -3187,7 +3214,7 @@ MenuUI.open=function(tab){Sh.open('選單',[['main','總覽'],['save','存檔'],
 MenuUI.render=function(tab){if(tab==='save'||tab==='load')return MenuUI.slots(tab);if(tab==='set')return MenuUI.settings();if(tab==='log')return MenuUI.log();if(tab==='full')return MenuUI.full();
  return '<div class="mgrid"><button class="mbtn" data-m="save"><i>💾</i>存檔</button><button class="mbtn" data-m="load"><i>📂</i>讀檔</button><button class="mbtn" data-m="set"><i>⚙</i>設定</button><button class="mbtn" data-m="log"><i>📜</i>回顧</button><button class="mbtn" data-m="alb"><i>📖</i>結局冊</button><button class="mbtn" data-m="title"><i>🏮</i>標題</button></div>'
   +(S?'<div class="kv"><b>本生</b>'+esc(pc().n+'・'+Fam.name()+'第'+S.fam.gen+'代・'+Eng.dateStr())+'；看診'+S.stats.pat+'、治癒'+S.stats.cure+'</div><div class="row"><button class="btn" data-act="endLife">🕯 結束這一生</button></div>':'')
-  +'<p class="note">AI：'+(SET.ai?(AI.ready()?'已啟用（'+(SET.aiSrc==='manual'?'手動貼上':(PRESETS[SET.preset]||{}).n||SET.preset)+'）':'已啟用但暫停／未設定 Key → 離線劇情'+(AI.lastErr?'｜'+esc(AI.lastErr):'')):'離線模式（事件庫）')+'</p>';};
+  +'<p class="note">AI：'+(SET.ai?(AI.ready()?'已啟用（'+(SET.aiSrc==='manual'?'手動貼上':(PRESETS[SET.preset]||{}).n||SET.preset)+(SET.preset==='deepseek'&&SET.model?' · '+SET.model:'')+'）':'已啟用但暫停／未設定 Key → 離線劇情'+(AI.lastErr?'｜'+esc(AI.lastErr):'')):'離線模式（事件庫）')+'</p>';};
 MenuUI.slots=function(mode){var h='';['auto',1,2,3].forEach(function(s){var i=slotInfo(s);if(mode==='save'&&s==='auto')return;
  h+='<div class="slot"><div class="si"><b>'+slotName(s)+'</b><br>'+(i?esc(i.name)+'・第'+(i.gen||1)+'代・第'+i.day+'日<br><small>'+new Date(i.t).toLocaleString()+'</small>':'（空）')+'</div>'+(mode==='save'?'<button class="pri" data-sv="'+s+'">存入</button>':(i?'<button class="pri" data-ld="'+s+'">讀取</button>':''))+'</div>';});
  return h+'<p class="note">每日清晨自動存檔。存檔保存在此瀏覽器。結局冊跨存檔保留。</p>';};
@@ -3198,7 +3225,7 @@ MenuUI.settings=function(){var P0=PRESETS[SET.preset]||PRESETS.custom;
   +'<label class="field">來源'+seg('aiSrc',[['api','API 直連'],['manual','手動貼上（Grok App 等）']])+'</label>'
   +'<label class="field">服務商<select id="sPreset">'+PRESET_ORDER.map(function(k){return '<option value="'+k+'"'+(k===SET.preset?' selected':'')+'>'+PRESETS[k].n+'</option>';}).join('')+'</select></label><p class="note">'+esc(P0.key)+'</p>'
   +'<label class="field">Base URL<input id="sBase" value="'+esc(SET.base)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
-  +'<label class="field">模型<input id="sModel" list="mdl" value="'+esc(SET.model)+'" autocapitalize="off" autocorrect="off" spellcheck="false"><datalist id="mdl">'+(MenuUI.models||P0.models||[]).map(function(m){return '<option value="'+esc(m)+'">';}).join('')+'</datalist></label>'
+  +(SET.preset==='deepseek'?'<label class="field">模型'+seg('model',[['deepseek-chat','deepseek-chat（快）'],['deepseek-reasoner','deepseek-reasoner（強・較慢）']])+'</label><p class="note">reasoner 較慢、較費額度，適合複雜醫案與長劇情；日常用 chat 即可。</p>':'<label class="field">模型<input id="sModel" list="mdl" value="'+esc(SET.model)+'" autocapitalize="off" autocorrect="off" spellcheck="false"><datalist id="mdl">'+(MenuUI.models||P0.models||[]).map(function(m){return '<option value="'+esc(m)+'">';}).join('')+'</datalist></label>')
   +'<label class="field">API Key（只存在本機）<input id="sKey" type="password" value="'+esc(SET.key)+'" autocapitalize="off" autocorrect="off" spellcheck="false"></label>'
   +'<label class="field">額外標頭（選填，Header: 值）<input id="sHdr" value="'+esc(SET.hdr)+'" autocapitalize="off" spellcheck="false"></label>'
   +'<div class="row"><button class="btn pri" id="sSave">儲存</button><button class="btn" id="sTest">測試連線</button><button class="btn" id="sList">列出模型</button></div><div id="sMsg" class="note"></div>'
@@ -3222,7 +3249,7 @@ Panels.bind=function(){$('shX').onclick=Sh.close;
   if((a=t.getAttribute('data-sv'))){saveSlot(a==='auto'?'auto':+a);Sh.draw();return;}
   if((a=t.getAttribute('data-ld'))){UI.loadGame(a==='auto'?'auto':+a);return;}
   if((a=t.getAttribute('data-set'))){var v=t.getAttribute('data-v');var dv=DEFSET[a];SET[a]=typeof dv==='boolean'?v==='true':(typeof dv==='number'?+v:v);saveSettings();applyLook();Sh.redraw();return;}
-  if(t.id==='sSave'||t.id==='sTest'||t.id==='sList'){SET.base=$('sBase').value.trim();SET.model=$('sModel').value.trim();SET.key=$('sKey').value.trim();SET.hdr=$('sHdr').value.trim();saveSettings();
+  if(t.id==='sSave'||t.id==='sTest'||t.id==='sList'){SET.base=$('sBase').value.trim();if($('sModel'))SET.model=$('sModel').value.trim();SET.key=$('sKey').value.trim();SET.hdr=$('sHdr').value.trim();saveSettings();
    if(t.id==='sSave'){toast('已儲存設定');return;}var m=$('sMsg');
    if(t.id==='sList'){m.textContent='讀取模型清單…';AI.listModels().then(function(L){MenuUI.models=L;Sh.redraw();var m2=$('sMsg');if(m2)m2.textContent=L.length?'✅ 找到 '+L.length+' 個模型：'+L.slice(0,12).join('、'):'（服務商沒有回傳模型清單）';},function(e){var m2=$('sMsg');if(m2)m2.textContent='❌ '+AI.errMsg(e);});return;}
    m.textContent='測試中…';AI.test().then(function(r){var m2=$('sMsg');if(m2)m2.textContent=(r.ok?'✅ ':'❌ ')+r.msg;});return;}

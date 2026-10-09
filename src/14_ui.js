@@ -39,6 +39,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
     if(Thread.paused()&&e&&e.kind!=='cancel'){s3=fb();s3.ch=[ch('🔁 重試接續','thRetry'),ch('🗑 放下這件事','thDrop')].concat(s3.ch||[]);}else{s3=fb();S.pend=null;}UI.present(s3);});
    return;}
   UI.screen('game');UI.sc=sc;UI.li=0;if(sc.bg)UI.setBg(PLACES[sc.bg]&&ART.file('bg_'+sc.bg)?sc.bg:((PLACES[sc.bg]||{}).bg||sc.bg));UI.hud();$('choices').innerHTML='';
+  if(sc.ai&&!sc.beatEnd&&typeof Thread!=='undefined'&&Thread.snap)Thread.snap(sc);
   if(!sc.hub){FullLog.add(sc);Recall.ingest(sc);}
   var f0=sc.focus&&P(sc.focus);if(f0&&ART.hasChar(f0))UI.setChar(f0.portrait);else UI.setChar('');
   if(!sc.lines.length){UI.endLines();return;}UI.showLine(0);};
@@ -64,7 +65,13 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  UI.choices=function(list){var box=$('choices');box.innerHTML='';box.className=list.length>6?'many':'';
   list.forEach(function(c,i){var b=document.createElement('button');var sys=c.sys||/^(🗺|↩|⏳|⏩|💤|🍚)/.test(c.t)||/^(繼續|告辭)$/.test(c.t);b.className='cbtn'+(c.ai?' ai':'')+(sys?' sys':'')+(/^💬/.test(c.t)?' talk':'');b.textContent=c.t;b.style.animationDelay=(i*0.03)+'s';
    b.addEventListener('click',function(ev){ev.stopPropagation();UI.pick(c);});box.appendChild(b);});box.scrollTop=0;};
- UI.pick=function(c){if(UI.busyOn)return;$('choices').innerHTML='';if(c.ai&&c.t){S.back.push({sp:'p',t:c.t.replace(/^✦ /,'')});}UI.go(c.go,c.a);};
+ UI.NAV_LEAVE={map:1,place:1,go:1,travel:1,skip:1,skipMenu:1,wait:1,sleep:1,title:1};
+ UI.eventBusy=function(){if(!S||UI.busyOn)return false;if(S.evcur&&UI.sc&&UI.sc.ev)return true;var c=typeof Thread!=='undefined'&&Thread.open&&Thread.open();return !!(c&&UI.sc&&!UI.sc.hub&&!UI.sc.beatEnd&&(UI.sc.ai||c.status==='active'||c.status==='paused'));};
+ UI.confirmLeave=function(done){UI.dialog('離開事件','此事尚未告一段落。暫離後可在行動選單用「繼續」接回。',[
+  ['留下',null],['暫離（可繼續）',function(){if(typeof Thread!=='undefined'&&Thread.open())Thread.hold();done('hold');}],
+  ['結束此事','pri',function(){if(typeof Thread!=='undefined')Thread.close();S.evcur='';S.pend=null;done('close');}]]);};
+ UI.pick=function(c){if(UI.busyOn)return;var go=function(){$('choices').innerHTML='';if(c.ai&&c.t){S.back.push({sp:'p',t:c.t.replace(/^✦ /,'')});}UI.go(c.go,c.a);};
+  if(!c.forceLeave&&UI.eventBusy()&&UI.NAV_LEAVE[c.go]){UI.confirmLeave(function(mode){if(mode)go();});return;}go();};
  /* ---------- HUD ---------- */
  var MET=[['food','飽'],['sta','體'],['hp','健'],['mood','心']];
  UI.hud=function(){if(!S)return;var me=pc();$('hDay').textContent=SEASONS[Eng.season()];$('hPer').textContent=PER_S[S.per];$('hCh').textContent=Eng.dateStr(true);
@@ -130,7 +137,8 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
   $('send').onclick=function(e){e.stopPropagation();if(Kb.on()&&!$('free').value){Kb.show();return;}UI.submitFree();};
   $('free').addEventListener('keydown',function(e){if(e.isComposing||e.keyCode===229)return;if(e.key==='Enter'){e.preventDefault();UI.submitFree();}});
   tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!S||UI.busyOn)return;var t=b.getAttribute('data-t');
-   if(t==='map')UI.go('map');else if(t==='bag')Panels.bag();else if(t==='fam')Panels.fam();else if(t==='ppl')Panels.ppl();else MenuUI.open();});
+   var go=function(){if(t==='map')UI.go('map');else if(t==='bag')Panels.bag();else if(t==='fam')Panels.fam();else if(t==='ppl')Panels.ppl();else MenuUI.open();};
+   if(t==='map'&&UI.eventBusy()){UI.confirmLeave(function(mode){if(mode)go();});return;}go();});
   $('hSeal').onclick=function(){if(S)Panels.bag('st');};
   $('pins').addEventListener('click',function(e){var b=e.target.closest('.pin');if(!b)return;var pl=b.getAttribute('data-pl');if(mapSel===pl&&!UI.locked(pl)){UI.go('go',{pl:pl});return;}UI.mapInfo(pl);});
   $('mapinfo').addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b){UI.go('go',{pl:b.getAttribute('data-go')});return;}if(e.target.closest('[data-travel]'))UI.go('travel');});
@@ -170,6 +178,9 @@ var Kb={open:false};
 /* 線程按鈕節點（M15） */
 NODES.thRetry=function(){var c=S.thread&&S.thread.cur;if(!c||!c.pend)return NODES.place();var a={type:c.pend.type||'free',text:c.pend.text,tag:c.pend.tag,id:c.pend.id,topic:c.pend.topic,retry:1};return {async:a,fb:function(){return Thread.pausedScene();}};};
 NODES.thOffline=function(){var c=S.thread.cur;c.status='active';c.inflight=0;var t=c.pend?c.pend.text:'';c.pend=null;var id=People.present()[0]||'';var L=['（離線接續）'+(t?'你方才'+(c.pend&&c.pend.tag==='對白'?'說：「'+t+'」':'的「'+t+'」')+'，':'')+'事情就這樣暫且告一段落。'];if(id)L.push([id,Speak.reply(id,t||'……')]);return Eng.L(L,id,S.place,Input.backCh(id));};
-NODES.thDrop=function(){Thread.close();S.pend=null;return Eng.L(['你把這件事放下了。'],'',S.place,[ch('繼續','place')]);};
+NODES.thDrop=function(){Thread.close();S.pend=null;return Eng.L(['你把這件事放下了。'],'',S.place,[ch('繼續','place',{},{forceLeave:1})]);};
+NODES.thResume=function(){if(typeof Thread==='undefined'||!Thread.open())return NODES.place();return Thread.resumeScene()||NODES.place();};
+NODES.aiHold=function(a){if(typeof Thread!=='undefined')Thread.hold();var id=a&&a.id&&P(a.id)?a.id:'';
+ return Eng.L(['你暫時退開一步。此事尚未了結——可隨時回來繼續。'],id,S.place,[ch('▶ 繼續','thResume',{},{forceLeave:1}),ch('🗺 地圖','map',{},{sys:1,forceLeave:1}),ch('↩ 行動選單','place',{},{sys:1,forceLeave:1})]);};
 NODES.aiNext=function(a){var id=a.id&&P(a.id)&&People.present().indexOf(a.id)>=0?a.id:(People.present()[0]||'');if(!AI.ready())return Eng.L([ '你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));return {async:{type:'free',text:a.text,tag:'選擇',id:id},fb:function(){return Eng.L(['你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));}};};
-NODES.aiClose=function(a){if(typeof Thread!=='undefined')Thread.close();S.pend=null;var id=a&&a.id&&P(a.id)?a.id:'';var L=['你拱手告退，這一幕便到此為止。'];if(typeof Deal!=='undefined'&&Deal._settled){L.push('（約定已記下／已兌現，可在人脈頁查看。）');Deal._settled=null;}return Eng.L(L,id,S.place,Input.backCh(id));};
+NODES.aiClose=function(a){if(typeof Thread!=='undefined')Thread.close();S.pend=null;S.evcur='';var id=a&&a.id&&P(a.id)?a.id:'';var L=['你拱手告退，這一幕便到此為止。'];if(typeof Deal!=='undefined'&&Deal._settled){L.push('（約定已記下／已兌現，可在人脈頁查看。）');Deal._settled=null;}return Eng.L(L,id,S.place,Input.backCh(id));};

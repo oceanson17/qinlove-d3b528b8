@@ -788,7 +788,7 @@ var Gene={
 function baseState(o){var s={v:2,seed:Date.now()%100000,world:o.world||'equal',mode:o.mode||'std',day:1,per:0,seq:0,ppl:{},pc:'',
  fam:{sur:'',gen:1,fame:0,tier:0,tech:{},land:0,plots:[],house:0,clinic:{open:0,lv:0,apps:[],days:0},grudge:null,hist:[]},gold:0,inv:{},
  region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,wev:{maj:[]},hist:{done:{},alt:''},
- pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[]};return s;}
+ pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[],deals:[],dseq:0,dealPend:null};return s;}
 function addNamed(){S.startBC=START_BC;NAMED_ORDER.forEach(function(k){var N=NAMED[k];if(START_BC===246&&ERA1[k]){var E=ERA1[k],M={};for(var q in N)M[q]=N[q];for(var q2 in E)M[q2]=E[q2];N=M;}var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:(k==='xiawuju'||k==='nanheng')?70:0,farm:0,craft:k==='zhengguo'?40:0,trade:k==='baqing'?70:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye'||k==='mengyi')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu'||k==='zhengguo'||k==='mengyi')?70:30},
   genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'||k==='mengyi'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
   aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:(k==='mengyi'?5:0)),medoff:k==='xiawuju'?3:(k==='nanheng'?1:0),mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:(typeof PORTRAIT_ALIAS!=='undefined'&&PORTRAIT_ALIAS[k]?PORTRAIT_ALIAS[k]:'')};
@@ -1466,6 +1466,91 @@ var Idn={
   Idn.react(c);Fam.tierCalc();if(typeof UI!=='undefined')UI.hud();return '';},
  react:function(c){if(c.k!=='appoint'&&c.k!=='medoff'&&c.k!=='harem'&&c.k!=='promote')return;for(var id in S.ppl){var p=S.ppl[id];if(!p.alive||!p.met||id===S.pc||p.hh)continue;if(p.pers.indexOf('善妒')>=0||id==='xiawuju'){p.aff=clamp(p.aff-4,-100,100);People.note(id,'妒忌'+pc().n+'得勢');}else if(p.pers.indexOf('貪財')>=0||p.pers.indexOf('狡猾')>=0){p.aff=clamp(p.aff+3,-100,100);People.note(id,'想巴結得勢的'+pc().n);}}}
 };
+/* ===== 約定／交易（Deal：醫好→租館等；離線亦可兌現） ===== */
+var Deal={};
+(function(){
+ Deal.list=function(){if(!S.deals)S.deals=[];return S.deals;};
+ Deal.open=function(){return Deal.list().filter(function(d){return d.status==='open';});};
+ Deal.byId=function(id){for(var i=0;i<Deal.list().length;i++)if(S.deals[i].id===id)return S.deals[i];return null;};
+ Deal.seq=function(){S.dseq=(S.dseq||0)+1;return 'd'+S.dseq;};
+ Deal.ACK=/一言為定|就這麼辦|就依你|依你所言|成交|可以|好說|好吧|好的|便是|便依|准了|應允|答應|說定|就這樣|依你|成全你|成全|算你說得|這條件|我答應|我應了|公道|公平|兩清/;
+ Deal.REFUSE=/休想|不行|拒絕|辦不到|別做夢|豈有此理|妄想|免談|不可能租|不租/;
+ Deal.BYE=/告辭|改日再來|改日再談|先回罷|先回去|不送了|慢走|請回|就此別過|事辦妥了|事情了結|兩清了|兩訖|說完了|我就告辭|你且去|你先去醫|去醫罷|去治罷|去吧/;
+ Deal.THEN_N={rent_clinic:'租下醫館',pay_gold:'付銀',gift:'贈禮',favor:'人情'};
+ Deal.brief=function(){var L=Deal.open();if(!L.length){var done=Deal.list().filter(function(d){return d.status==='done';}).slice(-3);if(!done.length)return '';return '【已履約約定】'+done.map(function(d){return cn(d.with)+'：'+Deal.str(d)+'（已兌現）';}).join('；');}
+  return '【未了約定・必須兌現】'+L.map(function(d){return Deal.str(d)+'（status=open）';}).join('；')+'。條件一旦達成，必須立刻履約並在敘事中承認，不得當作沒發生過、不得再提同一請求。';};
+ Deal.str=function(d){var ifs=d.if==='heal_grandson'?'醫好'+(d.who||'孫子'):(d.if==='heal'||d.if==='cure'?'醫好'+(d.who||d.pid&&cn(d.pid)||'病人'):(d.if||'條件'));
+  var th=Deal.THEN_N[d.then]||d.then;if(d.then==='rent_clinic')th='用'+(d.price||60)+'兩租醫館給主角';else if(d.then==='pay_gold')th='付'+(d.price||0)+'兩';return cn(d.with)+'與主角約定：若'+ifs+'，則'+th;};
+ Deal.dup=function(o){return Deal.list().some(function(d){return d.status==='open'&&d.with===o.with&&d.then===o.then&&d.if===o.if&&(d.who||'')===(o.who||'')&&(d.price|0)===(o.price|0);});};
+ Deal.add=function(o,force){if(!o||!o.with||!P(o.with)||o.with===S.pc)return null;if(!force&&Deal.dup(o))return Deal.open().filter(function(d){return d.with===o.with&&d.then===o.then;})[0]||null;
+  var d={id:Deal.seq(),type:'deal',with:o.with,if:o.if||'heal',then:o.then||'rent_clinic',price:clamp(o.price|0||60,1,500),status:o.status||'open',who:String(o.who||'').slice(0,8),pid:o.pid&&P(o.pid)?o.pid:'',text:String(o.text||'').slice(0,80),d:S.day,src:o.src||''};
+  Deal.list().push(d);if(S.deals.length>40){var j=S.deals.findIndex(function(x){return x.status!=='open';});S.deals.splice(j<0?0:j,1);}
+  if(d.status==='open'){FW.add(Deal.str(d),[d.with],S.pc,{src:'deal'});People.note(d.with,'與'+pc().n+'約定：'+Deal.str(d).replace(cn(d.with)+'與主角約定：',''),'crit');
+   if(typeof Bond!=='undefined'){var b=Bond.get(d.with);b.cond=Deal.str(d).replace(/^.*?約定：/,'');}addLog('〔約定〕'+Deal.str(d),'約');try{toast('📜 約定已記下');}catch(e){}}
+  return d;};
+ /* 從對白／設定抽出「醫好 X → 租館／付銀」 */
+ Deal.parseOffer=function(text,npcId){text=String(text||'');if(!text||text.length<4)return null;var price=60,who='',iff='heal',then='rent_clinic';
+  var m=text.match(/(\d{1,4})\s*兩/);if(m)price=+m[1];
+  var hasRent=/租|借.?給|讓.?我.?用|交給我.{0,4}醫館|醫館.{0,6}給我/.test(text)&&/醫館|舖面|鋪面|診所/.test(text);
+  var hasHeal=/醫好|治好|救好|治活|救治|治癒|治愈/.test(text);
+  if(!hasHeal)return null;if(!hasRent&&!/付|給你|酬|謝|銀/.test(text))return null;
+  if(hasRent)then='rent_clinic';else if(/付|酬謝|謝禮|給你.{0,4}兩/.test(text))then='pay_gold';
+  if(/孫子|孫女|外孫/.test(text)){who=(text.match(/孫子|孫女|外孫/)||['孫子'])[0];iff='heal_grandson';}
+  else{m=text.match(/(?:醫好|治好|救好|治活|救治)(?:了)?(?:我的|他的|她的|你家的|他家的)?([\u4e00-\u9fff]{1,4}?)(?:就|便|後|，|。|的病|病|再用|用)/);if(m){who=m[1];iff='heal';}}
+  if(!npcId||!P(npcId))return null;
+  return {with:npcId,if:iff,then:then,price:price,who:who,text:text.slice(0,80),src:'speech'};};
+ Deal.fromAI=function(arr,sp){if(!Array.isArray(arr))return;arr.slice(0,3).forEach(function(x){if(!x||typeof x!=='object')return;
+  var wid=x.with||x.npc||sp;if(wid==='me'||wid==='p')return;if(!P(wid))wid=People.idByName(String(wid))||sp;if(!P(wid)||wid===S.pc)return;
+  var st=x.status==='done'?'done':(x.status==='broken'?'broken':'open');
+  if(st==='done'||st==='broken'){var ex=Deal.open().filter(function(d){return d.with===wid&&(!x.then||d.then===x.then);})[0];if(ex){ex.status=st;return;}return;}
+  var iff=String(x.if||x.cond||'heal');if(/孫/.test(iff)||/孫/.test(String(x.who||'')))iff='heal_grandson';else if(/醫|治|癒|cure|heal/.test(iff))iff=/孫/.test(String(x.who||x.text||''))?'heal_grandson':'heal';
+  var then=String(x.then||x.reward||'');if(/租|醫館|clinic/.test(then)||then==='rent_clinic')then='rent_clinic';else if(/金|銀|兩|pay|gold/.test(then))then='pay_gold';else if(!then)then='rent_clinic';
+  Deal.add({with:wid,if:iff,then:then,price:x.price|0||60,who:String(x.who||x.patient||'').slice(0,8),pid:P(x.pid)?x.pid:'',text:String(x.text||'').slice(0,80),status:'open',src:'ai'});});};
+ /* AI 回合：玩家提案＋AI 應允 → 入庫；AI JSON deals；禁止憑空發明（只在玩家或 AI 明確同意時） */
+ Deal.ingestTurn=function(a,r){Deal._settled=null;var npc=r.speaker||a.id||'';
+  if(Array.isArray(r.deals))Deal.fromAI(r.deals,npc);
+  var offer=null;if(a&&a.text&&(a.tag==='對白'||a.tag==='設定・劇情'||a.tag==='選擇'||a.type==='say'||a.type==='free'))offer=Deal.parseOffer(a.text,npc||a.id);
+  if(a&&a._dealOffer)offer=a._dealOffer;
+  if(offer){if(a.tag==='設定・劇情'||Deal.ACK.test(r.scene||'')||(r.deals&&r.deals.length)){if(!Deal.REFUSE.test(r.scene||''))Deal.add(offer);}
+   else if(!Deal.REFUSE.test(r.scene||'')){S.dealPend=offer;} /* 等下一幕應允 */
+  }else if(S.dealPend&&npc&&(npc===S.dealPend.with||!r.speaker)){if(Deal.ACK.test(r.scene||'')&&!Deal.REFUSE.test(r.scene||'')){Deal.add(S.dealPend);S.dealPend=null;}else if(Deal.REFUSE.test(r.scene||''))S.dealPend=null;}
+  /* 從 bond.cond 補記（AI 寫了未了條件且像約定） */
+  if(r.fx&&r.fx.bond){for(var id in r.fx.bond){var c=r.fx.bond[id]&&r.fx.bond[id].cond;if(typeof c==='string'&&/醫|治|租|兩/.test(c)){var o2=Deal.parseOffer(c,id);if(o2)Deal.add(o2);}}}
+ };
+ Deal.isGrandchild=function(pp,elderId){if(!pp||!elderId)return false;var pars=pp.par||[];for(var i=0;i<pars.length;i++){var pa=P(pars[i]);if(!pa)continue;if(pars[i]===elderId)return false;if((pa.par||[]).indexOf(elderId)>=0)return true;if(pa.n&&elderId&&cn(elderId)&&pa.notes&&String(pa.notes.declRel||'').indexOf('父')>=0){}}
+  if(/孫/.test(pp.n||'')||/孫/.test(pp.rel||'')||/孫/.test(pp.title||''))return true;return false;};
+ Deal.matchCure=function(d,m){if(!d||d.status!=='open')return false;if(d.if!=='heal'&&d.if!=='heal_grandson'&&d.if!=='cure')return false;
+  if(d.pid&&m.pid&&d.pid===m.pid)return true;
+  var pp=m.pid?P(m.pid):null;
+  if(pp&&d.who){if(pp.n.indexOf(d.who)>=0||d.who.indexOf(pp.n)>=0)return true;if(/孫/.test(d.who)&&Deal.isGrandchild(pp,d.with))return true;}
+  if(d.if==='heal_grandson'&&pp&&Deal.isGrandchild(pp,d.with))return true;
+  if(pp&&d.who&&/孫/.test(d.who)&&ageOf(pp)<18)return true; /* 年幼病人＋孫子約定 */
+  if(!d.pid&&!d.who&&pp&&(pp.notes&&pp.notes.dealWith===d.with))return true;
+  return false;};
+ Deal.applyThen=function(d){var msg='';if(d.then==='rent_clinic'){var price=d.price||60;
+   if(S.fam.clinic.open){msg=cn(d.with)+'依約把醫館繼續交你經營（先前已開館）；雙方再確認押租'+(S.fam.clinic.rentPrice||price)+'兩之約。';S.fam.clinic.rentFrom=d.with;S.fam.clinic.rentPrice=S.fam.clinic.rentPrice||price;}
+   else{if(S.gold<price){msg=cn(d.with)+'依約准你租下醫館，但你銀兩不足（需'+price+'兩，現有'+S.gold+'）。對方寬限你籌錢——約定仍有效。';d._waitPay=1;return msg;}
+    Inv.gold(-price);S.fam.clinic.open=1;S.fam.clinic.lv=S.fam.clinic.lv||0;S.fam.clinic.d0=S.day;S.fam.clinic.rentFrom=d.with;S.fam.clinic.rentPrice=price;
+    FW.add(pc().n+'以'+price+'兩從'+cn(d.with)+'處租下醫館',[d.with],S.pc,{pub:1});WS.log(pc().n+'租下城南醫館','起因：與'+cn(d.with)+'約定履約','你所為');
+    msg=cn(d.with)+'依約把醫館租給你，收了'+price+'兩。木牌可挂了。';}
+  }else if(d.then==='pay_gold'){var g=d.price||30;Inv.gold(g);msg=cn(d.with)+'依約付你'+g+'兩。';}
+  else msg=cn(d.with)+'依約履行了「'+(Deal.THEN_N[d.then]||d.then)+'」。';
+  return msg;};
+ Deal.fulfill=function(d,m){if(!d||d.status!=='open')return '';var msg=Deal.applyThen(d);
+  if(d._waitPay){/* 仍 open，等湊錢 */}else{d.status='done';d.doneD=S.day;if(typeof Bond!=='undefined'){var b=Bond.get(d.with);if(b.cond)b.cond='';}
+   People.note(d.with,'履約：'+Deal.str(d).replace(/^.*?約定：/,'')+'——已兌現','crit');People.rel(d.with,{aff:8,trust:10},pc().n+'兌現了約定');
+   addLog('〔約定〕已兌現：'+Deal.str(d),'約');FW.add('約定已履行：'+Deal.str(d),[d.with],S.pc,{pub:1,src:'deal'});}
+  Deal._settled=d;try{toast('✅ 約定兌現');}catch(e){}return msg;};
+ Deal.onCure=function(m,r){if(!m||!r||(r.out!=='cure'&&r.out!=='better'))return [];var msgs=[];
+  Deal.open().forEach(function(d){if(Deal.matchCure(d,m)){var msg=Deal.fulfill(d,m);if(msg)msgs.push(msg);}});
+  /* 湊夠錢的租館欠款 */
+  Deal.open().forEach(function(d){if(d.then==='rent_clinic'&&d._waitPay&&S.gold>=(d.price||60)){delete d._waitPay;var msg=Deal.fulfill(d,m);if(msg)msgs.push(msg);}});
+  return msgs;};
+ Deal.tryPayRent=function(){var msgs=[];Deal.open().forEach(function(d){if(d.then==='rent_clinic'&&d._waitPay&&S.gold>=(d.price||60)){delete d._waitPay;msgs.push(Deal.fulfill(d));}});return msgs;};
+ Deal.sceneResolved=function(scene){scene=String(scene||'');if(Deal.BYE.test(scene))return true;if(Deal._settled)return true;if(/約定.*(兌現|履行|兩清)|依約|木牌可挂|租給你了|醫館歸你/.test(scene))return true;return false;};
+ Deal.forNpc=function(id){return Deal.list().filter(function(d){return d.with===id;}).slice(-6);};
+ Deal.aiRule=function(){return '【約定・Deal】'+Deal.brief()+' 若本幕雙方明確談成新約定，請在 JSON 加 deals:[{"with":"人物id","if":"heal_grandson|heal","then":"rent_clinic|pay_gold","price":60,"who":"孫子","status":"open"}]；不可虛構玩家未提的約定。已 closed／done 的約定禁止當成沒發生、禁止再求同一件事。條件達成時敘事必須承認履約。\n【事件收束】若本幕已是一個完整小節（談妥約定、病人已癒、道別、告一段落），請設 "done":true，並給出可結束的選項；不要無限延續同一事件。同一請求成功後禁止再重複提出。';};
+})();
 
 /* ---- 07_ai.js ---- */
 /* ===== AI：萬用 OpenAI 相容 API＋手動貼上；提示（硬規則）、驗證、事件線程（M15 斷線接續） ===== */
@@ -1517,10 +1602,11 @@ AI.cleanFx=function(fx){if(!fx||typeof fx!=='object')return null;var o={};var me
  if(typeof fx.move==='string'&&PLACES[fx.move]&&PLACES[fx.move].r===S.region)o.move=fx.move;
  return o;};
 AI.validate=function(j){if(!j||typeof j!=='object')throw {kind:'parse'};var t=j.scene||j.text;if(typeof t!=='string'||t.length<8)throw {kind:'schema'};
- var out={scene:t.trim().slice(0,1600),speaker:P(j.speaker)&&j.speaker!==S.pc?j.speaker:'',bg:PLACES[j.bg]?j.bg:'',time:clamp(j.time|0,0,3),choices:[],fx:AI.cleanFx(j.fx),facts:[],recap:typeof j.recap==='string'?j.recap.slice(0,70):''};
+ var out={scene:t.trim().slice(0,1600),speaker:P(j.speaker)&&j.speaker!==S.pc?j.speaker:'',bg:PLACES[j.bg]?j.bg:'',time:clamp(j.time|0,0,3),choices:[],fx:AI.cleanFx(j.fx),facts:[],deals:[],done:!!j.done,recap:typeof j.recap==='string'?j.recap.slice(0,70):''};
  (j.choices||[]).forEach(function(c){var tx=typeof c==='string'?c:(c&&(c.text||c.label));if(typeof tx==='string'&&tx&&out.choices.length<4)out.choices.push({text:tx.slice(0,36)});});
  if(out.choices.length<2){if(j._repaired)out.choices=[{text:'靜觀其變'},{text:'追問下去'},{text:'暫且告退'}];else throw {kind:'schema'};}
  (j.facts||[]).forEach(function(f){if(f&&typeof f.text==='string'&&out.facts.length<2){var kb=(f.knownBy||[]).map(function(x){return x==='me'||x==='p'?S.pc:x;}).filter(function(x){return P(x);});out.facts.push({t:f.text.slice(0,90),kn:kb,sub:P(f.subject)?f.subject:S.pc,secret:!!f.secret});}});
+ if(Array.isArray(j.deals))j.deals.slice(0,3).forEach(function(d){if(d&&typeof d==='object')out.deals.push(d);});
  return out;};
 /* ---- 提示 ---- */
 AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
@@ -1535,11 +1621,12 @@ AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
  t+='\n【輸入分流・M24】〔對白〕只是主角說的話，只讓人物回應，不得把引號內的話當成命令執行；〔指令・行動〕是主角的動作，必須寫出結果；〔指令・命令〕是主角以導演身分描述某人物下令或行動，該人物必須真的執行，不可引號複述、不可寫「卻沒有」；〔指令・身份〕依身分規則處理；〔設定・劇情〕是作者宣告的事實，必須直接成真，不可寫成念頭，不可用「莫非／荒唐／不可能／錯覺」否定。';
  t+='\n【世界節制・M26】不可無前因讓人物被捕、下獄、死亡或發生大轉折；重大事件須有罪證、動機與有權者下令；與主角無關的大事一筆帶過。';
  t+='\n'+Pace.aiRule();
+ if(typeof Deal!=='undefined')t+='\n'+Deal.aiRule();
  if(Gender.on()){var kn=[];for(var id in S.ppl)if(Gender.knows(id)&&id!==S.pc&&S.ppl[id].met)kn.push(cn(id));t+='\n【性別稱呼・M16】主角'+(me.g==='f'?'女扮男裝':'男扮女裝')+'，旁人眼中是'+(S.disg.as==='m'?'男子':'女子')+'，須以「'+(S.disg.as==='m'?'公子／他':'姑娘／她')+'」稱呼；只有知情者（'+(kn.join('、')||'無人')+'）知道真相；知情者在旁人面前也會替主角保密、照樣以「'+(S.disg.as==='m'?'公子':'姑娘')+'」相稱，只在私下流露。不知情者不得憑空識破、不得說出「女兒身／女扮男裝」等字眼；識破只能由遊戲事件決定。';}
  else if(S.disg&&S.disg.fid){var f0=FW.byId(S.disg.fid);if(f0&&!f0.pub){var kn2=f0.kn.filter(function(x){return x!==S.pc;}).map(cn);t+='\n【易裝】主角此刻穿回本來的衣裳；曾以'+(S.disg.as==='m'?'男':'女')+'裝示人，知情者：'+(kn2.join('、')||'無人')+'。';}}
  t+='\n【身分變更・M17】主角的身分（官職、醫官、爵位、入宮、拜師、從軍）只能由有權者親口批准而改變，寫在 fx.change；主角單方面「想當」不算。官秩：'+OFFICE.slice(1).join('＞')+'；醫官：'+MEDOFF.slice(1).join('＞')+'。';
  return t;};
-AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
+AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"deals":[{"with":"人物id","if":"heal_grandson|heal","then":"rent_clinic|pay_gold","price":60,"who":"孫子","status":"open"}],"done":false,"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
 AI.pline=function(id){var p=P(id);var b=SET.bondd!==false?Bond.card(id):'';var mem=Nom.brief(id);var a=ageOf(p);
  return p.n+'('+id+'｜'+(p.g==='f'?'女':'男')+a+'歲｜'+(p.title||JOBS[p.job]||'')+'｜'+People.relTo(id)+(p.met?'｜已識':'｜未識')+')：好感'+p.aff+' 信任'+p.trust+' 情意'+(p.love||0)+' 健康'+Math.round(p.hp)+(p.ill.length?'('+Ill.str(p)+')':'')+'｜性格：'+p.pers.join('、')+'｜喜好：'+p.like.join('、')+(b?'｜心態卡：'+b:'')+(mem?'｜持久記憶：'+mem:'');};
 AI.summary=function(){var me=pc(),L=[];if(S.fate){var hid=S.facts.filter(function(f){return f.hidePc&&!f.pub&&f.kn.indexOf(S.pc)<0;});if(hid.length)L.push('【隱藏真相（只供說書人埋伏筆；主角本人不知道，除列明知情者外任何角色都不得說破，也不可讓主角憑空想到）】'+hid.map(function(f){return f.t+'（知情：'+(f.kn.map(cn).join('、')||'無人')+'）';}).join('；'));if(S.mis)L.push('【母命】主角奉生母之命要殺'+cn(S.mis.tg)+'；狀態：'+({active:'進行中',delay:'拖延中',quit:'已放棄',done:'已完成',truth:'已揭穿真相'})[S.mis.st]+'；伏線 '+S.mis.clues+'/3');if(S.anti)L.push('【月蝕之毒】'+(S.anti.cured?'已解':'下次服解藥期限第'+S.anti.due+'日'+(S.anti.stage?'；已失去'+Fate.SENSE.slice(1,S.anti.stage+1).join('、'):'')));}var EK=S.startBC===246?'y1':'y10';L.push('【時代】'+Eng.era()+'（開局：'+ERAS[EK].n+'）'+(Eng.yb()>237?'：秦王嬴政'+ageOf(P('yingzheng'))+'歲、未親政，相國呂不韋與太后趙姬主政；李斯為呂不韋舍人；扶蘇為宗室公子（非秦王之子）。':''));
@@ -1553,6 +1640,7 @@ AI.summary=function(){var me=pc(),L=[];if(S.fate){var hid=S.facts.filter(functio
  var pub=S.facts.filter(function(f){return f.pub;}).slice(-5).map(function(f){return f.t;});if(pub.length)L.push('【公開事實】'+pub.join('；'));
  var wl=WS.brief(4);if(wl.length)L.push('【近期大事】'+wl.join('；'));
  if(S.thread&&S.thread.cur&&S.thread.cur.status!=='closed')L.push(Thread.brief());
+ var db=typeof Deal!=='undefined'?Deal.brief():'';if(db)L.push(db);
  var rc=S.flags.romCtx;if(rc&&rc.d===S.day&&P(rc.id))L.push('【心動場景】主角正與'+cn(rc.id)+'經歷「'+rc.t+'」；請依角色性格與情意('+P(rc.id).love+')回應，可在 fx.ppl 調整 love/aff/trust（單次±8內）。');
  if(S.recent)L.push('【剛說過的對話】'+S.recent.slice(-1800));
  return L.join('\n');};
@@ -1594,13 +1682,27 @@ AI.post=function(r,a){r=Nom.check(r);r=FW.check(r);r.scene=Gender.fixText(r.scen
  if(off){toast('🎬 AI 未照辦，已改用系統結果',3000);Thread.fixLast(off);return off;}
  if(r.fx)AI.applyFx(r.fx,r.speaker);
  r.facts.forEach(function(f){FW.add(f.t,f.kn,f.sub,{secret:f.secret,src:'ai'});});
+ if(typeof Deal!=='undefined')Deal.ingestTurn(a,r);
  if(r.time)Eng.pass(r.time);
  var sp=r.speaker||a.id||'';var sc=Eng.textScene(r.scene,sp,r.bg||'');
  var prev=(S.thread&&S.thread.cur&&S.thread.cur.prevCh)||[];var dup=r.choices.filter(function(c){return prev.indexOf(c.text)>=0;}).length;
  if(dup>=2){r.choices=[{text:'換個方式應對'},{text:'追問其中隱情'},{text:'暫且按下不表'}];}
- sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});sc.ch.push({t:'↩ 返回',go:'place',sys:1});sc.ai=1;sc.recap=r.recap;
+ var turns=(S.thread&&S.thread.cur&&S.thread.cur.turns)?S.thread.cur.turns.length:0;
+ var resolved=!!r.done||(typeof Deal!=='undefined'&&Deal.sceneResolved(r.scene))||turns>=7;
+ sc.ai=1;sc.recap=r.recap;
  if(sp&&P(sp)){People.meet(sp);Eng.keep(sp);S.focus=sp;}
- Thread.ok(r,a);return sc;};
+ if(resolved){Thread.ok(r,a);Thread.close();
+  var L=Input.backCh(sp);
+  if(sp&&P(sp))L.unshift({t:'💬 再與'+cn(sp)+'說幾句',go:'talk',a:{id:sp}});
+  L.unshift({t:'✅ 告一段落',go:'place',sys:1});
+  sc.ch=L;sc.beatEnd=1;
+ }else{
+  sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});
+  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1});
+  sc.ch.push({t:'↩ 返回',go:'place',sys:1});
+  Thread.ok(r,a);
+ }
+ return sc;};
 /* ===== 事件線程（M15） ===== */
 var Thread={
  get:function(){if(!S.thread)S.thread={seq:0,cur:null,done:[]};return S.thread;},
@@ -1655,6 +1757,7 @@ AI.STYLE='\n【文筆與劇情要求】\n'
  +'4. 不替主角做決定、不寫主角的台詞或內心結論（主角已輸入的話除外）；在懸念處停筆，把選擇留給玩家。\n'
  +'5. choices 給 3–4 個具體、互有分歧的行動（例：「按住他的脈，追問那包藥從何而來」「假意應允，暗中記下時辰」），不要「繼續」「觀察」「思考」之類空話，也不要與上一幕選項雷同。\n'
  +'6. 不重複【上幾回開頭】的句式、意象與台詞。\n'
+ +'7. 已履約或已結束的約定不可當作沒發生；同一求助成功後禁止再提；小節收束時設 done:true，並讓角色道別或結束話題。\n'
  +'【示範（只示風格，勿抄內容）】\n{"scene":"燭芯「劈」地爆了一聲。\\n李斯將竹簡推回案上，指腹在刻痕上停了停。\\n李斯：「先生的方子，用藥極險。」\\n他抬眼，笑意不到眼底。\\n李斯：「若出了差池，這罪名，誰來擔？」","speaker":"lisi","time":0,"choices":[{"text":"直言藥性，請他當面試服"},{"text":"反問他為何深夜來查方子"},{"text":"收起竹簡，只說明日再議"}],"fx":{"ppl":{"lisi":{"trust":-1}}},"facts":[],"recap":"李斯夜查藥方，語帶威脅"}';
 (function(){var os=AI.system;AI.system=function(){return os()+AI.STYLE;};})();
 /* 反重複：記住最近三幕 */
@@ -1816,6 +1919,12 @@ Decl.apply=function(t){var out={lines:[],focus:''};var x=t.replace(/^[\/／]?(�
  if(m){var n=parseInt(m[1],10);if(isNaN(n))n=({一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10,百:100}[m[1].slice(-1)]||10)*(m[1].length>1?10:1);var capg=SET.decld!==false?100:500;var got=Math.min(n,capg);Inv.gold(got);say('（作者設定）你得到了'+got+'兩銀子。'+(got<n?'（宣告調整：單次上限 '+capg+' 兩）':''));return out;}
  m=x.match(/^我(?:是|其實是|乃)(.{1,12})$/);
  if(m){var who=m[1];FW.add(me.n+'其實是'+who,[S.pc],S.pc,{secret:1,kw:[who.slice(-2)]});me.notes.declId=who;say('（作者設定，秘密）你真正的身分是：'+who+'。此事只有你自己知道——除非你說出口。');return out;}
+ /* 約定：某某答應醫好孫子就用N兩租醫館 */
+ m=x.match(/^(.{1,8}?)(?:答應|約定|說好|允諾)(?:了)?(?:：|，|：)?(.{4,60})$/);
+ if(m&&typeof Deal!=='undefined'){id=People.idByName(m[1]);var body=m[2];if(!id){var o0=Deal.parseOffer(x,S.focus);if(o0){Deal.add(o0);say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o0));return out;}}
+  if(id&&id!==S.pc){var o1=Deal.parseOffer(body,id)||Deal.parseOffer(x,id);if(o1){o1.src='decl';Deal.add(o1);out.focus=id;say('（作者設定）你與'+cn(id)+'說定：'+Deal.str(Deal.open().filter(function(d){return d.with===id;}).slice(-1)[0]||o1)+'。');return out;}}}
+ m=x.match(/(?:醫好|治好).{0,12}(?:租|讓).{0,6}醫館/);
+ if(m&&typeof Deal!=='undefined'){var nid=S.focus&&P(S.focus)?S.focus:(People.present()[0]||'');var o2=Deal.parseOffer(x,nid);if(o2){o2.src='decl';Deal.add(o2);out.focus=nid;say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o2));return out;}}
  FW.add(x,[],S.pc,{pub:1});say('（作者設定，從此成為事實）'+x);return out;};
 Decl.NEG=/莫非|荒唐|不可能|錯覺|並非如此|只是幻想|只是個夢|胡思亂想|不過是想像/;
 Decl.verify=function(r,d){if(SET.decld===false&&!Decl.NEG.test(r.scene))return null;if(Decl.NEG.test(r.scene))return d.off();return null;};
@@ -1846,8 +1955,11 @@ Input.submit=function(raw){var t=String(raw||'').trim();if(!t||!S)return null;va
    extra='（行動結果：'+resA+'）';off=function(){var L=[resA];if(o.mode==='mix'&&o.say&&id){L.push(['p',o.say]);L.push([id,Speak.reply(id,o.say)]);}return Eng.L(L,id,S.place,Input.backCh(id));};act.off=off;req.act=act;
    if(o.mode==='mix'&&o.say){if(id)Recall.said(id,o.say);req.text='（'+o.act+'）'+o.say;extra+='（隨後主角說：「'+o.say+'」——這句是對白，只需回應）';}}}}
  else{tag='對白';if(id){var p=P(id);Recall.said(id,t);if(!p.talked){People.rel(id,{aff:2});p.talked=1;}
-   FW.secretsOf().forEach(function(f){if(f.kw&&f.kw.some(function(w){return t.indexOf(w)>=0;})&&f.kn.indexOf(id)<0){Seal.told(id,f);toast('🔏 '+cn(id)+'得知了你的秘密（會替你守口如瓶）');}});}
-  off=function(){return Eng.L(id?[['p',t],[id,Speak.reply(id,t)]]:[['p',t],'你的話散在風裡，無人回應。'],id,S.place,Input.backCh(id));};}
+   FW.secretsOf().forEach(function(f){if(f.kw&&f.kw.some(function(w){return t.indexOf(w)>=0;})&&f.kn.indexOf(id)<0){Seal.told(id,f);toast('🔏 '+cn(id)+'得知了你的秘密（會替你守口如瓶）');}});
+   if(typeof Deal!=='undefined'){var ofr=Deal.parseOffer(t,id);if(ofr){req._dealOffer=ofr;S.dealPend=ofr;extra+='（主角提出約定：'+Deal.str(ofr)+'。若對方應允，必須寫入 deals 並設 status=open。）';}}}
+  off=function(){var L=id?[['p',t],[id,Speak.reply(id,t)]]:[['p',t],'你的話散在風裡，無人回應。'];
+   if(typeof Deal!=='undefined'&&!AI.ready()&&id){var of2=Deal.parseOffer(t,id);if(of2&&!Deal.REFUSE.test(Speak.reply(id,t))){Deal.add(of2);L.push('（離線）'+cn(id)+'沉吟片刻，點頭應了這門約定。');}}
+   return Eng.L(L,id,S.place,Input.backCh(id));};}
  req.tag=tag;req.extra=extra;req.id=id;
  if(AI.ready()){S.pend={text:t,id:id,d:S.day};return {async:req,fb:off};}
  return off();};
@@ -1892,6 +2004,7 @@ var Med={cur:null};
   var t='依「'+m.plan.name+'」施治：'+m.plan.method;var f=document.getElementById('free');if(f)f.value=t;toast('已填入指令欄（說／指令）。可完成或關閉問診後送出。',3200);};
 
  Med.open=function(o){var ci=o.ci!=null?o.ci:(o.pid?Med.illCase(P(o.pid)):-1);if(ci<0)ci=Med.pickCase();var d=CASES[ci];var pp=o.pid?P(o.pid):null;
+  if(typeof Deal!=='undefined'&&o.pid){Deal.open().forEach(function(x){if(x.pid)return;if(pp&&x.who&&(pp.n.indexOf(x.who)>=0||x.who.indexOf(pp.n)>=0||(x.if==='heal_grandson'&&Deal.isGrandchild(pp,x.with))))x.pid=o.pid;});}
   Med.cur={d:d,ci:ci,pid:o.pid||'',src:o.src||'clinic',fee:o.fee!=null?o.fee:d.fee,rev:{},step:'exam',dxOk:null,seq:[],dxOpts:shuffle([d.dx].concat(d.wrong)),cb:o.cb||''};
   $('med').className='sheet med on';$('mdT').textContent=pp?'為'+(pp.id===S.pc?'自己':pp.n)+'診治':'坐堂看診';Med.draw();};
  Med.revealed=function(){return Object.keys(Med.cur.rev).length;};
@@ -1929,14 +2042,14 @@ var Med={cur:null};
   else{S.stats.dead++;msg='你盡力了。病人還是在你手中斷了氣。';if(pp&&pp.id!==S.pc)People.die(pp.id,d.dx);if(pub){S.fam.fame=Math.max(0,S.fam.fame-3);S.fam.notor=(S.fam.notor||0)+3;}me.mood=clamp(me.mood-15,0,100);}
   var shock=m.seq.filter(function(t){return ['suture','drain','amput','debr','deliver'].indexOf(t)>=0;}).length;if(pub&&shock){S.fam.notor=(S.fam.notor||0)+(m.seq.indexOf('amput')>=0?4:1);S.flags.westSeen=(S.flags.westSeen||0)+1;}
   if(m.seq.indexOf('incant')>=0||m.seq.indexOf('bleed')>=0)msg+='（古法無益，反傷元氣。）';
-  addLog('〔行醫〕'+d.dx+'：'+r.stamp+(pp?'（'+pp.n+'）':''),'醫');r.msg=msg;Med.react(m,r);if(m.src==='clinic')S.fam.clinic.days++;};
+  addLog('〔行醫〕'+d.dx+'：'+r.stamp+(pp?'（'+pp.n+'）':''),'醫');if(typeof Deal!=='undefined'){var dm=Deal.onCure(m,r);if(dm.length){msg+=' '+dm.join(' ');r.dealMsgs=dm;}}r.msg=msg;Med.react(m,r);if(m.src==='clinic')S.fam.clinic.days++;};
  /* 世人反應：傳統醫者嫉妒、方士指為妖術、朝廷召見 */
  Med.react=function(m,r){var no=S.fam.notor||0,fa=S.fam.fame;if(S.region!=='xianyang'&&S.region!=='frontier')return;
   if(fa>=12&&!S.evseen.tradocEnvy&&rand()<0.5)S.queue.push({go:'evTradoc'});
   else if(no>=6&&!S.evseen.fangshi&&rand()<0.5)S.queue.push({go:'evFangshi'});
   else if(fa>=30&&S.region==='xianyang'&&!S.flags.palace&&rand()<0.5)S.queue.push({go:'evCourt'});
   else if(r.out==='dead'&&no>=8&&rand()<0.4)S.queue.push({go:'evAccuse'});};
- Med.close=function(){var m=Med.cur;$('med').className='sheet med';Med.cur=null;if(!m)return;UI.hud();if(m.step!=='done'){m.seq.slice().reverse().forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,T.need[k]);});UI.go('place');return;}UI.go('medDone',{out:m.res.out,src:m.src,pid:m.pid,dx:m.d.dx,cb:m.cb});};
+ Med.close=function(){var m=Med.cur;$('med').className='sheet med';Med.cur=null;if(!m)return;UI.hud();if(m.step!=='done'){m.seq.slice().reverse().forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,T.need[k]);});UI.go('place');return;}UI.go('medDone',{out:m.res.out,src:m.src,pid:m.pid,dx:m.d.dx,cb:m.cb,deal:m.res.dealMsgs||[]});};
  /* 自動看診（歲月流轉／醫館學徒）：回傳結果 */
  Med.auto=function(ci,sk,useInv){var d=CASES[ci];var ok=d.seq.every(function(t){var c=useInv?Med.techOk(t):{ok:!!S.fam.tech[t]};return c.ok;});var p=(sk/100)*0.8+(ok?0.25:-0.2)-0.12*(d.lv-1);var good=rand()<p;if(useInv&&ok)d.seq.forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);});return {ok:good,fee:good?d.fee:0,d:d};};
  Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;var a;
@@ -2028,7 +2141,7 @@ NODES.skip=function(a){if(S.region==='road')return Eng.L(['流放路上，一日
 /* ---------- 生活動作 ---------- */
 NODES.payLodge=function(){if(S.gold<10)return Eng.L(['你摸了摸錢袋——連十兩都湊不出。今夜只能睡在簷下了。'],'',S.place,[ch('↩','place')]);Inv.gold(-10);S.flags.paidLodge=S.day;return Eng.L(['掌櫃收了錢，給你一間朝北的小房。'],'',S.place,[ch('↩','place')]);};
 NODES.buyHouse=function(){if(S.gold<300)return Eng.L(['牙人報了價：一處像樣的瓦屋要三百兩。你還差'+(300-S.gold)+'兩。'],'',S.place,[ch('↩','place')]);Inv.gold(-300);S.fam.house=3;S.home={r:'xianyang',pl:'lodge'};PLACES.lodge.n='自家宅院';addLog('〔家〕置下咸陽的宅子','家');Fam.tierCalc();return Eng.L(['你在城南置下一處瓦屋小院。從今往後，這裡就是家。'],'',S.place,[ch('↩','place')]);};
-NODES.openClinic=function(){if(S.gold<120)return Eng.L(['舖主要一百二十兩押租。你還差'+(120-S.gold)+'兩。可以先擺攤義診攢些名聲和銀子。'],'',S.place,[ch('↩','place')]);Inv.gold(-120);S.fam.clinic.open=1;S.fam.clinic.lv=0;S.fam.clinic.d0=S.day;addLog('〔醫館〕'+pc().n+'開館','醫');WS.log('城南新開一間醫館，大夫用刀圭針線治病','起因：'+pc().n+'開館','你所為');FW.add(pc().n+'在城南開了醫館',[],S.pc,{pub:1});
+NODES.openClinic=function(){if(typeof Deal!=='undefined'){var pay=Deal.tryPayRent();if(pay.length)return Eng.L(pay.concat(['木牌可挂了。']),'',S.place,[ch('🩺 開門看診','clinicSit'),ch('↩','place')]);}if(S.gold<120)return Eng.L(['舖主要一百二十兩押租。你還差'+(120-S.gold)+'兩。可以先擺攤義診攢些名聲和銀子。'],'',S.place,[ch('↩','place')]);Inv.gold(-120);S.fam.clinic.open=1;S.fam.clinic.lv=0;S.fam.clinic.d0=S.day;addLog('〔醫館〕'+pc().n+'開館','醫');WS.log('城南新開一間醫館，大夫用刀圭針線治病','起因：'+pc().n+'開館','你所為');FW.add(pc().n+'在城南開了醫館',[],S.pc,{pub:1});
  return Eng.L(['你掛上親手寫的木牌：「青囊醫館」。','街坊探頭探腦——聽說這位大夫治病不用符水，用刀子和針線。'],'',S.place,[ch('🩺 開門看診','clinicSit'),ch('↩','place')]);};
 NODES.clinicUp=function(){var c=(S.fam.clinic.lv+1)*150;if(S.gold<c)return Eng.L(['擴建要'+c+'兩，錢不夠。'],'',S.place,[ch('↩','place')]);Inv.gold(-c);S.fam.clinic.lv++;Fam.tierCalc();return Eng.L(['醫館擴建了：'+['','多了一間淨室，可以安心動刀','添了病榻與藥櫃','成了咸陽數一數二的醫館'][S.fam.clinic.lv]+'。（診金+20%）'],'',S.place,[ch('↩','place')]);};
 NODES.clinicSit=function(){if(S.per>=5)return Eng.L(['夜深了，醫館已經上了門板。'],'',S.place,[ch('↩','place')]);if(pc().sta<15)return Eng.L(['你累得手都在抖——這樣拿刀會出人命。先歇歇吧。'],'',S.place,[ch('↩','place')]);pc().sta-=12;Med.open({src:'clinic'});return {screen:'med'};};
@@ -2036,7 +2149,8 @@ NODES.streetClinic=function(){if(pc().sta<15)return Eng.L(['你太累了。'],''
 NODES.armyClinic=function(){pc().sta-=12;var ci=pick([Med.caseOf('arrow'),Med.caseOf('fracture'),Med.caseOf('cut'),Med.caseOf('gangrene')]);Med.open({src:'army',ci:ci});return {screen:'med'};};
 NODES.treat=function(a){var p=P(a.id)||pc();if(!p.ill.length)return Eng.L([(p.id===S.pc?'你':p.n)+'身上沒有病痛。'],'',S.place,[ch('↩','place')]);Med.open({pid:p.id,src:'family'});return {screen:'med'};};
 NODES.medDone=function(a){var L=[];var me=pc();if(a.out==='cure'||a.out==='better')L.push(pick(['你洗淨雙手，長長吐了口氣。','病人的家屬撲通跪下，對你連連磕頭。','你收起刀具，才發覺背上的衣裳早已濕透。']));else if(a.out==='dead')L.push('白布蓋上了。你在門口站了很久。');else L.push('你皺著眉，把處置的每一步在心裡又過了一遍。');
- if(a.src==='clinic'&&S.fam.clinic.apps.length)L.push('學徒們在一旁看得目不轉睛。');var c=[ch('繼續','place')];if(a.src==='clinic'&&S.per<5&&me.sta>=15)c.unshift(ch('🩺 叫下一位','clinicSit'));return Eng.L(L,'',S.place,c);};
+ if(a.deal&&a.deal.length)a.deal.forEach(function(x){L.push(x);});
+ if(a.src==='clinic'&&S.fam.clinic.apps.length)L.push('學徒們在一旁看得目不轉睛。');var c=[ch('繼續','place')];if(a.src==='clinic'&&S.per<5&&me.sta>=15)c.unshift(ch('🩺 叫下一位','clinicSit'));if(S.fam.clinic.open&&S.place!=='clinic')c.push(ch('🏥 前往醫館','go',{pl:'clinic'}));return Eng.L(L,'',S.place,c);};
 NODES.research=function(){var me=pc();Eng.pass(2);var cand=[['garlic',45,'蒜汁抗菌'],['deliver',50,'助產轉胎'],['amput',60,'截肢術'],['isolate',35,'隔離防疫'],['listen',30,'聽診']].filter(function(x){return !S.fam.tech[x[0]];});
  var gain=Inv.has('notes')?2:1;if(rand()<0.5)me.sk.med=clamp(me.sk.med+gain,0,100);var got=cand.filter(function(x){return me.sk.med>=x[1];})[0];
  if(got&&(Inv.has('notes')||rand()<0.3)){S.fam.tech[got[0]]=1;addLog('〔醫術〕習得'+got[2],'醫');return Eng.L(['你對著'+(Inv.has('notes')?'師父手札裡的解剖圖':'自己的病案')+'琢磨了兩個時辰——終於想通了「'+got[2]+'」的要訣。（習得新技法）'],'',S.place,[ch('↩','place')]);}
@@ -2936,6 +3050,7 @@ NODES.thRetry=function(){var c=S.thread&&S.thread.cur;if(!c||!c.pend)return NODE
 NODES.thOffline=function(){var c=S.thread.cur;c.status='active';c.inflight=0;var t=c.pend?c.pend.text:'';c.pend=null;var id=People.present()[0]||'';var L=['（離線接續）'+(t?'你方才'+(c.pend&&c.pend.tag==='對白'?'說：「'+t+'」':'的「'+t+'」')+'，':'')+'事情就這樣暫且告一段落。'];if(id)L.push([id,Speak.reply(id,t||'……')]);return Eng.L(L,id,S.place,Input.backCh(id));};
 NODES.thDrop=function(){Thread.close();S.pend=null;return Eng.L(['你把這件事放下了。'],'',S.place,[ch('繼續','place')]);};
 NODES.aiNext=function(a){var id=a.id&&P(a.id)&&People.present().indexOf(a.id)>=0?a.id:(People.present()[0]||'');if(!AI.ready())return Eng.L([ '你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));return {async:{type:'free',text:a.text,tag:'選擇',id:id},fb:function(){return Eng.L(['你選擇了「'+a.text+'」。'],id,S.place,Input.backCh(id));}};};
+NODES.aiClose=function(a){if(typeof Thread!=='undefined')Thread.close();S.pend=null;var id=a&&a.id&&P(a.id)?a.id:'';var L=['你拱手告退，這一幕便到此為止。'];if(typeof Deal!=='undefined'&&Deal._settled){L.push('（約定已記下／已兌現，可在人脈頁查看。）');Deal._settled=null;}return Eng.L(L,id,S.place,Input.backCh(id));};
 
 /* ---- 15_panels.js ---- */
 /* ===== 面板：開局設定、行囊、買賣、家族（族譜）、人脈（心態卡／記憶／書信）、結局冊、選單與設定 ===== */
@@ -3009,7 +3124,7 @@ Panels.famR=function(tab){var me=pc();
  if(tab==='tree')return Panels.tree();
  if(tab==='est'){var g=S.fam.grudge;return '<div class="pstat"><div>家族<b>'+TIERS[Fam.tier()].n+'</b></div><div>家業分<b>'+Fam.score()+'</b></div><div>名聲<b>'+S.fam.fame+'</b></div><div>銀兩<b>'+S.gold+'</b></div><div>住所<b>'+Eng.HOUSE_N[S.fam.house||0]+'</b></div><div>田<b>'+S.fam.plots.length+'</b></div></div>'
   +'<div class="kv"><b>等級</b>'+TIERS.map(function(t,i){return (i<=Fam.tier()?'◆':'◇')+t.n+'（'+t.v+'）';}).join(' → ')+'</div>'
-  +'<div class="kv"><b>醫館</b>'+(S.fam.clinic.open?'已開（規模 '+S.fam.clinic.lv+'）；學徒：'+(S.fam.clinic.apps.filter(alive).map(cn).join('、')||'無'):'未開')+'</div>'
+  +'<div class="kv"><b>醫館</b>'+(S.fam.clinic.open?'已開（規模 '+S.fam.clinic.lv+(S.fam.clinic.rentFrom?'；租自'+cn(S.fam.clinic.rentFrom)+(S.fam.clinic.rentPrice?'・'+S.fam.clinic.rentPrice+'兩':''):'')+'）；學徒：'+(S.fam.clinic.apps.filter(alive).map(cn).join('、')||'無'):'未開')+'</div>'
   +'<div class="kv"><b>田地</b>'+(S.fam.plots.map(function(p,i){return '第'+(i+1)+'塊：'+Farm.st[p.st];}).join('；')||'無')+'</div>'
   +'<div class="kv"><b>商隊</b>'+((S.fam.biz||[]).filter(function(b){return !b.done;}).map(function(b){return b.amt+'兩（'+(b.back-S.day)+'日後）';}).join('、')||'無')+'</div>'
   +(g?'<div class="kv"><b>冤案</b>'+esc(g.crime)+'——'+(g.done?'已平反':'線索 '+g.ev+'/3：'+(g.clues.join('、')||'無'))+'</div>':'')
@@ -3048,6 +3163,7 @@ Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();v
   +'<div class="bars">'+bar('好感',p.aff+100,'',200)+bar('信任',p.trust+100,'t',200)+bar('情意',p.love||0)+bar('健康',p.hp,'h')+'</div>'
   +'<div class="kv"><b>性格</b>'+esc(p.pers.join('、'))+'｜喜好：'+(p.aff>=15?esc(p.like.join('、')):'？？？')+'</div>'
   +'<div class="kv"><b>心態卡（M20）</b>'+esc(Bond.card(id))+'</div>'
+  +'<div class="kv"><b>約定</b><div class="mem">'+((typeof Deal!=='undefined'?Deal.forNpc(id):[]).map(function(d){return ({open:'⏳',done:'✅',broken:'✘'}[d.status]||'・')+' '+esc(Deal.str(d))+(d.status==='open'?'（未了）':d.status==='done'?'（已兌現）':'');}).join('<br>')||'尚無')+'</div></div>'
   +'<div class="kv"><b>記憶（M21）</b><div class="mem">'+(mem.map(function(m){return (m.k!=='n'?'◆':'・')+esc(m.t);}).join('<br>')||'尚無')+'</div></div>'
   +'<div class="kv"><b>所知（M13）</b><div class="mem">'+(kn.map(function(f){return '・'+esc(f.t);}).concat(ru.map(function(f){return '・（傳聞）'+esc(f.t);})).join('<br>')||'——')+'</div></div>'
   +(p.kind==='named'?'<div class="kv"><b>簡介</b>'+esc((P(id).bio||NAMED[id].bio))+'</div>':'')+'</div>';};

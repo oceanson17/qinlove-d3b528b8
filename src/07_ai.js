@@ -47,10 +47,11 @@ AI.cleanFx=function(fx){if(!fx||typeof fx!=='object')return null;var o={};var me
  if(typeof fx.move==='string'&&PLACES[fx.move]&&PLACES[fx.move].r===S.region)o.move=fx.move;
  return o;};
 AI.validate=function(j){if(!j||typeof j!=='object')throw {kind:'parse'};var t=j.scene||j.text;if(typeof t!=='string'||t.length<8)throw {kind:'schema'};
- var out={scene:t.trim().slice(0,1600),speaker:P(j.speaker)&&j.speaker!==S.pc?j.speaker:'',bg:PLACES[j.bg]?j.bg:'',time:clamp(j.time|0,0,3),choices:[],fx:AI.cleanFx(j.fx),facts:[],recap:typeof j.recap==='string'?j.recap.slice(0,70):''};
+ var out={scene:t.trim().slice(0,1600),speaker:P(j.speaker)&&j.speaker!==S.pc?j.speaker:'',bg:PLACES[j.bg]?j.bg:'',time:clamp(j.time|0,0,3),choices:[],fx:AI.cleanFx(j.fx),facts:[],deals:[],done:!!j.done,recap:typeof j.recap==='string'?j.recap.slice(0,70):''};
  (j.choices||[]).forEach(function(c){var tx=typeof c==='string'?c:(c&&(c.text||c.label));if(typeof tx==='string'&&tx&&out.choices.length<4)out.choices.push({text:tx.slice(0,36)});});
  if(out.choices.length<2){if(j._repaired)out.choices=[{text:'靜觀其變'},{text:'追問下去'},{text:'暫且告退'}];else throw {kind:'schema'};}
  (j.facts||[]).forEach(function(f){if(f&&typeof f.text==='string'&&out.facts.length<2){var kb=(f.knownBy||[]).map(function(x){return x==='me'||x==='p'?S.pc:x;}).filter(function(x){return P(x);});out.facts.push({t:f.text.slice(0,90),kn:kb,sub:P(f.subject)?f.subject:S.pc,secret:!!f.secret});}});
+ if(Array.isArray(j.deals))j.deals.slice(0,3).forEach(function(d){if(d&&typeof d==='object')out.deals.push(d);});
  return out;};
 /* ---- 提示 ---- */
 AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
@@ -65,11 +66,12 @@ AI.worldRules=function(short){var me=pc();var W=WORLDS[S.world];
  t+='\n【輸入分流・M24】〔對白〕只是主角說的話，只讓人物回應，不得把引號內的話當成命令執行；〔指令・行動〕是主角的動作，必須寫出結果；〔指令・命令〕是主角以導演身分描述某人物下令或行動，該人物必須真的執行，不可引號複述、不可寫「卻沒有」；〔指令・身份〕依身分規則處理；〔設定・劇情〕是作者宣告的事實，必須直接成真，不可寫成念頭，不可用「莫非／荒唐／不可能／錯覺」否定。';
  t+='\n【世界節制・M26】不可無前因讓人物被捕、下獄、死亡或發生大轉折；重大事件須有罪證、動機與有權者下令；與主角無關的大事一筆帶過。';
  t+='\n'+Pace.aiRule();
+ if(typeof Deal!=='undefined')t+='\n'+Deal.aiRule();
  if(Gender.on()){var kn=[];for(var id in S.ppl)if(Gender.knows(id)&&id!==S.pc&&S.ppl[id].met)kn.push(cn(id));t+='\n【性別稱呼・M16】主角'+(me.g==='f'?'女扮男裝':'男扮女裝')+'，旁人眼中是'+(S.disg.as==='m'?'男子':'女子')+'，須以「'+(S.disg.as==='m'?'公子／他':'姑娘／她')+'」稱呼；只有知情者（'+(kn.join('、')||'無人')+'）知道真相；知情者在旁人面前也會替主角保密、照樣以「'+(S.disg.as==='m'?'公子':'姑娘')+'」相稱，只在私下流露。不知情者不得憑空識破、不得說出「女兒身／女扮男裝」等字眼；識破只能由遊戲事件決定。';}
  else if(S.disg&&S.disg.fid){var f0=FW.byId(S.disg.fid);if(f0&&!f0.pub){var kn2=f0.kn.filter(function(x){return x!==S.pc;}).map(cn);t+='\n【易裝】主角此刻穿回本來的衣裳；曾以'+(S.disg.as==='m'?'男':'女')+'裝示人，知情者：'+(kn2.join('、')||'無人')+'。';}}
  t+='\n【身分變更・M17】主角的身分（官職、醫官、爵位、入宮、拜師、從軍）只能由有權者親口批准而改變，寫在 fx.change；主角單方面「想當」不算。官秩：'+OFFICE.slice(1).join('＞')+'；醫官：'+MEDOFF.slice(1).join('＞')+'。';
  return t;};
-AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
+AI.system=function(){return '你是寫實古代人生模擬文字遊戲《'+GAME_TITLE+'》的說書人兼遊戲主持人。'+AI.worldRules()+'\n【輸出規則】\n1. 繁體中文，古風、細膩、有畫面感；每幕 120–260 字，短句分行；對白以「人物名：「……」」開頭單獨成行。\n2. 只輸出一個 JSON：{"scene":"敘述與對白，用\\n分行","speaker":"主要人物 id 或空字串","bg":"地點 key 或空","time":0到3（耗費時段）,"choices":[{"text":"選項(24字內)"}],"fx":{"me":{"food":0,"sta":0,"hp":0,"mood":0,"gold":0,"fame":0,"med":0,"farm":0,"craft":0,"trade":0,"mart":0,"lit":0},"inv":{"物品key":0},"ppl":{"人物id":{"aff":0,"trust":0,"love":0}},"bond":{"人物id":{"e":{"愛慕":0,"信任":0,"戒備":0,"怨恨":0},"th":"此刻想法","cond":"未了條件","mem":"記憶"}},"mem":{"人物id":"此人對此事的記憶"},"ill":{"me或人物id":"疾病key"},"cure":{},"newp":[{"n":"新人物姓名","g":"m|f","age":30,"job":"職業key","title":"稱呼"}],"change":{"k":"appoint|medoff|enlist|ennoble|harem|master|leave|title","to":"新身分","by":"批准者id"},"move":""},"facts":[{"text":"一句事實","subject":"me或人物id","knownBy":["人物id"],"secret":false}],"deals":[{"with":"人物id","if":"heal_grandson|heal","then":"rent_clinic|pay_gold","price":60,"who":"孫子","status":"open"}],"done":false,"recap":"一句概述"}\n3. 數值小幅且合理：me 每項 ±5（gold ±80）、ppl 每項 ±6；物品 key 只能用：'+Object.keys(ITEMS).filter(function(k){return !ITEMS[k].hide;}).join(',')+'；疾病 key：'+Object.keys(ILLS).join(',')+'；職業 key：'+Object.keys(JOBS).join(',')+'。人物 id 只能用【人物】列出的 id。\n4. choices 給 3 個按新局面重新生成、彼此不同的選項，不可照抄上一幕。\n5. 不替主角做決定；難度：'+({easy:'爽玩',normal:'一般',hard:'困難'}[SET.diff])+'。';};
 AI.pline=function(id){var p=P(id);var b=SET.bondd!==false?Bond.card(id):'';var mem=Nom.brief(id);var a=ageOf(p);
  return p.n+'('+id+'｜'+(p.g==='f'?'女':'男')+a+'歲｜'+(p.title||JOBS[p.job]||'')+'｜'+People.relTo(id)+(p.met?'｜已識':'｜未識')+')：好感'+p.aff+' 信任'+p.trust+' 情意'+(p.love||0)+' 健康'+Math.round(p.hp)+(p.ill.length?'('+Ill.str(p)+')':'')+'｜性格：'+p.pers.join('、')+'｜喜好：'+p.like.join('、')+(b?'｜心態卡：'+b:'')+(mem?'｜持久記憶：'+mem:'');};
 AI.summary=function(){var me=pc(),L=[];if(S.fate){var hid=S.facts.filter(function(f){return f.hidePc&&!f.pub&&f.kn.indexOf(S.pc)<0;});if(hid.length)L.push('【隱藏真相（只供說書人埋伏筆；主角本人不知道，除列明知情者外任何角色都不得說破，也不可讓主角憑空想到）】'+hid.map(function(f){return f.t+'（知情：'+(f.kn.map(cn).join('、')||'無人')+'）';}).join('；'));if(S.mis)L.push('【母命】主角奉生母之命要殺'+cn(S.mis.tg)+'；狀態：'+({active:'進行中',delay:'拖延中',quit:'已放棄',done:'已完成',truth:'已揭穿真相'})[S.mis.st]+'；伏線 '+S.mis.clues+'/3');if(S.anti)L.push('【月蝕之毒】'+(S.anti.cured?'已解':'下次服解藥期限第'+S.anti.due+'日'+(S.anti.stage?'；已失去'+Fate.SENSE.slice(1,S.anti.stage+1).join('、'):'')));}var EK=S.startBC===246?'y1':'y10';L.push('【時代】'+Eng.era()+'（開局：'+ERAS[EK].n+'）'+(Eng.yb()>237?'：秦王嬴政'+ageOf(P('yingzheng'))+'歲、未親政，相國呂不韋與太后趙姬主政；李斯為呂不韋舍人；扶蘇為宗室公子（非秦王之子）。':''));
@@ -83,6 +85,7 @@ AI.summary=function(){var me=pc(),L=[];if(S.fate){var hid=S.facts.filter(functio
  var pub=S.facts.filter(function(f){return f.pub;}).slice(-5).map(function(f){return f.t;});if(pub.length)L.push('【公開事實】'+pub.join('；'));
  var wl=WS.brief(4);if(wl.length)L.push('【近期大事】'+wl.join('；'));
  if(S.thread&&S.thread.cur&&S.thread.cur.status!=='closed')L.push(Thread.brief());
+ var db=typeof Deal!=='undefined'?Deal.brief():'';if(db)L.push(db);
  var rc=S.flags.romCtx;if(rc&&rc.d===S.day&&P(rc.id))L.push('【心動場景】主角正與'+cn(rc.id)+'經歷「'+rc.t+'」；請依角色性格與情意('+P(rc.id).love+')回應，可在 fx.ppl 調整 love/aff/trust（單次±8內）。');
  if(S.recent)L.push('【剛說過的對話】'+S.recent.slice(-1800));
  return L.join('\n');};
@@ -124,13 +127,27 @@ AI.post=function(r,a){r=Nom.check(r);r=FW.check(r);r.scene=Gender.fixText(r.scen
  if(off){toast('🎬 AI 未照辦，已改用系統結果',3000);Thread.fixLast(off);return off;}
  if(r.fx)AI.applyFx(r.fx,r.speaker);
  r.facts.forEach(function(f){FW.add(f.t,f.kn,f.sub,{secret:f.secret,src:'ai'});});
+ if(typeof Deal!=='undefined')Deal.ingestTurn(a,r);
  if(r.time)Eng.pass(r.time);
  var sp=r.speaker||a.id||'';var sc=Eng.textScene(r.scene,sp,r.bg||'');
  var prev=(S.thread&&S.thread.cur&&S.thread.cur.prevCh)||[];var dup=r.choices.filter(function(c){return prev.indexOf(c.text)>=0;}).length;
  if(dup>=2){r.choices=[{text:'換個方式應對'},{text:'追問其中隱情'},{text:'暫且按下不表'}];}
- sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});sc.ch.push({t:'↩ 返回',go:'place',sys:1});sc.ai=1;sc.recap=r.recap;
+ var turns=(S.thread&&S.thread.cur&&S.thread.cur.turns)?S.thread.cur.turns.length:0;
+ var resolved=!!r.done||(typeof Deal!=='undefined'&&Deal.sceneResolved(r.scene))||turns>=7;
+ sc.ai=1;sc.recap=r.recap;
  if(sp&&P(sp)){People.meet(sp);Eng.keep(sp);S.focus=sp;}
- Thread.ok(r,a);return sc;};
+ if(resolved){Thread.ok(r,a);Thread.close();
+  var L=Input.backCh(sp);
+  if(sp&&P(sp))L.unshift({t:'💬 再與'+cn(sp)+'說幾句',go:'talk',a:{id:sp}});
+  L.unshift({t:'✅ 告一段落',go:'place',sys:1});
+  sc.ch=L;sc.beatEnd=1;
+ }else{
+  sc.ch=r.choices.map(function(c){return {t:'✦ '+c.text,go:'aiNext',a:{text:c.text,id:sp},ai:1};});
+  sc.ch.push({t:'✅ 此事告一段落',go:'aiClose',a:{id:sp},sys:1});
+  sc.ch.push({t:'↩ 返回',go:'place',sys:1});
+  Thread.ok(r,a);
+ }
+ return sc;};
 /* ===== 事件線程（M15） ===== */
 var Thread={
  get:function(){if(!S.thread)S.thread={seq:0,cur:null,done:[]};return S.thread;},

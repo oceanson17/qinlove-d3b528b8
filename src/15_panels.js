@@ -69,7 +69,7 @@ Panels.famR=function(tab){var me=pc();
  if(tab==='tree')return Panels.tree();
  if(tab==='est'){var g=S.fam.grudge;return '<div class="pstat"><div>家族<b>'+TIERS[Fam.tier()].n+'</b></div><div>家業分<b>'+Fam.score()+'</b></div><div>名聲<b>'+S.fam.fame+'</b></div><div>銀兩<b>'+S.gold+'</b></div><div>住所<b>'+Eng.HOUSE_N[S.fam.house||0]+'</b></div><div>田<b>'+S.fam.plots.length+'</b></div></div>'
   +'<div class="kv"><b>等級</b>'+TIERS.map(function(t,i){return (i<=Fam.tier()?'◆':'◇')+t.n+'（'+t.v+'）';}).join(' → ')+'</div>'
-  +'<div class="kv"><b>醫館</b>'+(S.fam.clinic.open?'已開（規模 '+S.fam.clinic.lv+'）；學徒：'+(S.fam.clinic.apps.filter(alive).map(cn).join('、')||'無'):'未開')+'</div>'
+  +'<div class="kv"><b>醫館</b>'+(S.fam.clinic.open?'已開（規模 '+S.fam.clinic.lv+(S.fam.clinic.rentFrom?'；租自'+cn(S.fam.clinic.rentFrom)+(S.fam.clinic.rentPrice?'・'+S.fam.clinic.rentPrice+'兩':''):'')+'）；學徒：'+(S.fam.clinic.apps.filter(alive).map(cn).join('、')||'無'):'未開')+'</div>'
   +'<div class="kv"><b>田地</b>'+(S.fam.plots.map(function(p,i){return '第'+(i+1)+'塊：'+Farm.st[p.st];}).join('；')||'無')+'</div>'
   +'<div class="kv"><b>商隊</b>'+((S.fam.biz||[]).filter(function(b){return !b.done;}).map(function(b){return b.amt+'兩（'+(b.back-S.day)+'日後）';}).join('、')||'無')+'</div>'
   +(g?'<div class="kv"><b>冤案</b>'+esc(g.crime)+'——'+(g.done?'已平反':'線索 '+g.ev+'/3：'+(g.clues.join('、')||'無'))+'</div>':'')
@@ -108,6 +108,7 @@ Panels.pdet=function(id){var p=P(id);var mem=Nom.list(id,14).slice().reverse();v
   +'<div class="bars">'+bar('好感',p.aff+100,'',200)+bar('信任',p.trust+100,'t',200)+bar('情意',p.love||0)+bar('健康',p.hp,'h')+'</div>'
   +'<div class="kv"><b>性格</b>'+esc(p.pers.join('、'))+'｜喜好：'+(p.aff>=15?esc(p.like.join('、')):'？？？')+'</div>'
   +'<div class="kv"><b>心態卡（M20）</b>'+esc(Bond.card(id))+'</div>'
+  +'<div class="kv"><b>約定</b><div class="mem">'+((typeof Deal!=='undefined'?Deal.forNpc(id):[]).map(function(d){return ({open:'⏳',done:'✅',broken:'✘'}[d.status]||'・')+' '+esc(Deal.str(d))+(d.status==='open'?'（未了）':d.status==='done'?'（已兌現）':'');}).join('<br>')||'尚無')+'</div></div>'
   +'<div class="kv"><b>記憶（M21）</b><div class="mem">'+(mem.map(function(m){return (m.k!=='n'?'◆':'・')+esc(m.t);}).join('<br>')||'尚無')+'</div></div>'
   +'<div class="kv"><b>所知（M13）</b><div class="mem">'+(kn.map(function(f){return '・'+esc(f.t);}).concat(ru.map(function(f){return '・（傳聞）'+esc(f.t);})).join('<br>')||'——')+'</div></div>'
   +(p.kind==='named'?'<div class="kv"><b>簡介</b>'+esc((P(id).bio||NAMED[id].bio))+'</div>':'')+'</div>';};

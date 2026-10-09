@@ -36,6 +36,7 @@ var Med={cur:null};
   var t='依「'+m.plan.name+'」施治：'+m.plan.method;var f=document.getElementById('free');if(f)f.value=t;toast('已填入指令欄（說／指令）。可完成或關閉問診後送出。',3200);};
 
  Med.open=function(o){var ci=o.ci!=null?o.ci:(o.pid?Med.illCase(P(o.pid)):-1);if(ci<0)ci=Med.pickCase();var d=CASES[ci];var pp=o.pid?P(o.pid):null;
+  if(typeof Deal!=='undefined'&&o.pid){Deal.open().forEach(function(x){if(x.pid)return;if(pp&&x.who&&(pp.n.indexOf(x.who)>=0||x.who.indexOf(pp.n)>=0||(x.if==='heal_grandson'&&Deal.isGrandchild(pp,x.with))))x.pid=o.pid;});}
   Med.cur={d:d,ci:ci,pid:o.pid||'',src:o.src||'clinic',fee:o.fee!=null?o.fee:d.fee,rev:{},step:'exam',dxOk:null,seq:[],dxOpts:shuffle([d.dx].concat(d.wrong)),cb:o.cb||''};
   $('med').className='sheet med on';$('mdT').textContent=pp?'為'+(pp.id===S.pc?'自己':pp.n)+'診治':'坐堂看診';Med.draw();};
  Med.revealed=function(){return Object.keys(Med.cur.rev).length;};
@@ -73,14 +74,14 @@ var Med={cur:null};
   else{S.stats.dead++;msg='你盡力了。病人還是在你手中斷了氣。';if(pp&&pp.id!==S.pc)People.die(pp.id,d.dx);if(pub){S.fam.fame=Math.max(0,S.fam.fame-3);S.fam.notor=(S.fam.notor||0)+3;}me.mood=clamp(me.mood-15,0,100);}
   var shock=m.seq.filter(function(t){return ['suture','drain','amput','debr','deliver'].indexOf(t)>=0;}).length;if(pub&&shock){S.fam.notor=(S.fam.notor||0)+(m.seq.indexOf('amput')>=0?4:1);S.flags.westSeen=(S.flags.westSeen||0)+1;}
   if(m.seq.indexOf('incant')>=0||m.seq.indexOf('bleed')>=0)msg+='（古法無益，反傷元氣。）';
-  addLog('〔行醫〕'+d.dx+'：'+r.stamp+(pp?'（'+pp.n+'）':''),'醫');r.msg=msg;Med.react(m,r);if(m.src==='clinic')S.fam.clinic.days++;};
+  addLog('〔行醫〕'+d.dx+'：'+r.stamp+(pp?'（'+pp.n+'）':''),'醫');if(typeof Deal!=='undefined'){var dm=Deal.onCure(m,r);if(dm.length){msg+=' '+dm.join(' ');r.dealMsgs=dm;}}r.msg=msg;Med.react(m,r);if(m.src==='clinic')S.fam.clinic.days++;};
  /* 世人反應：傳統醫者嫉妒、方士指為妖術、朝廷召見 */
  Med.react=function(m,r){var no=S.fam.notor||0,fa=S.fam.fame;if(S.region!=='xianyang'&&S.region!=='frontier')return;
   if(fa>=12&&!S.evseen.tradocEnvy&&rand()<0.5)S.queue.push({go:'evTradoc'});
   else if(no>=6&&!S.evseen.fangshi&&rand()<0.5)S.queue.push({go:'evFangshi'});
   else if(fa>=30&&S.region==='xianyang'&&!S.flags.palace&&rand()<0.5)S.queue.push({go:'evCourt'});
   else if(r.out==='dead'&&no>=8&&rand()<0.4)S.queue.push({go:'evAccuse'});};
- Med.close=function(){var m=Med.cur;$('med').className='sheet med';Med.cur=null;if(!m)return;UI.hud();if(m.step!=='done'){m.seq.slice().reverse().forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,T.need[k]);});UI.go('place');return;}UI.go('medDone',{out:m.res.out,src:m.src,pid:m.pid,dx:m.d.dx,cb:m.cb});};
+ Med.close=function(){var m=Med.cur;$('med').className='sheet med';Med.cur=null;if(!m)return;UI.hud();if(m.step!=='done'){m.seq.slice().reverse().forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,T.need[k]);});UI.go('place');return;}UI.go('medDone',{out:m.res.out,src:m.src,pid:m.pid,dx:m.d.dx,cb:m.cb,deal:m.res.dealMsgs||[]});};
  /* 自動看診（歲月流轉／醫館學徒）：回傳結果 */
  Med.auto=function(ci,sk,useInv){var d=CASES[ci];var ok=d.seq.every(function(t){var c=useInv?Med.techOk(t):{ok:!!S.fam.tech[t]};return c.ok;});var p=(sk/100)*0.8+(ok?0.25:-0.2)-0.12*(d.lv-1);var good=rand()<p;if(useInv&&ok)d.seq.forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);});return {ok:good,fee:good?d.fee:0,d:d};};
  Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;var a;

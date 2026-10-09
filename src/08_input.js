@@ -143,6 +143,12 @@ Decl.apply=function(t){var out={lines:[],focus:''};var x=t.replace(/^[\/／]?(�
  if(m){var n=parseInt(m[1],10);if(isNaN(n))n=({一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10,百:100}[m[1].slice(-1)]||10)*(m[1].length>1?10:1);var capg=SET.decld!==false?100:500;var got=Math.min(n,capg);Inv.gold(got);say('（作者設定）你得到了'+got+'兩銀子。'+(got<n?'（宣告調整：單次上限 '+capg+' 兩）':''));return out;}
  m=x.match(/^我(?:是|其實是|乃)(.{1,12})$/);
  if(m){var who=m[1];FW.add(me.n+'其實是'+who,[S.pc],S.pc,{secret:1,kw:[who.slice(-2)]});me.notes.declId=who;say('（作者設定，秘密）你真正的身分是：'+who+'。此事只有你自己知道——除非你說出口。');return out;}
+ /* 約定：某某答應醫好孫子就用N兩租醫館 */
+ m=x.match(/^(.{1,8}?)(?:答應|約定|說好|允諾)(?:了)?(?:：|，|：)?(.{4,60})$/);
+ if(m&&typeof Deal!=='undefined'){id=People.idByName(m[1]);var body=m[2];if(!id){var o0=Deal.parseOffer(x,S.focus);if(o0){Deal.add(o0);say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o0));return out;}}
+  if(id&&id!==S.pc){var o1=Deal.parseOffer(body,id)||Deal.parseOffer(x,id);if(o1){o1.src='decl';Deal.add(o1);out.focus=id;say('（作者設定）你與'+cn(id)+'說定：'+Deal.str(Deal.open().filter(function(d){return d.with===id;}).slice(-1)[0]||o1)+'。');return out;}}}
+ m=x.match(/(?:醫好|治好).{0,12}(?:租|讓).{0,6}醫館/);
+ if(m&&typeof Deal!=='undefined'){var nid=S.focus&&P(S.focus)?S.focus:(People.present()[0]||'');var o2=Deal.parseOffer(x,nid);if(o2){o2.src='decl';Deal.add(o2);out.focus=nid;say('（作者設定）約定已成：'+Deal.str(Deal.open().slice(-1)[0]||o2));return out;}}
  FW.add(x,[],S.pc,{pub:1});say('（作者設定，從此成為事實）'+x);return out;};
 Decl.NEG=/莫非|荒唐|不可能|錯覺|並非如此|只是幻想|只是個夢|胡思亂想|不過是想像/;
 Decl.verify=function(r,d){if(SET.decld===false&&!Decl.NEG.test(r.scene))return null;if(Decl.NEG.test(r.scene))return d.off();return null;};
@@ -173,8 +179,11 @@ Input.submit=function(raw){var t=String(raw||'').trim();if(!t||!S)return null;va
    extra='（行動結果：'+resA+'）';off=function(){var L=[resA];if(o.mode==='mix'&&o.say&&id){L.push(['p',o.say]);L.push([id,Speak.reply(id,o.say)]);}return Eng.L(L,id,S.place,Input.backCh(id));};act.off=off;req.act=act;
    if(o.mode==='mix'&&o.say){if(id)Recall.said(id,o.say);req.text='（'+o.act+'）'+o.say;extra+='（隨後主角說：「'+o.say+'」——這句是對白，只需回應）';}}}}
  else{tag='對白';if(id){var p=P(id);Recall.said(id,t);if(!p.talked){People.rel(id,{aff:2});p.talked=1;}
-   FW.secretsOf().forEach(function(f){if(f.kw&&f.kw.some(function(w){return t.indexOf(w)>=0;})&&f.kn.indexOf(id)<0){Seal.told(id,f);toast('🔏 '+cn(id)+'得知了你的秘密（會替你守口如瓶）');}});}
-  off=function(){return Eng.L(id?[['p',t],[id,Speak.reply(id,t)]]:[['p',t],'你的話散在風裡，無人回應。'],id,S.place,Input.backCh(id));};}
+   FW.secretsOf().forEach(function(f){if(f.kw&&f.kw.some(function(w){return t.indexOf(w)>=0;})&&f.kn.indexOf(id)<0){Seal.told(id,f);toast('🔏 '+cn(id)+'得知了你的秘密（會替你守口如瓶）');}});
+   if(typeof Deal!=='undefined'){var ofr=Deal.parseOffer(t,id);if(ofr){req._dealOffer=ofr;S.dealPend=ofr;extra+='（主角提出約定：'+Deal.str(ofr)+'。若對方應允，必須寫入 deals 並設 status=open。）';}}}
+  off=function(){var L=id?[['p',t],[id,Speak.reply(id,t)]]:[['p',t],'你的話散在風裡，無人回應。'];
+   if(typeof Deal!=='undefined'&&!AI.ready()&&id){var of2=Deal.parseOffer(t,id);if(of2&&!Deal.REFUSE.test(Speak.reply(id,t))){Deal.add(of2);L.push('（離線）'+cn(id)+'沉吟片刻，點頭應了這門約定。');}}
+   return Eng.L(L,id,S.place,Input.backCh(id));};}
  req.tag=tag;req.extra=extra;req.id=id;
  if(AI.ready()){S.pend={text:t,id:id,d:S.day};return {async:req,fb:off};}
  return off();};

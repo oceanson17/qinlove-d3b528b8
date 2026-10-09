@@ -31,6 +31,12 @@ var PLACES={
  school:{r:'xianyang',s:'學',n:'學室',d:'官府學室，教子弟識字、律令與算術。',bg:'study',x:40,y:54},
  farm:{r:'xianyang',s:'田',n:'城郊田舍',d:'渭水邊的田地，置產後可耕作。',bg:'field',x:84,y:52},
  courtyard:{r:'xianyang',s:'庭',n:'夜色庭院',d:'月下庭院，只在入夜後前往。',bg:'night',x:62,y:30,night:1},
+ herbshop:{r:'xianyang',s:'藥',n:'藥市',d:'城南藥材行聚集處。草藥、柳皮、蜜蠟、蠶絲皆可購。',bg:'market',x:30,y:70},
+ dock:{r:'xianyang',s:'碼頭',n:'渭水碼頭',d:'舟車輻輳，商旅與使節由此出入咸陽。',bg:'plum',x:90,y:56},
+ shrine:{r:'xianyang',s:'廟',n:'宗廟社壇',d:'國家宗廟與社稷壇。可祭拜、靜思，偶遇朝臣。',bg:'palace',x:46,y:10},
+ garden:{r:'xianyang',s:'苑',n:'上林苑外',d:'禁苑外圍的林地與陂池，可散步、採藥，入夜尤靜。',bg:'plum',x:8,y:24,wild:1},
+ prison:{r:'xianyang',s:'獄',n:'獄舍',d:'內史獄舍。醫官可入內診治囚徒。',bg:'camp',x:72,y:16,need:'prison'},
+ embassy:{r:'xianyang',s:'館',n:'諸侯賓館',d:'供六國使節與遠客暫住的館舍，打聽外事之地。',bg:'tavern',x:36,y:26},
  home:{r:'frontier',s:'家',n:'家',d:'你在邊地的安身之所。',bg:'hut',x:30,y:66,home:1},
  field:{r:'frontier',s:'田',n:'荒地',d:'官府分下的荒地，開墾後可種。',bg:'field',x:58,y:74},
  forest:{r:'frontier',s:'林',n:'後山林',d:'野菜、野果、柴薪、藥草；也有毒物與野獸。',bg:'forest',x:22,y:32,wild:1},
@@ -41,7 +47,7 @@ var PLACES={
  mountain:{r:'frontier',s:'山',n:'深山',d:'雲霧深處，傳說住著奇人。',bg:'title',x:14,y:14,wild:1},
  road:{r:'road',s:'途',n:'驛道營地',d:'押解的隊伍在此歇腳。',bg:'camp',x:50,y:50}
 };
-var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','palace','study','yamen','school','farm','courtyard'],frontier:['home','field','forest','river','village','fair','yamen2','mountain'],road:['road']};
+var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','palace','study','yamen','school','farm','courtyard','herbshop','dock','shrine','garden','prison','embassy'],frontier:['home','field','forest','river','village','fair','yamen2','mountain'],road:['road']};
 var EXILE_DEST=[{k:'shu',n:'蜀郡',d:'巴山蜀水，潮濕多瘴',dt:2,days:14},{k:'shang',n:'上郡',d:'黃土高坡，風沙苦寒',dt:-5,days:12},{k:'longxi',n:'隴西',d:'隴山之西，羌戎雜處',dt:-3,days:16}];
 /* 物品 */
 var ITEMS={
@@ -63,7 +69,7 @@ var ITEMS={
  notes:{n:'師父手札',k:'book',p:0,d:'解剖圖、刀法、藥理，西方醫術的心血'},lawbook:{n:'秦律抄本',k:'book',p:40,d:'讀之長文墨，利於吏試'},
  dose:{n:'緩解藥',k:'med',p:0,d:'壓制體內舊毒的藥（身世）'}
 };
-var SHOPS={market:['grain','cake','jerky','egg','wine','wood','timber','cloth','salt','honey','fat','silk','seed','needle','axe','hoe','still','winterc','sandal','herb','garlic','candy','bamboo','rouge','jade','sword','qinpu','warmer','ink','osm','go','lawbook'],fair:['grain','cake','jerky','wine','wood','cloth','salt','fat','seed','needle','axe','hoe','sandal','herb','garlic','winterc','candy','bamboo']};
+var SHOPS={market:['grain','cake','jerky','egg','wine','wood','timber','cloth','salt','honey','fat','silk','seed','needle','axe','hoe','still','winterc','sandal','herb','garlic','candy','bamboo','rouge','jade','sword','qinpu','warmer','ink','osm','go','lawbook'],fair:['grain','cake','jerky','wine','wood','cloth','salt','fat','seed','needle','axe','hoe','sandal','herb','garlic','winterc','candy','bamboo'],herbshop:['herb','willow','garlic','honey','silk','cloth','alcohol','bandage','antipyr','ors','salve','antidote','soap','wine','fat']};
 /* 西醫技法 */
 var TECHS={
  wash:{n:'煮沸洗手',d:'術前以皂與沸水洗手、煮器械'},alco:{n:'酒精消毒',d:'酒精擦拭傷口與器械',need:{alcohol:1}},debr:{n:'清創',d:'清除壞死組織與異物'},
@@ -173,14 +179,27 @@ var NAMED={
  zhaoji:{n:'趙姬',g:'f',age:43,job:'太后',title:'太后',col:'#8a3a5a',sub:'華服慵懶的太后',pers:['開朗','善妒'],like:['玉器','花草'],auth:8,np:1,
   bio:'秦王之母，邯鄲舞姬出身，貌美多情。',gene:{con:11,wit:12,look:17,cha:16,dex:11},hid:[],at:['palace','palace','palace','palace','palace','palace'],die:228},
  gaojianli:{n:'高漸離',g:'m',age:27,job:'樂師',title:'樂師',col:'#7a6a5a',sub:'抱筑的樂師',pers:['沉默','仗義'],like:['琴譜','酒'],auth:1,np:1,
-  bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218}
+  bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218},
+ mengyi:{n:'蒙毅',g:'m',age:21,job:'clerk',title:'廷尉史',col:'#4a6a8a',sub:'青衫執法的蒙氏子弟',pers:['正直','沉默'],like:['竹簡','玉器'],auth:5,np:1,
+  bio:'蒙恬之弟，習獄法，剛正寡言；常在官署與宮門之間奔走。',gene:{con:13,wit:15,look:14,cha:12,dex:12},hid:['memory'],ail:'舊傷隱痛',at:['yamen','yamen','palace','yamen','study','courtyard']},
+ baqing:{n:'巴清',g:'f',age:24,job:'owner',title:'女商',col:'#8a5a2a',sub:'錦袍珠珥的巴蜀女商',pers:['精明','開朗'],like:['玉器','糕點','酒'],auth:2,np:1,
+  bio:'巴郡丹穴之主的後人，以商賈入咸陽；笑裡藏算盤，重諾守信。',gene:{con:12,wit:16,look:16,cha:17,dex:12},hid:['beauty'],ail:'旅途風寒',at:['market','market','embassy','herbshop','tavern','dock']},
+ nanheng:{n:'南蘅',g:'f',age:23,job:'tradoc',title:'楚醫',col:'#2f6b4a',sub:'青囊斜挎的楚地女醫',pers:['刻薄','正直'],like:['竹簡','花草'],auth:2,np:1,
+  bio:'自楚國來的女醫，精湯藥針砭；對西醫刀圭又嫉又好奇，是你的勁敵與知音。',gene:{con:11,wit:15,look:15,cha:13,dex:15},hid:['hand'],ail:'過勞心悸',at:['clinic','herbshop','market','clinic','herbshop','']},
+ yanshu:{n:'晏姝',g:'f',age:20,job:'none',title:'齊使',col:'#6a4a7a',sub:'玄衣佩玉的齊國使女',pers:['溫和','多疑'],like:['花草','琴譜','胭脂'],auth:3,np:1,
+  bio:'隨齊使入秦的宗女，知禮而警惕；聽聞秦相與齊國舊事，常欲言又止。',gene:{con:10,wit:14,look:16,cha:15,dex:11},hid:['beauty'],ail:'思鄉失眠',at:['embassy','embassy','garden','plum','embassy','courtyard']},
+ zhengguo:{n:'鄭國',g:'m',age:38,job:'scholar',title:'水工',col:'#5a6a4a',sub:'泥靴竹尺的韓人水工',pers:['勤快','沉默'],like:['竹簡','肉'],auth:3,np:1,
+  bio:'韓人水工，入秦修渠；話少、手勤，懂水土與民瘼。',gene:{con:15,wit:16,look:11,cha:10,dex:14},hid:['strong'],ail:'腰腿勞損',at:['dock','yamen','farm','dock','study','']},
+ aying:{n:'阿瓔',g:'f',age:18,job:'none',title:'侍女',col:'#a86a7a',sub:'宮裝低眉的年輕侍女',pers:['熱心','膽小'],like:['糖','胭脂','花草'],auth:1,np:1,
+  bio:'趙姬身邊的小侍女，耳聰目明卻膽小；常為宮中瑣事求醫。',gene:{con:10,wit:12,look:15,cha:14,dex:12},hid:[],ail:'宮寒體弱',at:['palace','palace','garden','palace','palace','courtyard']}
 };
-var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji'];
+var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji','mengyi','baqing','nanheng','yanshu','zhengguo','aying'];
 /* 開局時間：y10＝秦王政十年（前 237，預設）；y1＝秦王政元年（前 246） */
 var ERAS={y10:{bc:237,n:'秦王政十年（前237）',d:'秦王二十二歲，剛平定嫪毐之亂、罷免呂不韋，開始親政；李斯為客卿，長公子扶蘇已長成。'},y1:{bc:246,n:'秦王政元年（前246）',d:'十三歲的嬴政剛剛登基，未親政；相國呂不韋總攬朝政，趙姬為太后；李斯是呂不韋門下舍人。史上長公子扶蘇此時尚未出生——本局把扶蘇改為與秦王同族的「宗室公子」（18 歲）照常可結緣；嬴政、蒙恬年紀尚小，滿 16 歲前只會以朋友相待。'}};
-var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34}};
+var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34},mengyi:{age:13,title:'蒙氏少年',job:'將門子弟'},baqing:{age:16},nanheng:{age:15},yanshu:{age:12,title:'齊國宗女'},zhengguo:{age:29},aying:{age:10,title:'小宮女'}};
 var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
-var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙']];
+var PORTRAIT_ALIAS={mengyi:'mengtian',zhengguo:'hanfei'};
+var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙'],['mengyi','mengtian','兄弟'],['mengyi','yingzheng','君臣·執法'],['nanheng','xiawuju','醫者相輕'],['yanshu','lvbuwei','齊秦之間'],['zhengguo','lisi','客卿相知'],['aying','zhaoji','宮人'],['baqing','lisi','商緣']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];var DEF_NAMES_M=['白朮','蘇子衿','沈澤蘭','葉長卿','顧決明'];
 /* 家世（全隨機） */
 var BIRTHS=[

@@ -396,3 +396,10 @@ body.kbopen #app{pointer-events:none;}
 #sayT{width:100%;box-sizing:border-box;font-size:16px;padding:8px;border-radius:6px;border:1px solid #b08a5a;background:#fffdf7;resize:vertical;min-height:72px}
 .sayExs{font-size:12px;opacity:.85;margin-top:6px;line-height:1.9}.sayEx{border:0;background:none;color:#7a2e1e;text-decoration:underline dotted;padding:0 4px;font-size:12px}
 .sayGo{display:flex;gap:10px;position:sticky;bottom:0;padding:8px 0;background:var(--paper)}.sayGo .btn{flex:1;padding:10px}
+
+/* 一鍵生成醫術 */
+.mplan{margin:8px 0;padding:10px 12px;border:1px solid rgba(201,163,90,.75);border-radius:12px;background:linear-gradient(160deg,#fff9f0,#f3e8d8);font-size:13px;line-height:1.55;}
+.mplan b{font-size:15px;color:var(--ver);letter-spacing:.12em;}
+.mplan .note{margin-top:4px;}
+.mplan .opts{margin-top:8px;}
+#mdGen.pri{width:100%;letter-spacing:.2em;}

@@ -1,7 +1,7 @@
 /* ===== 人物：位置、關係、心態卡(M20)、即時記憶(M20)、完整日誌、反失憶記憶庫(M21)、婚育、遺傳、衰老、死亡、傳承、來訪(M18) ===== */
 var People={};
 (function(){
- var LOCALS={market:['trader','owner','beggar'],tavern:['xia','singer','owner'],camp:['soldier','soldier'],yamen:['clerk','guard'],yamen2:['clerk','guard'],village:['farmer','weaver','carpenter'],fair:['trader','smith'],field:['farmer'],river:['boat','hunter'],forest:['hunter'],school:['scholar'],lodge:['owner'],plum:['scholar','hunter'],clinic:['tradoc'],mountain:[],road:[],farm:['farmer'],home:[],palace:['clerk'],study:['scholar'],courtyard:[]};
+ var LOCALS={market:['trader','owner','beggar'],tavern:['xia','singer','owner'],camp:['soldier','soldier'],yamen:['clerk','guard'],yamen2:['clerk','guard'],village:['farmer','weaver','carpenter'],fair:['trader','smith'],field:['farmer'],river:['boat','hunter'],forest:['hunter'],school:['scholar'],lodge:['owner'],plum:['scholar','hunter'],clinic:['tradoc'],mountain:[],road:[],farm:['farmer'],home:[],palace:['clerk'],study:['scholar'],courtyard:[],herbshop:['tradoc','trader'],dock:['boat','trader'],shrine:['scholar','clerk'],garden:['hunter','scholar'],prison:['guard'],embassy:['scholar','trader','singer']};
  People.ensureLocals=function(pl){var want=LOCALS[pl];if(!want||!want.length)return;var have=0;for(var id in S.ppl){var p=S.ppl[id];if(p.alive&&p.loc&&p.loc.pl===pl&&p.kind==='npc')have++;}
   var cap=pl==='market'||pl==='village'||pl==='tavern'?3:2;for(var i=have;i<cap;i++){var q=genPerson({job:want[i%want.length],loc:{r:PLACES[pl].r,pl:pl}});q.title=JOBS[q.job];}};
  /* 位置 */
@@ -17,7 +17,7 @@ var People={};
   return r.sort(function(a,b){var A=P(a),B=P(b);return (B.hh?3:0)+(B.kind==='named'?2:0)+(B.met?1:0)-((A.hh?3:0)+(A.kind==='named'?2:0)+(A.met?1:0));});};
  People.idByName=function(nm){nm=String(nm||'').replace(/\s/g,'');if(!nm)return '';if(nm==='我'||nm==='你'||nm===pc().n)return S.pc;var best='',bl=0;
   for(var id in S.ppl){var p=S.ppl[id];if(!p.alive&&!p.died)continue;var cands=[p.n,p.gn,p.milk,p.title&&p.met?p.title:null,p.rel];cands.forEach(function(c){if(c&&c.length>=1&&nm.indexOf(c)>=0&&c.length>bl&&(c.length>=2||nm===c)){best=id;bl=c.length;}});}
-  if(!best){if(/秦王|大王|王上|陛下|始皇/.test(nm))return 'yingzheng';if(/將軍/.test(nm))return 'mengtian';if(/長公子/.test(nm))return 'fusu';if(/影衛|蒙面/.test(nm))return 'xuanye';if(/侍醫/.test(nm))return 'xiawuju';if(/方士/.test(nm))return 'xufu';
+  if(!best){if(/秦王|大王|王上|陛下|始皇/.test(nm))return 'yingzheng';if(/將軍/.test(nm))return 'mengtian';if(/長公子/.test(nm))return 'fusu';if(/影衛|蒙面/.test(nm))return 'xuanye';if(/侍醫/.test(nm))return 'xiawuju';if(/方士/.test(nm))return 'xufu';if(/蒙毅/.test(nm))return 'mengyi';if(/巴清/.test(nm))return 'baqing';if(/南蘅/.test(nm))return 'nanheng';if(/晏姝/.test(nm))return 'yanshu';if(/鄭國/.test(nm))return 'zhengguo';if(/阿瓔/.test(nm))return 'aying';
    if(/衙役|差爺|官差/.test(nm)&&S.road)return S.road.guards[0];if(/父親|爹|阿爹/.test(nm))return People.byRel('父');if(/母親|娘|阿娘/.test(nm))return People.byRel('母');if(/夫君|相公|娘子|夫人|妻子|丈夫/.test(nm))return pc().spouse||'';if(/師父/.test(nm))return 'master';}
   return best;};
  People.byRel=function(r){for(var id in S.ppl){var p=S.ppl[id];if(p.alive&&p.hh&&p.rel===r)return id;}return '';};

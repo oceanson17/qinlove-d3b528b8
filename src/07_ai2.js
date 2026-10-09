@@ -9,7 +9,13 @@ var VOICE={
  xuanye:{tone:'寡言，字少而準，冷中帶護',tic:'「……在。」「別回頭。」',goal:'奉命護衛；隱藏自己的身世'},
  zhaogao:{tone:'謙卑圓滑，笑裡藏刀，奉承中探底',tic:'「小人不敢。」「大人說的是。」',goal:'攀附權力、掌握他人把柄'},
  lvbuwei:{tone:'老練從容，商人算盤，常以「奇貨」喻人',tic:'「奇貨可居。」「老夫看人，從不走眼。」',goal:'保相國權位、著《呂氏春秋》傳名'},
- zhaoji:{tone:'嬌慵而帶威，喜怒無常',tic:'「哀家乏了。」',goal:'貪歡、保自身富貴，與兒子關係緊張'}};
+ zhaoji:{tone:'嬌慵而帶威，喜怒無常',tic:'「哀家乏了。」',goal:'貪歡、保自身富貴，與兒子關係緊張'},
+ mengyi:{tone:'剛正簡練，法理口吻，少廢話',tic:'「依法處置。」「證據何在？」',goal:'公正執法、不辱蒙氏門風；暗中護兄'},
+ baqing:{tone:'爽利帶笑，商人口吻，算賬清楚',tic:'「這筆賬，我記著。」「成不成，一句話。」',goal:'擴張巴蜀商路、在咸陽站住腳'},
+ nanheng:{tone:'辛辣直白，醫者傲氣，不服就辯',tic:'「可笑。」「拿你的刀圭來比比看。」',goal:'證明楚醫不輸西醫；其實渴望交流'},
+ yanshu:{tone:'溫柔謹慎，話到嘴邊留三分',tic:'「使團有規矩。」「……不宜多說。」',goal:'完成使節使命、探聽秦相與齊國舊緣'},
+ zhengguo:{tone:'樸實少言，談渠與土最起勁',tic:'「挖下去便是。」「民以食爲天。」',goal:'修成鄭國渠、讓關中無饑'},
+ aying:{tone:'怯生生、細聲細氣，偶爾八卦',tic:'「大夫……」「別告訴別人。」',goal:'保住差事、幫宮裡病人；偷偷喜歡外面的世界'}};
 AI.MOODS=function(p){var b=p.bond&&p.bond.e||{};var top=Object.keys(b).sort(function(x,y){return (b[y]||0)-(b[x]||0);})[0];var m=p.hp<40?'病弱':p.mood!=null&&p.mood<30?'低落':p.mood>75?'愉快':'平靜';return m+(top&&b[top]>=20?'，對主角'+top+'較重':'')+(p.aff<-20?'，心有芥蒂':'');};
 (function(){var op=AI.pline;AI.pline=function(id){var s=op(id);var v=VOICE[id],p=P(id);var ex=[];if(v)ex.push('語氣：'+v.tone,'口頭禪：'+v.tic,'動機：'+v.goal);else if(p&&p.pers)ex.push('語氣：依性格「'+p.pers.join('、')+'」');if(p)ex.push('此刻情緒：'+AI.MOODS(p));return s+'｜'+ex.join('｜');};})();
 AI.STYLE='\n【文筆與劇情要求】\n'

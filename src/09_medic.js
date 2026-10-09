@@ -7,6 +7,34 @@ var Med={cur:null};
  Med.illCase=function(p){var w=(p.ill||[]).slice().sort(function(a,b){return b.sev-a.sev;})[0];if(!w)return -1;var k=(ILLS[w.k]||{}).case;return k?Med.caseOf(k):-1;};
  Med.techOk=function(t){var T=TECHS[t];if(!T)return {ok:false,why:''};if(t!=='incant'&&t!=='bleed'&&t!=='herbs'&&!S.fam.tech[t])return {ok:false,why:'未習得'};if(T.tool&&!Inv.has(T.tool))return {ok:false,why:'缺'+ITEMS[T.tool].n};if(T.need)for(var k in T.need)if(!Inv.has(k,T.need[k]))return {ok:false,why:'缺'+ITEMS[k].n};return {ok:true};};
  Med.techs=function(){var o=TECH_ORDER.filter(function(t){return S.fam.tech[t]||t==='incant'||t==='bleed'||t==='herbs';});return o;};
+ Med.CANNED=[
+  {for:['cut','arrow','burn'],name:'青囊清創縫合法',method:'先以皂與沸水洗手，再以酒精擦創緣，去腐清異物，蠶絲縫合，繃帶包紮。',effect:'創口閉合，感染大減',risk:'異物未盡則仍可能化膿',seq:['wash','alco','debr','suture','bandage']},
+  {for:['abscess'],name:'切開排膿術',method:'洗手消毒後於膿腫低位切開，排盡膿液，不以縫線強合，僅繃帶覆蓋。',effect:'紅腫漸消、熱退',risk:'切開過深傷及脈絡',seq:['wash','alco','drain','bandage']},
+  {for:['fracture','disloc'],name:'正骨夾板法',method:'手法復位後以木板固定，囑臥床靜養，勿妄動。',effect:'骨位歸正、痛減',risk:'復位粗暴可傷筋絡',seq:['reduce','splint','rest']},
+  {for:['fever','diarrhea','lung','poison','snake'],name:'退熱補液調理方',method:'先察神志與脈息，予退燒散與鹽糖補液，必要時隔離靜養；毒症則先灌解毒湯。',effect:'熱退、津液漸復',risk:'補液過急易致嘔吐',seq:['fever','ors','rest']},
+  {for:['gangrene'],name:'截肢保命術',method:'近心端紮止血帶，洗手消毒後截去壞死肢體，繃帶包紮，以保性命。',effect:'可免毒火攻心',risk:'殘廢終身，家人或痛責',seq:['tourn','wash','alco','amput','bandage']},
+  {for:['birth'],name:'轉胎助產法',method:'洗手後手轉胎位，側切接生，再予補液扶正。',effect:'母子可保',risk:'產婦力竭則凶險',seq:['wash','deliver','ors']},
+  {for:['tetanus','append'],name:'清創隔離養護',method:'清創去腐，隔離靜室，囑絕對臥床，輔以退熱。',effect:'或可止痙退熱',risk:'重症仍難保全',seq:['wash','debr','isolate','rest']}
+ ];
+ Med.pickCanned=function(d){var c=Med.CANNED.filter(function(x){return x.for.indexOf(d.k)>=0;});return c.length?pick(c):pick(Med.CANNED);};
+ Med.planHtml=function(plan,src){if(!plan)return '';return '<div class="mplan"><b>✨ '+esc(plan.name)+'</b>'+(src?' <small class="note">（'+esc(src)+'）</small>':'')+'<div class="note">手法：'+esc(plan.method)+'</div><div class="note">預期：'+esc(plan.effect)+'　風險：'+esc(plan.risk)+'</div><div class="note">步驟：'+(plan.seq||[]).map(function(t){return TECHS[t]?TECHS[t].n:t;}).join('→')+'</div><div class="opts" style="flex-direction:row;flex-wrap:wrap;gap:6px"><button class="cbtn" id="mdUsePlan" style="flex:1">採用此術</button><button class="btn" id="mdCmdPlan">填入指令</button><button class="btn" id="mdRePlan">再生成</button></div></div>';};
+ Med.genOffline=function(){var m=Med.cur;if(!m)return;var plan=Med.pickCanned(m.d);/* 只保留已習得／可用技法 */plan={name:plan.name,method:plan.method,effect:plan.effect,risk:plan.risk,seq:(plan.seq||[]).filter(function(t){return TECHS[t]&&(S.fam.tech[t]||t==='incant'||t==='bleed'||t==='herbs'||t==='rest');})};if(!plan.seq.length)plan.seq=(m.d.seq||[]).slice();m.plan=plan;m.planSrc='離線方';Med.draw();toast('已生成離線醫術方案');};
+ Med.genPrompt=function(){var m=Med.cur,d=m.d,me=pc();var keys=Med.techs().join(',');return '你是秦代背景文字遊戲《青囊·秦心》的醫術顧問。依病況生成一則遊戲用「醫術方案」。繁體中文、古雅西醫詞彙（刀圭、酒精、縫合、聽診、清創）。只輸出 JSON：{"name":"術名(8字內)","method":"手法步驟(80字內)","effect":"預期效果(24字內)","risk":"風險(24字內)","seq":["技法key",...]}。技法 key 只能從：'+keys+'。可參考理想次序：'+d.seq.join('→')+'。病況：'+d.p+'——'+d.c+'；正確診斷為「'+d.dx+'」。勿寫真實現代自殘或危險實驗指引，保持虛構歷史診所語氣。';};
+ Med.genAI=function(){var m=Med.cur;if(!m)return;if(!AI.ready()||AI.manual()){Med.genOffline();return;}
+  var btn=document.getElementById('mdGen');if(btn){btn.disabled=true;btn.textContent='生成中…';}
+  toast('正在請 AI 擬定醫術…');
+  AI.call([{role:'system',content:'只輸出一個 JSON 物件，不要 markdown。'},{role:'user',content:Med.genPrompt()}],{maxTok:400,timeout:Math.min(45,SET.aiTimeout||60),fmt:true}).then(function(res){
+   var j=AI.extractJSON(res.text)||{};var seq=[];(j.seq||[]).forEach(function(t){t=String(t);if(TECHS[t]&&seq.indexOf(t)<0)seq.push(t);});
+   if(!seq.length)seq=(Med.pickCanned(m.d).seq||[]).slice();
+   m.plan={name:String(j.name||'青囊應急方').slice(0,12),method:String(j.method||'').slice(0,120)||Med.pickCanned(m.d).method,effect:String(j.effect||'病勢或有起色').slice(0,40),risk:String(j.risk||'仍有不測').slice(0,40),seq:seq};
+   m.planSrc='AI';Med.draw();toast('醫術方案已就緒');
+  },function(e){toast('AI 失敗，改用離線方：'+AI.errMsg(e));Med.genOffline();});};
+ Med.usePlan=function(){var m=Med.cur;if(!m||!m.plan)return;if(m.step==='exam'){if(m.dxOk==null)m.dxOk=true;m.step='proc';}if(m.step!=='proc')m.step='proc';
+  var skip=[];(m.plan.seq||[]).forEach(function(t){if(m.seq.indexOf(t)>=0)return;var ok=Med.techOk(t);if(!ok.ok){skip.push((TECHS[t]?TECHS[t].n:t)+'：'+ok.why);return;}var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);m.seq.push(t);});
+  toast(skip.length?skip[0]:'已依方案加入處置步驟',2800);Med.draw();};
+ Med.toCmd=function(){var m=Med.cur;if(!m||!m.plan)return;SET.inmode='cmd';try{saveSettings();}catch(e){}if(typeof UI!=='undefined'&&UI.modeSync)UI.modeSync();
+  var t='依「'+m.plan.name+'」施治：'+m.plan.method;var f=document.getElementById('free');if(f)f.value=t;toast('已填入指令欄（說／指令）。可完成或關閉問診後送出。',3200);};
+
  Med.open=function(o){var ci=o.ci!=null?o.ci:(o.pid?Med.illCase(P(o.pid)):-1);if(ci<0)ci=Med.pickCase();var d=CASES[ci];var pp=o.pid?P(o.pid):null;
   Med.cur={d:d,ci:ci,pid:o.pid||'',src:o.src||'clinic',fee:o.fee!=null?o.fee:d.fee,rev:{},step:'exam',dxOk:null,seq:[],dxOpts:shuffle([d.dx].concat(d.wrong)),cb:o.cb||''};
   $('med').className='sheet med on';$('mdT').textContent=pp?'為'+(pp.id===S.pc?'自己':pp.n)+'診治':'坐堂看診';Med.draw();};
@@ -17,6 +45,7 @@ var Med={cur:null};
   if(m.step==='done'){var r=m.res;h+='<div class="mres"><div class="stamp">'+r.stamp+'</div><div class="note">診斷 '+(m.dxOk?'✔ ':'✘ 應為「'+esc(d.dx)+'」 ')+'｜處置 '+Math.round(r.q*100)+'%｜理想次序：'+d.seq.map(function(t){return TECHS[t].n;}).join('→')+'</div><div class="note" style="margin-top:6px">'+esc(r.msg)+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起刀圭</button></div>';}
   else{h+='<h4>生命徵象與檢查 <small class="note">（至少三項）</small></h4><div class="vgrid">'+EXAM.map(function(e){var k=e[0];var got=m.rev[k];var v=got?(d.vit[k]||d.ex[k]):'';return '<button class="vbtn'+(got?' done':'')+'" data-ex="'+k+'"><i>'+e[1]+'</i><b>'+e[2]+'</b>'+(got?'<span>'+esc(v)+'</span>':'')+'</button>';}).join('')+'</div>';
    if(m.step==='exam'&&Med.revealed()>=3)h+='<h4>診斷</h4><div class="opts">'+m.dxOpts.map(function(x){return '<button class="cbtn" data-dx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';
+   if(m.step==='exam'&&Med.revealed()>=3||m.step==='proc'){h+='<div class="row" style="margin:8px 0"><button class="btn pri" id="mdGen">✨ 一鍵生成醫術</button></div>';if(m.plan)h+=Med.planHtml(m.plan,m.planSrc);}
    if(m.step==='proc'){h+='<h4>處置次序 <small class="note">依序點選，耗用藥材</small></h4><div class="sym">'+(m.seq.length?m.seq.map(function(t,i){return '<span>'+(i+1)+'. '+TECHS[t].n+'</span>';}).join(''):'<span class="note" style="border:0;background:none">尚未處置</span>')+'</div>';
     h+='<div class="tgrid">'+Med.techs().map(function(t){var ok=Med.techOk(t);var T=TECHS[t];var need=T.need?Object.keys(T.need).map(function(k){return ITEMS[k].n+(S.inv[k]||0);}).join(''):'';return '<button class="tbtn'+(ok.ok?'':' lock')+(t==='incant'||t==='bleed'||t==='herbs'?' old':'')+'" data-tc="'+t+'"'+(ok.ok?'':' disabled')+'><b>'+T.n+'</b><small>'+(ok.ok?(need||T.d.slice(0,8)):ok.why)+'</small></button>';}).join('')+'</div>';
     h+='<div class="opts" style="flex-direction:row"><button class="btn" id="mdUndo">撤回一步</button><button class="cbtn" id="mdFin" style="flex:1">完成處置</button></div>';}}
@@ -52,7 +81,7 @@ var Med={cur:null};
  /* 自動看診（歲月流轉／醫館學徒）：回傳結果 */
  Med.auto=function(ci,sk,useInv){var d=CASES[ci];var ok=d.seq.every(function(t){var c=useInv?Med.techOk(t):{ok:!!S.fam.tech[t]};return c.ok;});var p=(sk/100)*0.8+(ok?0.25:-0.2)-0.12*(d.lv-1);var good=rand()<p;if(useInv&&ok)d.seq.forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);});return {ok:good,fee:good?d.fee:0,d:d};};
  Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;var a;
-  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();});};
+  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();else if(b.id==='mdGen'||b.id==='mdRePlan')Med.genAI();else if(b.id==='mdUsePlan')Med.usePlan();else if(b.id==='mdCmdPlan')Med.toCmd();});};
 })();
 /* ===== 製藥 ===== */
 var Craft={

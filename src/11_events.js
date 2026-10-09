@@ -51,7 +51,13 @@ var TALK={
   xiawuju:['刀子割人，成何體統。','湯藥才是正道。','你那酒精……有點意思。','宮裡的病，可不是市井的病。','老夫行醫三十年，沒見過你這種治法。'],
   xufu:['海上有仙山，名曰蓬萊。','長生之術，你信不信？','你的醫術，莫非也是仙術？','天機不可洩露。','大王對長生，很有興趣。'],
   zhaogao:['大夫辛苦了。','宮中耳目眾多，大夫說話要小心。','奴婢只是替大王跑腿的。','大夫的醫術，真是神乎其技啊。','有空，來奴婢府上坐坐。'],
-  gaojianli:['……想聽一曲嗎？','荊卿又喝醉了。','筑聲，是心聲。','易水的水，很冷。','你笑起來很好看。']},
+  gaojianli:['……想聽一曲嗎？','荊卿又喝醉了。','筑聲，是心聲。','易水的水，很冷。','你笑起來很好看。'],
+  mengyi:['法者，所以禁暴也。','家兄常提起你。','廷尉署近日多事。','證據不足，不可妄斷。','你的刀圭……若用在刑訊上，後果難料。'],
+  baqing:['巴蜀的丹砂，比金子還貴。','做生意，講究信字。','咸陽的酒，烈是烈，卻不夠香。','你開醫館？改天我投筆銀子。','遠道而來，最怕人騙。'],
+  nanheng:['湯藥才是正道——你那刀子，太狠。','楚地潮濕，傷寒最多。','你的酒精……我試過了，有用。','別以爲西醫就能壓過我。','針砭與刀圭，或許可以並用。'],
+  yanshu:['齊國的海風，和這裡不一樣。','使團裡的事，不宜多問。','你可聽過呂相國與齊國的舊事？','這梅花，像故鄉的一樣。','……我只是過客。'],
+  zhengguo:['渠成，則關中無饑。','挖土的事，比說話實在。','韓人在秦，當小心。','水土不服，多有腰腿疾。','你懂醫，可知民病半因饑寒。'],
+  aying:['太后今日心情不好……','大夫，宮裡有人發燒。','我什麼都不知道。真的。','這糖人……可以給我嗎？','別告訴別人我跟你說過話。']},
  G:{開朗:['哈哈，今天心情真好！','走，一起去看熱鬧？'],沉默:['……嗯。','你說，我聽著。'],暴躁:['煩死了！','別惹我。'],溫和:['慢慢來，不急。','你也要照顧好自己。'],精明:['這事兒，得算計算計。','無利不起早嘛。'],狡猾:['嘿嘿，大夫好啊。','有什麼好處，記得分我一份。'],仗義:['有事儘管開口！','朋友有難，豈能不管。'],熱心:['吃過了嗎？我家剛蒸了餅。','有什麼要幫忙的？'],刻薄:['哼。','你也配？'],多疑:['你打聽這個做什麼？','人心隔肚皮。'],正直:['做人要問心無愧。','不義之財，不可取。'],膽小:['最近外頭不太平……','我、我什麼都沒看見。'],貪財:['有錢能使鬼推磨。','最近手頭緊啊。']}
 };
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
@@ -65,7 +71,7 @@ NODES.talkT=function(a){var id=a.id,p=P(id),me=pc();var L=[];var k=a.k;
  if(AI.ready()&&k!=='heal'&&k!=='call'){var tp={chat:'閒聊',news:'問近況',date:'邀約同遊',secret:'主角想吐露秘密'}[k];return {async:{type:'talk',id:id,topic:tp},fb:function(){return NODES.talkT({id:id,k:k,off:1,_o:1});}};}
  if(k==='chat'){Eng.pass(1);L.push([id,TALK.chat(p)]);if(p.notes.tk!==S.day){p.notes.tk=S.day;People.rel(id,{aff:2,trust:1},'與'+me.n+'閒聊');if(p.love<60&&p.aff>=35&&rand()<0.3)People.rel(id,{love:2});}}
  else if(k==='news'){L.push([id,'「'+People.thought(p).replace(/^（|）$/g,'')+'」']);if(p.ill.length)L.push(ta(p)+'說著咳了兩聲——看起來是'+Ill.str(p)+'。');if(p.kind==='named'&&NAMED[id].ail&&!p.notes.ailCured)L.push('你注意到'+ta(p)+'似乎有'+NAMED[id].ail+'的毛病。');}
- else if(k==='heal'){if(p.ill.length){Med.open({pid:id,src:'call',fee:p.kind==='named'?60:15});return {screen:'med'};}if(p.kind==='named'){var ci=Med.caseOf({頭痛失眠:'fever',舊箭傷:'arrow',胃疾:'diarrhea',寒症:'lung',心悸:'fever',舊毒:'poison',刀傷:'cut'}[NAMED[id].ail]||'fever');p.notes.ailTry=S.day;Med.open({pid:'',ci:ci,src:'call',fee:40,cb:'ail:'+id});return {screen:'med'};}}
+ else if(k==='heal'){if(p.ill.length){Med.open({pid:id,src:'call',fee:p.kind==='named'?60:15});return {screen:'med'};}if(p.kind==='named'){var ci=Med.caseOf({頭痛失眠:'fever',舊箭傷:'arrow',胃疾:'diarrhea',寒症:'lung',心悸:'fever',舊毒:'poison',刀傷:'cut',舊傷隱痛:'fracture',旅途風寒:'fever',過勞心悸:'fever',思鄉失眠:'fever',腰腿勞損:'fracture',宮寒體弱:'fever'}[NAMED[id].ail]||'fever');p.notes.ailTry=S.day;Med.open({pid:'',ci:ci,src:'call',fee:40,cb:'ail:'+id});return {screen:'med'};}}
  else if(k==='call'){var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl){S.calls=S.calls.filter(function(v){return v!==cl;});Eng.pass(1);People.rel(id,{aff:4,trust:4},me.n+'應邀到我家出診');Med.open({pid:'',ci:Med.caseOf(cl.cs),src:'call',fee:15+Fam.tier()*5});return {screen:'med'};}}
  else if(k==='date'){Eng.pass(2);People.rel(id,{aff:4,love:3},'和'+me.n+'同遊');me.mood=clamp(me.mood+6,0,100);L.push('你們沿著'+(S.region==='frontier'?'河灘':'渭水')+'走了很久，說了很多話。');L.push([id,p.love>=40?'「……下回，還一起來吧。」':'「今天很開心。」']);}
  else if(k==='secret'){var f=FW.secretsOf().filter(function(x){return x.kn.indexOf(id)<0;})[0];if(!f)L.push('你想說的，'+ta(p)+'都已經知道了。');else{Seal.told(id,f);People.rel(id,{trust:6},me.n+'把秘密託付給我');L.push('你壓低聲音，把「'+f.t+'」告訴了'+p.n+'。');L.push([id,'「……我知道了。這件事，我不會對任何人說。」']);}}

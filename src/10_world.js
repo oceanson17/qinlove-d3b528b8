@@ -41,6 +41,12 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
   if(Eng.atHome()&&S.region==='frontier'){if(S.fam.house<2)A('🏚 搭屋（'+Eng.HOUSE_N[S.fam.house+1]+'）','build');}
   if(pl==='village'){if(adult)A('💪 幫鄰里幹活','work');if(adult&&(S.fam.tech.alco||me.sk.med>=25))A('⛺ 為鄉鄰看病','streetClinic');}
   if(pl==='courtyard'){A('🌙 賞月','moon');}
+  if(pl==='herbshop'){A('🛒 購買藥材','shop');if(adult&&(S.fam.tech.alco||me.sk.med>=20))A('💬 與藥行掌櫃論藥','rumor');}
+  if(pl==='dock'){A('🎣 臨水垂釣','fish');A('👂 打聽商旅消息','rumor');if(adult)A('💪 幫船家搬貨','work');}
+  if(pl==='shrine'){A('🙏 祭拜靜思','pray');A('📚 讀碑銘（文墨）','read');}
+  if(pl==='garden'){A('🌿 採藥散步','forage');A('🚶 林間閒步','gardenWalk');}
+  if(pl==='prison'){if(me.medoff||me.office||S.fam.fame>=10)A('🩺 為囚徒診治','prisonClinic');else A('（無資格入內）','place');}
+  if(pl==='embassy'){A('🍶 與使節閒談','rumor');if(adult)A('🎁 以禮結交遠客','embassyGift');}
  }
  var here=People.present().slice(0,5);here.forEach(function(id){c.push(ch('💬 '+People.label(id),'talk',{id:id}));});
  var sickFam=Eng.house().filter(function(p){return p.ill.length&&(p.id===S.pc||Eng.atHome()||S.region==='road');});if(sickFam.length&&(S.fam.tech.alco||me.sk.med>=20))A('🩺 為'+(sickFam[0].id===S.pc?'自己':sickFam[0].n)+'診治','treat',{id:sickFam[0].id});
@@ -51,6 +57,7 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
 NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
 NODES.map=function(){if(S.region==='road')return NODES.place();if(S.flags.held)return NODES.place();return {screen:'map'};};
 NODES.go=function(a){var pl=PLACES[a.pl];if(!pl)return NODES.place();if(pl.need==='palace'&&!S.flags.palace&&!pc().office)return Eng.L(['宮門侍衛橫戟攔住你：「無詔不得入。」'],'',S.place,[ch('↩ 返回','map')]);
+ if(pl.need==='prison'&&!(pc().medoff||pc().office||S.fam.fame>=10))return Eng.L(['獄卒攔在門外：「無官職醫憑，或名聲不夠，不得入內。」'],'',S.place,[ch('↩ 返回','map')]);
  if(pl.night&&S.per<4)return Eng.L(['月色庭院只在入夜後才去得。'],'',S.place,[ch('↩ 返回','map')]);
  if(a.pl!==S.place){S.place=a.pl;Eng.pass(1);if(rand()<0.25&&!S.queue.length)Ev.roll('move');}return NODES.place();};
 NODES.wait=function(){Eng.pass(1);pc().sta=clamp(pc().sta+8,0,100);return NODES.place();};
@@ -84,6 +91,10 @@ NODES.chop=function(){var me=pc();if(me.sta<15)return Eng.L(['你累得揮不動
 NODES.fish=function(){var me=pc();Eng.pass(1);me.sta-=10;var ok=rand()<0.35+me.sk.farm/200;if(ok)Inv.add('fish',1);if(Weather.wet()&&rand()<0.2)Ill.add(me,'cold',1);return Eng.L([ok?'一條魚咬了鉤！（鮮魚+1）':'等了一個時辰，什麼也沒釣到。'],'',S.place,[ch('再釣','fish'),ch('↩','place')]);};
 NODES.wash=function(){Eng.pass(1);Eng.house().forEach(function(p){p.cloth=clamp(p.cloth+5,0,100);p.mood=clamp(p.mood+2,0,100);});if(Inv.has('soap'))Eng.house().forEach(function(p){if(Ill.has(p,'diarrhea'))Ill.cure(p,'diarrhea',1);});return Eng.L(['你把全家的衣裳洗得乾乾淨淨。'+(Inv.has('soap')?'用了草木灰皂，疫病也少了。':'')],'',S.place,[ch('↩','place')]);};
 NODES.moon=function(){Eng.pass(1);pc().mood=clamp(pc().mood+6,0,100);if(S.flags.xy_open||ageOf(pc())>=16&&rand()<0.3&&alive('xuanye')){S.flags.xy_open=1;return Eng.L(['月色如水。屋簷上有個黑影，靜靜地陪你坐著。'],'xuanye',S.place,[ch('💬 喚他下來','talk',{id:'xuanye'}),ch('↩','place')]);}return Eng.L(['月色如水，你心裡靜了些。（心情+6）'],'',S.place,[ch('↩','place')]);};
+NODES.pray=function(){Eng.pass(1);var me=pc();me.mood=clamp(me.mood+5,0,100);me.sk.lit=clamp(me.sk.lit+(rand()<0.4?1:0),0,100);return Eng.L(['你在社壇前肅立片刻，煙霧裊裊。（心情+5）'],'',S.place,[ch('↩','place')]);};
+NODES.gardenWalk=function(){Eng.pass(1);pc().mood=clamp(pc().mood+4,0,100);pc().sta=clamp(pc().sta+5,0,100);var L=['上林苑外林木疏朗，陂水聲細。你走了一個時辰。（心情+4）'];var c=[ch('↩','place')];if(alive('yanshu')&&rand()<0.35){P('yanshu').here={d:S.day,per:S.per,pl:S.place};Eng.keep('yanshu');L.push('亭邊似有齊國使女的身影。');c.unshift(ch('💬 上前','talk',{id:'yanshu'}));}else if(alive('aying')&&rand()<0.3){P('aying').here={d:S.day,per:S.per,pl:S.place};Eng.keep('aying');L.push('小徑盡頭，一名宮裝侍女正採花。');c.unshift(ch('💬 上前','talk',{id:'aying'}));}return Eng.L(L,'',S.place,c);};
+NODES.prisonClinic=function(){if(pc().sta<15)return Eng.L(['你太累了，不宜動刀。'],'',S.place,[ch('↩','place')]);pc().sta-=12;var ci=pick([Med.caseOf('cut'),Med.caseOf('fever'),Med.caseOf('fracture'),Med.caseOf('diarrhea')]);Med.open({src:'call',ci:ci,fee:8});return {screen:'med'};};
+NODES.embassyGift=function(){if(S.gold<8)return Eng.L(['你囊中羞澀，拿不出體面的見面禮。'],'',S.place,[ch('↩','place')]);Inv.gold(-8);Eng.pass(1);pc().sk.trade=clamp(pc().sk.trade+1,0,100);S.fam.fame=clamp(S.fam.fame+1,0,999);var L=['你備了薄禮，與賓館中的遠客寒暄片刻。（名聲+1）'];var c=[ch('↩','place')];if(alive('baqing')&&rand()<0.4){P('baqing').here={d:S.day,per:S.per,pl:S.place};Eng.keep('baqing');L.push('廳中錦袍女商朝你舉杯致意——正是巴清。');c.unshift(ch('💬 與巴清交談','talk',{id:'baqing'}));}else if(alive('yanshu')&&rand()<0.4){P('yanshu').here={d:S.day,per:S.per,pl:S.place};Eng.keep('yanshu');L.push('齊使女官晏姝自廊下緩步而來。');c.unshift(ch('💬 與晏姝交談','talk',{id:'yanshu'}));}return Eng.L(L,'',S.place,c);};
 NODES.read=function(){var me=pc();Eng.pass(2);me.sk.lit=clamp(me.sk.lit+2,0,100);if(S.place==='school'&&S.gold>=2)Inv.gold(-2);return Eng.L(['你讀了兩個時辰。（文+2）'],'',S.place,[ch('↩','place')]);};
 NODES.rumor=function(){Eng.pass(1);Inv.gold(-Math.min(S.gold,3));pc().mood=clamp(pc().mood+3,0,100);var w=WS.brief(3);var hint=History.hint();return Eng.L(['酒客們七嘴八舌：'].concat(w.length?w:['近來倒也太平。']).concat(hint?[hint]:[]),'',S.place,[ch('↩','place')]);};
 /* ---------- 採集辨識 ---------- */

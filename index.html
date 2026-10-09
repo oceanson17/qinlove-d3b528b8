@@ -412,6 +412,13 @@ body.kbopen #app{pointer-events:none;}
 .sayExs{font-size:12px;opacity:.85;margin-top:6px;line-height:1.9}.sayEx{border:0;background:none;color:#7a2e1e;text-decoration:underline dotted;padding:0 4px;font-size:12px}
 .sayGo{display:flex;gap:10px;position:sticky;bottom:0;padding:8px 0;background:var(--paper)}.sayGo .btn{flex:1;padding:10px}
 
+/* 一鍵生成醫術 */
+.mplan{margin:8px 0;padding:10px 12px;border:1px solid rgba(201,163,90,.75);border-radius:12px;background:linear-gradient(160deg,#fff9f0,#f3e8d8);font-size:13px;line-height:1.55;}
+.mplan b{font-size:15px;color:var(--ver);letter-spacing:.12em;}
+.mplan .note{margin-top:4px;}
+.mplan .opts{margin-top:8px;}
+#mdGen.pri{width:100%;letter-spacing:.2em;}
+
 </style>
 </head>
 <body>
@@ -522,6 +529,12 @@ var PLACES={
  school:{r:'xianyang',s:'學',n:'學室',d:'官府學室，教子弟識字、律令與算術。',bg:'study',x:40,y:54},
  farm:{r:'xianyang',s:'田',n:'城郊田舍',d:'渭水邊的田地，置產後可耕作。',bg:'field',x:84,y:52},
  courtyard:{r:'xianyang',s:'庭',n:'夜色庭院',d:'月下庭院，只在入夜後前往。',bg:'night',x:62,y:30,night:1},
+ herbshop:{r:'xianyang',s:'藥',n:'藥市',d:'城南藥材行聚集處。草藥、柳皮、蜜蠟、蠶絲皆可購。',bg:'market',x:30,y:70},
+ dock:{r:'xianyang',s:'碼頭',n:'渭水碼頭',d:'舟車輻輳，商旅與使節由此出入咸陽。',bg:'plum',x:90,y:56},
+ shrine:{r:'xianyang',s:'廟',n:'宗廟社壇',d:'國家宗廟與社稷壇。可祭拜、靜思，偶遇朝臣。',bg:'palace',x:46,y:10},
+ garden:{r:'xianyang',s:'苑',n:'上林苑外',d:'禁苑外圍的林地與陂池，可散步、採藥，入夜尤靜。',bg:'plum',x:8,y:24,wild:1},
+ prison:{r:'xianyang',s:'獄',n:'獄舍',d:'內史獄舍。醫官可入內診治囚徒。',bg:'camp',x:72,y:16,need:'prison'},
+ embassy:{r:'xianyang',s:'館',n:'諸侯賓館',d:'供六國使節與遠客暫住的館舍，打聽外事之地。',bg:'tavern',x:36,y:26},
  home:{r:'frontier',s:'家',n:'家',d:'你在邊地的安身之所。',bg:'hut',x:30,y:66,home:1},
  field:{r:'frontier',s:'田',n:'荒地',d:'官府分下的荒地，開墾後可種。',bg:'field',x:58,y:74},
  forest:{r:'frontier',s:'林',n:'後山林',d:'野菜、野果、柴薪、藥草；也有毒物與野獸。',bg:'forest',x:22,y:32,wild:1},
@@ -532,7 +545,7 @@ var PLACES={
  mountain:{r:'frontier',s:'山',n:'深山',d:'雲霧深處，傳說住著奇人。',bg:'title',x:14,y:14,wild:1},
  road:{r:'road',s:'途',n:'驛道營地',d:'押解的隊伍在此歇腳。',bg:'camp',x:50,y:50}
 };
-var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','palace','study','yamen','school','farm','courtyard'],frontier:['home','field','forest','river','village','fair','yamen2','mountain'],road:['road']};
+var REGION_PLACES={xianyang:['lodge','clinic','market','plum','camp','tavern','palace','study','yamen','school','farm','courtyard','herbshop','dock','shrine','garden','prison','embassy'],frontier:['home','field','forest','river','village','fair','yamen2','mountain'],road:['road']};
 var EXILE_DEST=[{k:'shu',n:'蜀郡',d:'巴山蜀水，潮濕多瘴',dt:2,days:14},{k:'shang',n:'上郡',d:'黃土高坡，風沙苦寒',dt:-5,days:12},{k:'longxi',n:'隴西',d:'隴山之西，羌戎雜處',dt:-3,days:16}];
 /* 物品 */
 var ITEMS={
@@ -554,7 +567,7 @@ var ITEMS={
  notes:{n:'師父手札',k:'book',p:0,d:'解剖圖、刀法、藥理，西方醫術的心血'},lawbook:{n:'秦律抄本',k:'book',p:40,d:'讀之長文墨，利於吏試'},
  dose:{n:'緩解藥',k:'med',p:0,d:'壓制體內舊毒的藥（身世）'}
 };
-var SHOPS={market:['grain','cake','jerky','egg','wine','wood','timber','cloth','salt','honey','fat','silk','seed','needle','axe','hoe','still','winterc','sandal','herb','garlic','candy','bamboo','rouge','jade','sword','qinpu','warmer','ink','osm','go','lawbook'],fair:['grain','cake','jerky','wine','wood','cloth','salt','fat','seed','needle','axe','hoe','sandal','herb','garlic','winterc','candy','bamboo']};
+var SHOPS={market:['grain','cake','jerky','egg','wine','wood','timber','cloth','salt','honey','fat','silk','seed','needle','axe','hoe','still','winterc','sandal','herb','garlic','candy','bamboo','rouge','jade','sword','qinpu','warmer','ink','osm','go','lawbook'],fair:['grain','cake','jerky','wine','wood','cloth','salt','fat','seed','needle','axe','hoe','sandal','herb','garlic','winterc','candy','bamboo'],herbshop:['herb','willow','garlic','honey','silk','cloth','alcohol','bandage','antipyr','ors','salve','antidote','soap','wine','fat']};
 /* 西醫技法 */
 var TECHS={
  wash:{n:'煮沸洗手',d:'術前以皂與沸水洗手、煮器械'},alco:{n:'酒精消毒',d:'酒精擦拭傷口與器械',need:{alcohol:1}},debr:{n:'清創',d:'清除壞死組織與異物'},
@@ -664,14 +677,27 @@ var NAMED={
  zhaoji:{n:'趙姬',g:'f',age:43,job:'太后',title:'太后',col:'#8a3a5a',sub:'華服慵懶的太后',pers:['開朗','善妒'],like:['玉器','花草'],auth:8,np:1,
   bio:'秦王之母，邯鄲舞姬出身，貌美多情。',gene:{con:11,wit:12,look:17,cha:16,dex:11},hid:[],at:['palace','palace','palace','palace','palace','palace'],die:228},
  gaojianli:{n:'高漸離',g:'m',age:27,job:'樂師',title:'樂師',col:'#7a6a5a',sub:'抱筑的樂師',pers:['沉默','仗義'],like:['琴譜','酒'],auth:1,np:1,
-  bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218}
+  bio:'善擊筑，荊軻摯友。',gene:{con:12,wit:13,look:13,cha:12,dex:16},hid:[],at:['tavern','tavern','tavern','market','tavern','tavern'],die:218},
+ mengyi:{n:'蒙毅',g:'m',age:21,job:'clerk',title:'廷尉史',col:'#4a6a8a',sub:'青衫執法的蒙氏子弟',pers:['正直','沉默'],like:['竹簡','玉器'],auth:5,np:1,
+  bio:'蒙恬之弟，習獄法，剛正寡言；常在官署與宮門之間奔走。',gene:{con:13,wit:15,look:14,cha:12,dex:12},hid:['memory'],ail:'舊傷隱痛',at:['yamen','yamen','palace','yamen','study','courtyard']},
+ baqing:{n:'巴清',g:'f',age:24,job:'owner',title:'女商',col:'#8a5a2a',sub:'錦袍珠珥的巴蜀女商',pers:['精明','開朗'],like:['玉器','糕點','酒'],auth:2,np:1,
+  bio:'巴郡丹穴之主的後人，以商賈入咸陽；笑裡藏算盤，重諾守信。',gene:{con:12,wit:16,look:16,cha:17,dex:12},hid:['beauty'],ail:'旅途風寒',at:['market','market','embassy','herbshop','tavern','dock']},
+ nanheng:{n:'南蘅',g:'f',age:23,job:'tradoc',title:'楚醫',col:'#2f6b4a',sub:'青囊斜挎的楚地女醫',pers:['刻薄','正直'],like:['竹簡','花草'],auth:2,np:1,
+  bio:'自楚國來的女醫，精湯藥針砭；對西醫刀圭又嫉又好奇，是你的勁敵與知音。',gene:{con:11,wit:15,look:15,cha:13,dex:15},hid:['hand'],ail:'過勞心悸',at:['clinic','herbshop','market','clinic','herbshop','']},
+ yanshu:{n:'晏姝',g:'f',age:20,job:'none',title:'齊使',col:'#6a4a7a',sub:'玄衣佩玉的齊國使女',pers:['溫和','多疑'],like:['花草','琴譜','胭脂'],auth:3,np:1,
+  bio:'隨齊使入秦的宗女，知禮而警惕；聽聞秦相與齊國舊事，常欲言又止。',gene:{con:10,wit:14,look:16,cha:15,dex:11},hid:['beauty'],ail:'思鄉失眠',at:['embassy','embassy','garden','plum','embassy','courtyard']},
+ zhengguo:{n:'鄭國',g:'m',age:38,job:'scholar',title:'水工',col:'#5a6a4a',sub:'泥靴竹尺的韓人水工',pers:['勤快','沉默'],like:['竹簡','肉'],auth:3,np:1,
+  bio:'韓人水工，入秦修渠；話少、手勤，懂水土與民瘼。',gene:{con:15,wit:16,look:11,cha:10,dex:14},hid:['strong'],ail:'腰腿勞損',at:['dock','yamen','farm','dock','study','']},
+ aying:{n:'阿瓔',g:'f',age:18,job:'none',title:'侍女',col:'#a86a7a',sub:'宮裝低眉的年輕侍女',pers:['熱心','膽小'],like:['糖','胭脂','花草'],auth:1,np:1,
+  bio:'趙姬身邊的小侍女，耳聰目明卻膽小；常為宮中瑣事求醫。',gene:{con:10,wit:12,look:15,cha:14,dex:12},hid:[],ail:'宮寒體弱',at:['palace','palace','garden','palace','palace','courtyard']}
 };
-var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji'];
+var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','xiawuju','xufu','zhaogao','gaojianli','lvbuwei','zhaoji','mengyi','baqing','nanheng','yanshu','zhengguo','aying'];
 /* 開局時間：y10＝秦王政十年（前 237，預設）；y1＝秦王政元年（前 246） */
 var ERAS={y10:{bc:237,n:'秦王政十年（前237）',d:'秦王二十二歲，剛平定嫪毐之亂、罷免呂不韋，開始親政；李斯為客卿，長公子扶蘇已長成。'},y1:{bc:246,n:'秦王政元年（前246）',d:'十三歲的嬴政剛剛登基，未親政；相國呂不韋總攬朝政，趙姬為太后；李斯是呂不韋門下舍人。史上長公子扶蘇此時尚未出生——本局把扶蘇改為與秦王同族的「宗室公子」（18 歲）照常可結緣；嬴政、蒙恬年紀尚小，滿 16 歲前只會以朋友相待。'}};
-var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34}};
+var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34},mengyi:{age:13,title:'蒙氏少年',job:'將門子弟'},baqing:{age:16},nanheng:{age:15},yanshu:{age:12,title:'齊國宗女'},zhengguo:{age:29},aying:{age:10,title:'小宮女'}};
 var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
-var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙']];
+var PORTRAIT_ALIAS={mengyi:'mengtian',zhengguo:'hanfei'};
+var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙'],['mengyi','mengtian','兄弟'],['mengyi','yingzheng','君臣·執法'],['nanheng','xiawuju','醫者相輕'],['yanshu','lvbuwei','齊秦之間'],['zhengguo','lisi','客卿相知'],['aying','zhaoji','宮人'],['baqing','lisi','商緣']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];var DEF_NAMES_M=['白朮','蘇子衿','沈澤蘭','葉長卿','顧決明'];
 /* 家世（全隨機） */
 var BIRTHS=[
@@ -763,9 +789,9 @@ function baseState(o){var s={v:2,seed:Date.now()%100000,world:o.world||'equal',m
  fam:{sur:'',gen:1,fame:0,tier:0,tech:{},land:0,plots:[],house:0,clinic:{open:0,lv:0,apps:[],days:0},grudge:null,hist:[]},gold:0,inv:{},
  region:'xianyang',place:'lodge',road:null,wx:{k:'晴',t:15},flags:{},evseen:{},log:[],back:[],full:[],facts:[],letters:[],invites:[],calls:[],apps:[],fseq:0,wev:{maj:[]},hist:{done:{},alt:''},
  pend:null,thread:null,focus:'',queue:[],stats:{pat:0,cure:0,dead:0},bond:{},nm:{},pace:{last:-99,per:{},q:[]},idn:{hist:[]},disg:null,afl:null,origin:null,seal:{},cmds:[],ends:[],lives:[]};return s;}
-function addNamed(){S.startBC=START_BC;NAMED_ORDER.forEach(function(k){var N=NAMED[k];if(START_BC===246&&ERA1[k]){var E=ERA1[k],M={};for(var q in N)M[q]=N[q];for(var q2 in E)M[q2]=E[q2];N=M;}var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:k==='xiawuju'?70:0,farm:0,craft:0,trade:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu')?70:30},
-  genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
-  aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:0),medoff:k==='xiawuju'?3:0,mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:''};
+function addNamed(){S.startBC=START_BC;NAMED_ORDER.forEach(function(k){var N=NAMED[k];if(START_BC===246&&ERA1[k]){var E=ERA1[k],M={};for(var q in N)M[q]=N[q];for(var q2 in E)M[q2]=E[q2];N=M;}var p={id:k,sur:'',gn:N.n,n:N.n,g:N.g,born:S.day-N.age*DPY,kind:'named',job:N.job,title:N.title,pers:N.pers.slice(),like:N.like.slice(),at:{},sk:{med:(k==='xiawuju'||k==='nanheng')?70:0,farm:0,craft:k==='zhengguo'?40:0,trade:k==='baqing'?70:0,mart:(k==='mengtian'||k==='jingke'||k==='xuanye'||k==='mengyi')?70:10,lit:(k==='lisi'||k==='hanfei'||k==='fusu'||k==='zhengguo'||k==='mengyi')?70:30},
+  genes:N.hid.slice(),genes2:N.hid.slice(),expr:N.hid.slice(),look:{hair:k==='mengtian'||k==='xuanye'||k==='mengyi'?'#d8dce6':'#1a1414',skin:'#f6e2d6',seed:7},hp:k==='fusu'?70:90,food:80,sta:100,mood:60,temp:36.6,ill:[],feet:100,cloth:100,
+  aff:0,trust:0,love:0,met:0,alive:1,died:0,spouse:'',par:[],kids:[],loc:null,hh:0,rank:k==='mengtian'?9:0,office:k==='lisi'?8:(k==='zhaogao'?6:(k==='mengyi'?5:0)),medoff:k==='xiawuju'?3:(k==='nanheng'?1:0),mem:[],thought:'',tal:{},notes:{},portrait:PORTRAITS.indexOf(k)>=0?k:(typeof PORTRAIT_ALIAS!=='undefined'&&PORTRAIT_ALIAS[k]?PORTRAIT_ALIAS[k]:'')};
   for(var a in N.gene)p.at[a]=N.gene[a];S.ppl[k]=p;if(N.sub)p.sub=N.sub;if(N.bio)p.bio=N.bio;if(N.at)p.sched=N.at.slice();if(N.arrive&&START_BC>N.arrive)p.away=1;});if(START_BC<238&&S.ppl.zhaoji){S.ppl.zhaoji.away=1;S.ppl.lvbuwei.title='文信侯';}
  S.ppl.hanfei.away=1;S.ppl.xuanye.hidden=1;}
 function heroineState(o){S=baseState({world:o.world,mode:'std'});addNamed();var sur=(o.name||'').length>=2?o.name.slice(0,1):'白';
@@ -1198,7 +1224,7 @@ var Inv={add:function(k,n){if(!ITEMS[k])return;S.inv[k]=Math.max(0,(S.inv[k]||0)
 /* ===== 人物：位置、關係、心態卡(M20)、即時記憶(M20)、完整日誌、反失憶記憶庫(M21)、婚育、遺傳、衰老、死亡、傳承、來訪(M18) ===== */
 var People={};
 (function(){
- var LOCALS={market:['trader','owner','beggar'],tavern:['xia','singer','owner'],camp:['soldier','soldier'],yamen:['clerk','guard'],yamen2:['clerk','guard'],village:['farmer','weaver','carpenter'],fair:['trader','smith'],field:['farmer'],river:['boat','hunter'],forest:['hunter'],school:['scholar'],lodge:['owner'],plum:['scholar','hunter'],clinic:['tradoc'],mountain:[],road:[],farm:['farmer'],home:[],palace:['clerk'],study:['scholar'],courtyard:[]};
+ var LOCALS={market:['trader','owner','beggar'],tavern:['xia','singer','owner'],camp:['soldier','soldier'],yamen:['clerk','guard'],yamen2:['clerk','guard'],village:['farmer','weaver','carpenter'],fair:['trader','smith'],field:['farmer'],river:['boat','hunter'],forest:['hunter'],school:['scholar'],lodge:['owner'],plum:['scholar','hunter'],clinic:['tradoc'],mountain:[],road:[],farm:['farmer'],home:[],palace:['clerk'],study:['scholar'],courtyard:[],herbshop:['tradoc','trader'],dock:['boat','trader'],shrine:['scholar','clerk'],garden:['hunter','scholar'],prison:['guard'],embassy:['scholar','trader','singer']};
  People.ensureLocals=function(pl){var want=LOCALS[pl];if(!want||!want.length)return;var have=0;for(var id in S.ppl){var p=S.ppl[id];if(p.alive&&p.loc&&p.loc.pl===pl&&p.kind==='npc')have++;}
   var cap=pl==='market'||pl==='village'||pl==='tavern'?3:2;for(var i=have;i<cap;i++){var q=genPerson({job:want[i%want.length],loc:{r:PLACES[pl].r,pl:pl}});q.title=JOBS[q.job];}};
  /* 位置 */
@@ -1214,7 +1240,7 @@ var People={};
   return r.sort(function(a,b){var A=P(a),B=P(b);return (B.hh?3:0)+(B.kind==='named'?2:0)+(B.met?1:0)-((A.hh?3:0)+(A.kind==='named'?2:0)+(A.met?1:0));});};
  People.idByName=function(nm){nm=String(nm||'').replace(/\s/g,'');if(!nm)return '';if(nm==='我'||nm==='你'||nm===pc().n)return S.pc;var best='',bl=0;
   for(var id in S.ppl){var p=S.ppl[id];if(!p.alive&&!p.died)continue;var cands=[p.n,p.gn,p.milk,p.title&&p.met?p.title:null,p.rel];cands.forEach(function(c){if(c&&c.length>=1&&nm.indexOf(c)>=0&&c.length>bl&&(c.length>=2||nm===c)){best=id;bl=c.length;}});}
-  if(!best){if(/秦王|大王|王上|陛下|始皇/.test(nm))return 'yingzheng';if(/將軍/.test(nm))return 'mengtian';if(/長公子/.test(nm))return 'fusu';if(/影衛|蒙面/.test(nm))return 'xuanye';if(/侍醫/.test(nm))return 'xiawuju';if(/方士/.test(nm))return 'xufu';
+  if(!best){if(/秦王|大王|王上|陛下|始皇/.test(nm))return 'yingzheng';if(/將軍/.test(nm))return 'mengtian';if(/長公子/.test(nm))return 'fusu';if(/影衛|蒙面/.test(nm))return 'xuanye';if(/侍醫/.test(nm))return 'xiawuju';if(/方士/.test(nm))return 'xufu';if(/蒙毅/.test(nm))return 'mengyi';if(/巴清/.test(nm))return 'baqing';if(/南蘅/.test(nm))return 'nanheng';if(/晏姝/.test(nm))return 'yanshu';if(/鄭國/.test(nm))return 'zhengguo';if(/阿瓔/.test(nm))return 'aying';
    if(/衙役|差爺|官差/.test(nm)&&S.road)return S.road.guards[0];if(/父親|爹|阿爹/.test(nm))return People.byRel('父');if(/母親|娘|阿娘/.test(nm))return People.byRel('母');if(/夫君|相公|娘子|夫人|妻子|丈夫/.test(nm))return pc().spouse||'';if(/師父/.test(nm))return 'master';}
   return best;};
  People.byRel=function(r){for(var id in S.ppl){var p=S.ppl[id];if(p.alive&&p.hh&&p.rel===r)return id;}return '';};
@@ -1613,7 +1639,13 @@ var VOICE={
  xuanye:{tone:'寡言，字少而準，冷中帶護',tic:'「……在。」「別回頭。」',goal:'奉命護衛；隱藏自己的身世'},
  zhaogao:{tone:'謙卑圓滑，笑裡藏刀，奉承中探底',tic:'「小人不敢。」「大人說的是。」',goal:'攀附權力、掌握他人把柄'},
  lvbuwei:{tone:'老練從容，商人算盤，常以「奇貨」喻人',tic:'「奇貨可居。」「老夫看人，從不走眼。」',goal:'保相國權位、著《呂氏春秋》傳名'},
- zhaoji:{tone:'嬌慵而帶威，喜怒無常',tic:'「哀家乏了。」',goal:'貪歡、保自身富貴，與兒子關係緊張'}};
+ zhaoji:{tone:'嬌慵而帶威，喜怒無常',tic:'「哀家乏了。」',goal:'貪歡、保自身富貴，與兒子關係緊張'},
+ mengyi:{tone:'剛正簡練，法理口吻，少廢話',tic:'「依法處置。」「證據何在？」',goal:'公正執法、不辱蒙氏門風；暗中護兄'},
+ baqing:{tone:'爽利帶笑，商人口吻，算賬清楚',tic:'「這筆賬，我記著。」「成不成，一句話。」',goal:'擴張巴蜀商路、在咸陽站住腳'},
+ nanheng:{tone:'辛辣直白，醫者傲氣，不服就辯',tic:'「可笑。」「拿你的刀圭來比比看。」',goal:'證明楚醫不輸西醫；其實渴望交流'},
+ yanshu:{tone:'溫柔謹慎，話到嘴邊留三分',tic:'「使團有規矩。」「……不宜多說。」',goal:'完成使節使命、探聽秦相與齊國舊緣'},
+ zhengguo:{tone:'樸實少言，談渠與土最起勁',tic:'「挖下去便是。」「民以食爲天。」',goal:'修成鄭國渠、讓關中無饑'},
+ aying:{tone:'怯生生、細聲細氣，偶爾八卦',tic:'「大夫……」「別告訴別人。」',goal:'保住差事、幫宮裡病人；偷偷喜歡外面的世界'}};
 AI.MOODS=function(p){var b=p.bond&&p.bond.e||{};var top=Object.keys(b).sort(function(x,y){return (b[y]||0)-(b[x]||0);})[0];var m=p.hp<40?'病弱':p.mood!=null&&p.mood<30?'低落':p.mood>75?'愉快':'平靜';return m+(top&&b[top]>=20?'，對主角'+top+'較重':'')+(p.aff<-20?'，心有芥蒂':'');};
 (function(){var op=AI.pline;AI.pline=function(id){var s=op(id);var v=VOICE[id],p=P(id);var ex=[];if(v)ex.push('語氣：'+v.tone,'口頭禪：'+v.tic,'動機：'+v.goal);else if(p&&p.pers)ex.push('語氣：依性格「'+p.pers.join('、')+'」');if(p)ex.push('此刻情緒：'+AI.MOODS(p));return s+'｜'+ex.join('｜');};})();
 AI.STYLE='\n【文筆與劇情要求】\n'
@@ -1649,7 +1681,13 @@ var Letters={};
   fusu:['天寒，望添衣。你教的煮水之法，我已令府中照辦。——扶蘇','讀〈蒹葭〉，所謂伊人，在水一方。忽覺此句寫得極好。——扶蘇'],
   hanfei:['謝、謝謝你的水。新寫一篇，想、想請你先看。——韓非','寫信不會結巴。所以我想多寫一些。——非'],
   jingke:['小大夫，今日沒喝酒。誇我。——荊軻','高漸離說我最近笑得太傻。你說是為什麼？——軻'],
-  xuanye:['夜路危險。——（無署名）','……玄夜。我寫了自己的名字。——玄夜']
+  xuanye:['夜路危險。——（無署名）','……玄夜。我寫了自己的名字。——玄夜'],
+  mengyi:['近日審一樁醫案，想起你的刀圭。——蒙毅','家兄北巡，託我問你可安。——毅'],
+  baqing:['藥市新到蜀中丹砂，你要不要？——巴清','今晚酒肆有巴蜀燒酒，來不來？——清'],
+  nanheng:['你那縫合，縫得還行。下回一起看診？——南蘅','湯藥我熬好了。你的酒精，借我一瓶。——蘅'],
+  yanshu:['園中梅花開了。若得閒，可來一觀。——晏姝','使團事多，不及細敘。望珍重。——姝'],
+  zhengguo:['渠工多有傷者，缺醫。你若有空。——鄭國','腰又痛了。你的夾板，可再借一副？——國'],
+  aying:['宮裡有人發燒，太后說叫你。——阿瓔','窗台放了兩塊糖。別問是誰。——（無署名）']
  };
  function sign(p){return '——'+p.n;}
  Letters.send=function(id,k,o){var p=P(id);if(!p)return;o=o||{};var t='';var me=pc();var pl=PLACES[o.pl||'']||{};
@@ -1825,6 +1863,34 @@ var Med={cur:null};
  Med.illCase=function(p){var w=(p.ill||[]).slice().sort(function(a,b){return b.sev-a.sev;})[0];if(!w)return -1;var k=(ILLS[w.k]||{}).case;return k?Med.caseOf(k):-1;};
  Med.techOk=function(t){var T=TECHS[t];if(!T)return {ok:false,why:''};if(t!=='incant'&&t!=='bleed'&&t!=='herbs'&&!S.fam.tech[t])return {ok:false,why:'未習得'};if(T.tool&&!Inv.has(T.tool))return {ok:false,why:'缺'+ITEMS[T.tool].n};if(T.need)for(var k in T.need)if(!Inv.has(k,T.need[k]))return {ok:false,why:'缺'+ITEMS[k].n};return {ok:true};};
  Med.techs=function(){var o=TECH_ORDER.filter(function(t){return S.fam.tech[t]||t==='incant'||t==='bleed'||t==='herbs';});return o;};
+ Med.CANNED=[
+  {for:['cut','arrow','burn'],name:'青囊清創縫合法',method:'先以皂與沸水洗手，再以酒精擦創緣，去腐清異物，蠶絲縫合，繃帶包紮。',effect:'創口閉合，感染大減',risk:'異物未盡則仍可能化膿',seq:['wash','alco','debr','suture','bandage']},
+  {for:['abscess'],name:'切開排膿術',method:'洗手消毒後於膿腫低位切開，排盡膿液，不以縫線強合，僅繃帶覆蓋。',effect:'紅腫漸消、熱退',risk:'切開過深傷及脈絡',seq:['wash','alco','drain','bandage']},
+  {for:['fracture','disloc'],name:'正骨夾板法',method:'手法復位後以木板固定，囑臥床靜養，勿妄動。',effect:'骨位歸正、痛減',risk:'復位粗暴可傷筋絡',seq:['reduce','splint','rest']},
+  {for:['fever','diarrhea','lung','poison','snake'],name:'退熱補液調理方',method:'先察神志與脈息，予退燒散與鹽糖補液，必要時隔離靜養；毒症則先灌解毒湯。',effect:'熱退、津液漸復',risk:'補液過急易致嘔吐',seq:['fever','ors','rest']},
+  {for:['gangrene'],name:'截肢保命術',method:'近心端紮止血帶，洗手消毒後截去壞死肢體，繃帶包紮，以保性命。',effect:'可免毒火攻心',risk:'殘廢終身，家人或痛責',seq:['tourn','wash','alco','amput','bandage']},
+  {for:['birth'],name:'轉胎助產法',method:'洗手後手轉胎位，側切接生，再予補液扶正。',effect:'母子可保',risk:'產婦力竭則凶險',seq:['wash','deliver','ors']},
+  {for:['tetanus','append'],name:'清創隔離養護',method:'清創去腐，隔離靜室，囑絕對臥床，輔以退熱。',effect:'或可止痙退熱',risk:'重症仍難保全',seq:['wash','debr','isolate','rest']}
+ ];
+ Med.pickCanned=function(d){var c=Med.CANNED.filter(function(x){return x.for.indexOf(d.k)>=0;});return c.length?pick(c):pick(Med.CANNED);};
+ Med.planHtml=function(plan,src){if(!plan)return '';return '<div class="mplan"><b>✨ '+esc(plan.name)+'</b>'+(src?' <small class="note">（'+esc(src)+'）</small>':'')+'<div class="note">手法：'+esc(plan.method)+'</div><div class="note">預期：'+esc(plan.effect)+'　風險：'+esc(plan.risk)+'</div><div class="note">步驟：'+(plan.seq||[]).map(function(t){return TECHS[t]?TECHS[t].n:t;}).join('→')+'</div><div class="opts" style="flex-direction:row;flex-wrap:wrap;gap:6px"><button class="cbtn" id="mdUsePlan" style="flex:1">採用此術</button><button class="btn" id="mdCmdPlan">填入指令</button><button class="btn" id="mdRePlan">再生成</button></div></div>';};
+ Med.genOffline=function(){var m=Med.cur;if(!m)return;var plan=Med.pickCanned(m.d);/* 只保留已習得／可用技法 */plan={name:plan.name,method:plan.method,effect:plan.effect,risk:plan.risk,seq:(plan.seq||[]).filter(function(t){return TECHS[t]&&(S.fam.tech[t]||t==='incant'||t==='bleed'||t==='herbs'||t==='rest');})};if(!plan.seq.length)plan.seq=(m.d.seq||[]).slice();m.plan=plan;m.planSrc='離線方';Med.draw();toast('已生成離線醫術方案');};
+ Med.genPrompt=function(){var m=Med.cur,d=m.d,me=pc();var keys=Med.techs().join(',');return '你是秦代背景文字遊戲《青囊·秦心》的醫術顧問。依病況生成一則遊戲用「醫術方案」。繁體中文、古雅西醫詞彙（刀圭、酒精、縫合、聽診、清創）。只輸出 JSON：{"name":"術名(8字內)","method":"手法步驟(80字內)","effect":"預期效果(24字內)","risk":"風險(24字內)","seq":["技法key",...]}。技法 key 只能從：'+keys+'。可參考理想次序：'+d.seq.join('→')+'。病況：'+d.p+'——'+d.c+'；正確診斷為「'+d.dx+'」。勿寫真實現代自殘或危險實驗指引，保持虛構歷史診所語氣。';};
+ Med.genAI=function(){var m=Med.cur;if(!m)return;if(!AI.ready()||AI.manual()){Med.genOffline();return;}
+  var btn=document.getElementById('mdGen');if(btn){btn.disabled=true;btn.textContent='生成中…';}
+  toast('正在請 AI 擬定醫術…');
+  AI.call([{role:'system',content:'只輸出一個 JSON 物件，不要 markdown。'},{role:'user',content:Med.genPrompt()}],{maxTok:400,timeout:Math.min(45,SET.aiTimeout||60),fmt:true}).then(function(res){
+   var j=AI.extractJSON(res.text)||{};var seq=[];(j.seq||[]).forEach(function(t){t=String(t);if(TECHS[t]&&seq.indexOf(t)<0)seq.push(t);});
+   if(!seq.length)seq=(Med.pickCanned(m.d).seq||[]).slice();
+   m.plan={name:String(j.name||'青囊應急方').slice(0,12),method:String(j.method||'').slice(0,120)||Med.pickCanned(m.d).method,effect:String(j.effect||'病勢或有起色').slice(0,40),risk:String(j.risk||'仍有不測').slice(0,40),seq:seq};
+   m.planSrc='AI';Med.draw();toast('醫術方案已就緒');
+  },function(e){toast('AI 失敗，改用離線方：'+AI.errMsg(e));Med.genOffline();});};
+ Med.usePlan=function(){var m=Med.cur;if(!m||!m.plan)return;if(m.step==='exam'){if(m.dxOk==null)m.dxOk=true;m.step='proc';}if(m.step!=='proc')m.step='proc';
+  var skip=[];(m.plan.seq||[]).forEach(function(t){if(m.seq.indexOf(t)>=0)return;var ok=Med.techOk(t);if(!ok.ok){skip.push((TECHS[t]?TECHS[t].n:t)+'：'+ok.why);return;}var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);m.seq.push(t);});
+  toast(skip.length?skip[0]:'已依方案加入處置步驟',2800);Med.draw();};
+ Med.toCmd=function(){var m=Med.cur;if(!m||!m.plan)return;SET.inmode='cmd';try{saveSettings();}catch(e){}if(typeof UI!=='undefined'&&UI.modeSync)UI.modeSync();
+  var t='依「'+m.plan.name+'」施治：'+m.plan.method;var f=document.getElementById('free');if(f)f.value=t;toast('已填入指令欄（說／指令）。可完成或關閉問診後送出。',3200);};
+
  Med.open=function(o){var ci=o.ci!=null?o.ci:(o.pid?Med.illCase(P(o.pid)):-1);if(ci<0)ci=Med.pickCase();var d=CASES[ci];var pp=o.pid?P(o.pid):null;
   Med.cur={d:d,ci:ci,pid:o.pid||'',src:o.src||'clinic',fee:o.fee!=null?o.fee:d.fee,rev:{},step:'exam',dxOk:null,seq:[],dxOpts:shuffle([d.dx].concat(d.wrong)),cb:o.cb||''};
   $('med').className='sheet med on';$('mdT').textContent=pp?'為'+(pp.id===S.pc?'自己':pp.n)+'診治':'坐堂看診';Med.draw();};
@@ -1835,6 +1901,7 @@ var Med={cur:null};
   if(m.step==='done'){var r=m.res;h+='<div class="mres"><div class="stamp">'+r.stamp+'</div><div class="note">診斷 '+(m.dxOk?'✔ ':'✘ 應為「'+esc(d.dx)+'」 ')+'｜處置 '+Math.round(r.q*100)+'%｜理想次序：'+d.seq.map(function(t){return TECHS[t].n;}).join('→')+'</div><div class="note" style="margin-top:6px">'+esc(r.msg)+'</div></div><div class="opts"><button class="cbtn" id="mdDone">收起刀圭</button></div>';}
   else{h+='<h4>生命徵象與檢查 <small class="note">（至少三項）</small></h4><div class="vgrid">'+EXAM.map(function(e){var k=e[0];var got=m.rev[k];var v=got?(d.vit[k]||d.ex[k]):'';return '<button class="vbtn'+(got?' done':'')+'" data-ex="'+k+'"><i>'+e[1]+'</i><b>'+e[2]+'</b>'+(got?'<span>'+esc(v)+'</span>':'')+'</button>';}).join('')+'</div>';
    if(m.step==='exam'&&Med.revealed()>=3)h+='<h4>診斷</h4><div class="opts">'+m.dxOpts.map(function(x){return '<button class="cbtn" data-dx="'+esc(x)+'">'+esc(x)+'</button>';}).join('')+'</div>';
+   if(m.step==='exam'&&Med.revealed()>=3||m.step==='proc'){h+='<div class="row" style="margin:8px 0"><button class="btn pri" id="mdGen">✨ 一鍵生成醫術</button></div>';if(m.plan)h+=Med.planHtml(m.plan,m.planSrc);}
    if(m.step==='proc'){h+='<h4>處置次序 <small class="note">依序點選，耗用藥材</small></h4><div class="sym">'+(m.seq.length?m.seq.map(function(t,i){return '<span>'+(i+1)+'. '+TECHS[t].n+'</span>';}).join(''):'<span class="note" style="border:0;background:none">尚未處置</span>')+'</div>';
     h+='<div class="tgrid">'+Med.techs().map(function(t){var ok=Med.techOk(t);var T=TECHS[t];var need=T.need?Object.keys(T.need).map(function(k){return ITEMS[k].n+(S.inv[k]||0);}).join(''):'';return '<button class="tbtn'+(ok.ok?'':' lock')+(t==='incant'||t==='bleed'||t==='herbs'?' old':'')+'" data-tc="'+t+'"'+(ok.ok?'':' disabled')+'><b>'+T.n+'</b><small>'+(ok.ok?(need||T.d.slice(0,8)):ok.why)+'</small></button>';}).join('')+'</div>';
     h+='<div class="opts" style="flex-direction:row"><button class="btn" id="mdUndo">撤回一步</button><button class="cbtn" id="mdFin" style="flex:1">完成處置</button></div>';}}
@@ -1870,7 +1937,7 @@ var Med={cur:null};
  /* 自動看診（歲月流轉／醫館學徒）：回傳結果 */
  Med.auto=function(ci,sk,useInv){var d=CASES[ci];var ok=d.seq.every(function(t){var c=useInv?Med.techOk(t):{ok:!!S.fam.tech[t]};return c.ok;});var p=(sk/100)*0.8+(ok?0.25:-0.2)-0.12*(d.lv-1);var good=rand()<p;if(useInv&&ok)d.seq.forEach(function(t){var T=TECHS[t];if(T.need)for(var k in T.need)Inv.add(k,-T.need[k]);});return {ok:good,fee:good?d.fee:0,d:d};};
  Med.bind=function(){$('mdB').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;var a;
-  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();});};
+  if((a=b.getAttribute('data-ex'))!==null)Med.exam(a);else if((a=b.getAttribute('data-dx'))!==null)Med.dx(a);else if((a=b.getAttribute('data-tc'))!==null)Med.tc(a);else if(b.id==='mdUndo')Med.undo();else if(b.id==='mdFin')Med.finish();else if(b.id==='mdDone')Med.close();else if(b.id==='mdGen'||b.id==='mdRePlan')Med.genAI();else if(b.id==='mdUsePlan')Med.usePlan();else if(b.id==='mdCmdPlan')Med.toCmd();});};
 })();
 /* ===== 製藥 ===== */
 var Craft={
@@ -1929,6 +1996,12 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
   if(Eng.atHome()&&S.region==='frontier'){if(S.fam.house<2)A('🏚 搭屋（'+Eng.HOUSE_N[S.fam.house+1]+'）','build');}
   if(pl==='village'){if(adult)A('💪 幫鄰里幹活','work');if(adult&&(S.fam.tech.alco||me.sk.med>=25))A('⛺ 為鄉鄰看病','streetClinic');}
   if(pl==='courtyard'){A('🌙 賞月','moon');}
+  if(pl==='herbshop'){A('🛒 購買藥材','shop');if(adult&&(S.fam.tech.alco||me.sk.med>=20))A('💬 與藥行掌櫃論藥','rumor');}
+  if(pl==='dock'){A('🎣 臨水垂釣','fish');A('👂 打聽商旅消息','rumor');if(adult)A('💪 幫船家搬貨','work');}
+  if(pl==='shrine'){A('🙏 祭拜靜思','pray');A('📚 讀碑銘（文墨）','read');}
+  if(pl==='garden'){A('🌿 採藥散步','forage');A('🚶 林間閒步','gardenWalk');}
+  if(pl==='prison'){if(me.medoff||me.office||S.fam.fame>=10)A('🩺 為囚徒診治','prisonClinic');else A('（無資格入內）','place');}
+  if(pl==='embassy'){A('🍶 與使節閒談','rumor');if(adult)A('🎁 以禮結交遠客','embassyGift');}
  }
  var here=People.present().slice(0,5);here.forEach(function(id){c.push(ch('💬 '+People.label(id),'talk',{id:id}));});
  var sickFam=Eng.house().filter(function(p){return p.ill.length&&(p.id===S.pc||Eng.atHome()||S.region==='road');});if(sickFam.length&&(S.fam.tech.alco||me.sk.med>=20))A('🩺 為'+(sickFam[0].id===S.pc?'自己':sickFam[0].n)+'診治','treat',{id:sickFam[0].id});
@@ -1939,6 +2012,7 @@ Place.acts=function(){var pl=S.place,P0=PLACES[pl],me=pc(),c=[];var A=function(t
 NODES.place=function(){if(!pc().alive)return NODES.endAfter({final:1});var rid=Rom.auto();if(rid)return NODES.rom({id:rid});var L=Place.desc();var chs=Place.acts();return Eng.L(L,'',PLACES[S.place].bg?S.place:S.place,chs,{hub:1});};
 NODES.map=function(){if(S.region==='road')return NODES.place();if(S.flags.held)return NODES.place();return {screen:'map'};};
 NODES.go=function(a){var pl=PLACES[a.pl];if(!pl)return NODES.place();if(pl.need==='palace'&&!S.flags.palace&&!pc().office)return Eng.L(['宮門侍衛橫戟攔住你：「無詔不得入。」'],'',S.place,[ch('↩ 返回','map')]);
+ if(pl.need==='prison'&&!(pc().medoff||pc().office||S.fam.fame>=10))return Eng.L(['獄卒攔在門外：「無官職醫憑，或名聲不夠，不得入內。」'],'',S.place,[ch('↩ 返回','map')]);
  if(pl.night&&S.per<4)return Eng.L(['月色庭院只在入夜後才去得。'],'',S.place,[ch('↩ 返回','map')]);
  if(a.pl!==S.place){S.place=a.pl;Eng.pass(1);if(rand()<0.25&&!S.queue.length)Ev.roll('move');}return NODES.place();};
 NODES.wait=function(){Eng.pass(1);pc().sta=clamp(pc().sta+8,0,100);return NODES.place();};
@@ -1972,6 +2046,10 @@ NODES.chop=function(){var me=pc();if(me.sta<15)return Eng.L(['你累得揮不動
 NODES.fish=function(){var me=pc();Eng.pass(1);me.sta-=10;var ok=rand()<0.35+me.sk.farm/200;if(ok)Inv.add('fish',1);if(Weather.wet()&&rand()<0.2)Ill.add(me,'cold',1);return Eng.L([ok?'一條魚咬了鉤！（鮮魚+1）':'等了一個時辰，什麼也沒釣到。'],'',S.place,[ch('再釣','fish'),ch('↩','place')]);};
 NODES.wash=function(){Eng.pass(1);Eng.house().forEach(function(p){p.cloth=clamp(p.cloth+5,0,100);p.mood=clamp(p.mood+2,0,100);});if(Inv.has('soap'))Eng.house().forEach(function(p){if(Ill.has(p,'diarrhea'))Ill.cure(p,'diarrhea',1);});return Eng.L(['你把全家的衣裳洗得乾乾淨淨。'+(Inv.has('soap')?'用了草木灰皂，疫病也少了。':'')],'',S.place,[ch('↩','place')]);};
 NODES.moon=function(){Eng.pass(1);pc().mood=clamp(pc().mood+6,0,100);if(S.flags.xy_open||ageOf(pc())>=16&&rand()<0.3&&alive('xuanye')){S.flags.xy_open=1;return Eng.L(['月色如水。屋簷上有個黑影，靜靜地陪你坐著。'],'xuanye',S.place,[ch('💬 喚他下來','talk',{id:'xuanye'}),ch('↩','place')]);}return Eng.L(['月色如水，你心裡靜了些。（心情+6）'],'',S.place,[ch('↩','place')]);};
+NODES.pray=function(){Eng.pass(1);var me=pc();me.mood=clamp(me.mood+5,0,100);me.sk.lit=clamp(me.sk.lit+(rand()<0.4?1:0),0,100);return Eng.L(['你在社壇前肅立片刻，煙霧裊裊。（心情+5）'],'',S.place,[ch('↩','place')]);};
+NODES.gardenWalk=function(){Eng.pass(1);pc().mood=clamp(pc().mood+4,0,100);pc().sta=clamp(pc().sta+5,0,100);var L=['上林苑外林木疏朗，陂水聲細。你走了一個時辰。（心情+4）'];var c=[ch('↩','place')];if(alive('yanshu')&&rand()<0.35){P('yanshu').here={d:S.day,per:S.per,pl:S.place};Eng.keep('yanshu');L.push('亭邊似有齊國使女的身影。');c.unshift(ch('💬 上前','talk',{id:'yanshu'}));}else if(alive('aying')&&rand()<0.3){P('aying').here={d:S.day,per:S.per,pl:S.place};Eng.keep('aying');L.push('小徑盡頭，一名宮裝侍女正採花。');c.unshift(ch('💬 上前','talk',{id:'aying'}));}return Eng.L(L,'',S.place,c);};
+NODES.prisonClinic=function(){if(pc().sta<15)return Eng.L(['你太累了，不宜動刀。'],'',S.place,[ch('↩','place')]);pc().sta-=12;var ci=pick([Med.caseOf('cut'),Med.caseOf('fever'),Med.caseOf('fracture'),Med.caseOf('diarrhea')]);Med.open({src:'call',ci:ci,fee:8});return {screen:'med'};};
+NODES.embassyGift=function(){if(S.gold<8)return Eng.L(['你囊中羞澀，拿不出體面的見面禮。'],'',S.place,[ch('↩','place')]);Inv.gold(-8);Eng.pass(1);pc().sk.trade=clamp(pc().sk.trade+1,0,100);S.fam.fame=clamp(S.fam.fame+1,0,999);var L=['你備了薄禮，與賓館中的遠客寒暄片刻。（名聲+1）'];var c=[ch('↩','place')];if(alive('baqing')&&rand()<0.4){P('baqing').here={d:S.day,per:S.per,pl:S.place};Eng.keep('baqing');L.push('廳中錦袍女商朝你舉杯致意——正是巴清。');c.unshift(ch('💬 與巴清交談','talk',{id:'baqing'}));}else if(alive('yanshu')&&rand()<0.4){P('yanshu').here={d:S.day,per:S.per,pl:S.place};Eng.keep('yanshu');L.push('齊使女官晏姝自廊下緩步而來。');c.unshift(ch('💬 與晏姝交談','talk',{id:'yanshu'}));}return Eng.L(L,'',S.place,c);};
 NODES.read=function(){var me=pc();Eng.pass(2);me.sk.lit=clamp(me.sk.lit+2,0,100);if(S.place==='school'&&S.gold>=2)Inv.gold(-2);return Eng.L(['你讀了兩個時辰。（文+2）'],'',S.place,[ch('↩','place')]);};
 NODES.rumor=function(){Eng.pass(1);Inv.gold(-Math.min(S.gold,3));pc().mood=clamp(pc().mood+3,0,100);var w=WS.brief(3);var hint=History.hint();return Eng.L(['酒客們七嘴八舌：'].concat(w.length?w:['近來倒也太平。']).concat(hint?[hint]:[]),'',S.place,[ch('↩','place')]);};
 /* ---------- 採集辨識 ---------- */
@@ -2136,7 +2214,13 @@ var TALK={
   xiawuju:['刀子割人，成何體統。','湯藥才是正道。','你那酒精……有點意思。','宮裡的病，可不是市井的病。','老夫行醫三十年，沒見過你這種治法。'],
   xufu:['海上有仙山，名曰蓬萊。','長生之術，你信不信？','你的醫術，莫非也是仙術？','天機不可洩露。','大王對長生，很有興趣。'],
   zhaogao:['大夫辛苦了。','宮中耳目眾多，大夫說話要小心。','奴婢只是替大王跑腿的。','大夫的醫術，真是神乎其技啊。','有空，來奴婢府上坐坐。'],
-  gaojianli:['……想聽一曲嗎？','荊卿又喝醉了。','筑聲，是心聲。','易水的水，很冷。','你笑起來很好看。']},
+  gaojianli:['……想聽一曲嗎？','荊卿又喝醉了。','筑聲，是心聲。','易水的水，很冷。','你笑起來很好看。'],
+  mengyi:['法者，所以禁暴也。','家兄常提起你。','廷尉署近日多事。','證據不足，不可妄斷。','你的刀圭……若用在刑訊上，後果難料。'],
+  baqing:['巴蜀的丹砂，比金子還貴。','做生意，講究信字。','咸陽的酒，烈是烈，卻不夠香。','你開醫館？改天我投筆銀子。','遠道而來，最怕人騙。'],
+  nanheng:['湯藥才是正道——你那刀子，太狠。','楚地潮濕，傷寒最多。','你的酒精……我試過了，有用。','別以爲西醫就能壓過我。','針砭與刀圭，或許可以並用。'],
+  yanshu:['齊國的海風，和這裡不一樣。','使團裡的事，不宜多問。','你可聽過呂相國與齊國的舊事？','這梅花，像故鄉的一樣。','……我只是過客。'],
+  zhengguo:['渠成，則關中無饑。','挖土的事，比說話實在。','韓人在秦，當小心。','水土不服，多有腰腿疾。','你懂醫，可知民病半因饑寒。'],
+  aying:['太后今日心情不好……','大夫，宮裡有人發燒。','我什麼都不知道。真的。','這糖人……可以給我嗎？','別告訴別人我跟你說過話。']},
  G:{開朗:['哈哈，今天心情真好！','走，一起去看熱鬧？'],沉默:['……嗯。','你說，我聽著。'],暴躁:['煩死了！','別惹我。'],溫和:['慢慢來，不急。','你也要照顧好自己。'],精明:['這事兒，得算計算計。','無利不起早嘛。'],狡猾:['嘿嘿，大夫好啊。','有什麼好處，記得分我一份。'],仗義:['有事儘管開口！','朋友有難，豈能不管。'],熱心:['吃過了嗎？我家剛蒸了餅。','有什麼要幫忙的？'],刻薄:['哼。','你也配？'],多疑:['你打聽這個做什麼？','人心隔肚皮。'],正直:['做人要問心無愧。','不義之財，不可取。'],膽小:['最近外頭不太平……','我、我什麼都沒看見。'],貪財:['有錢能使鬼推磨。','最近手頭緊啊。']}
 };
 NODES.talk=function(a){var id=a.id;var p=P(id);if(!p||!p.alive)return NODES.place();var first=!p.met;People.meet(id);Eng.keep(id);S.focus=id;
@@ -2150,7 +2234,7 @@ NODES.talkT=function(a){var id=a.id,p=P(id),me=pc();var L=[];var k=a.k;
  if(AI.ready()&&k!=='heal'&&k!=='call'){var tp={chat:'閒聊',news:'問近況',date:'邀約同遊',secret:'主角想吐露秘密'}[k];return {async:{type:'talk',id:id,topic:tp},fb:function(){return NODES.talkT({id:id,k:k,off:1,_o:1});}};}
  if(k==='chat'){Eng.pass(1);L.push([id,TALK.chat(p)]);if(p.notes.tk!==S.day){p.notes.tk=S.day;People.rel(id,{aff:2,trust:1},'與'+me.n+'閒聊');if(p.love<60&&p.aff>=35&&rand()<0.3)People.rel(id,{love:2});}}
  else if(k==='news'){L.push([id,'「'+People.thought(p).replace(/^（|）$/g,'')+'」']);if(p.ill.length)L.push(ta(p)+'說著咳了兩聲——看起來是'+Ill.str(p)+'。');if(p.kind==='named'&&NAMED[id].ail&&!p.notes.ailCured)L.push('你注意到'+ta(p)+'似乎有'+NAMED[id].ail+'的毛病。');}
- else if(k==='heal'){if(p.ill.length){Med.open({pid:id,src:'call',fee:p.kind==='named'?60:15});return {screen:'med'};}if(p.kind==='named'){var ci=Med.caseOf({頭痛失眠:'fever',舊箭傷:'arrow',胃疾:'diarrhea',寒症:'lung',心悸:'fever',舊毒:'poison',刀傷:'cut'}[NAMED[id].ail]||'fever');p.notes.ailTry=S.day;Med.open({pid:'',ci:ci,src:'call',fee:40,cb:'ail:'+id});return {screen:'med'};}}
+ else if(k==='heal'){if(p.ill.length){Med.open({pid:id,src:'call',fee:p.kind==='named'?60:15});return {screen:'med'};}if(p.kind==='named'){var ci=Med.caseOf({頭痛失眠:'fever',舊箭傷:'arrow',胃疾:'diarrhea',寒症:'lung',心悸:'fever',舊毒:'poison',刀傷:'cut',舊傷隱痛:'fracture',旅途風寒:'fever',過勞心悸:'fever',思鄉失眠:'fever',腰腿勞損:'fracture',宮寒體弱:'fever'}[NAMED[id].ail]||'fever');p.notes.ailTry=S.day;Med.open({pid:'',ci:ci,src:'call',fee:40,cb:'ail:'+id});return {screen:'med'};}}
  else if(k==='call'){var cl=S.calls.filter(function(v){return v.id===id;})[0];if(cl){S.calls=S.calls.filter(function(v){return v!==cl;});Eng.pass(1);People.rel(id,{aff:4,trust:4},me.n+'應邀到我家出診');Med.open({pid:'',ci:Med.caseOf(cl.cs),src:'call',fee:15+Fam.tier()*5});return {screen:'med'};}}
  else if(k==='date'){Eng.pass(2);People.rel(id,{aff:4,love:3},'和'+me.n+'同遊');me.mood=clamp(me.mood+6,0,100);L.push('你們沿著'+(S.region==='frontier'?'河灘':'渭水')+'走了很久，說了很多話。');L.push([id,p.love>=40?'「……下回，還一起來吧。」':'「今天很開心。」']);}
  else if(k==='secret'){var f=FW.secretsOf().filter(function(x){return x.kn.indexOf(id)<0;})[0];if(!f)L.push('你想說的，'+ta(p)+'都已經知道了。');else{Seal.told(id,f);People.rel(id,{trust:6},me.n+'把秘密託付給我');L.push('你壓低聲音，把「'+f.t+'」告訴了'+p.n+'。');L.push([id,'「……我知道了。這件事，我不會對任何人說。」']);}}
@@ -2759,7 +2843,7 @@ function toast(t,ms){var e=$('toast');if(!e)return;e.textContent=t;e.className='
  var mapSel='';
  UI.mapSvg=function(r){var river=r==='frontier'?'<path d="M300 -10 C 260 120, 340 220, 300 330 S 260 480, 320 570" stroke="#9fb6be" stroke-width="18" fill="none" opacity=".55"/>':'<path d="M-10 330 C 80 300, 140 360, 220 330 S 360 300, 410 320" stroke="#9fb6be" stroke-width="16" fill="none" opacity=".6"/><text x="300" y="300" font-size="13" fill="#6a8890" font-family="serif" letter-spacing="4">渭水</text><rect x="120" y="70" width="190" height="200" fill="none" stroke="#8a6a4a" stroke-width="2" stroke-dasharray="7 4" opacity=".55"/>';
   return '<svg viewBox="0 0 400 560" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e6d0"/><stop offset="1" stop-color="#e8d6ba"/></linearGradient></defs><rect width="400" height="560" fill="url(#mpg)"/><g fill="none" stroke="#8a7a6a" stroke-width="1.2" opacity=".55"><path d="M10 120 l30 -40 l25 30 l30 -50 l35 60"/><path d="M250 90 l30 -45 l28 34 l26 -40 l40 56"/></g>'+river+'<g opacity=".35" fill="#5a7a5a"><circle cx="60" cy="230" r="10"/><circle cx="75" cy="215" r="8"/><circle cx="340" cy="450" r="9"/></g><g transform="translate(350 510)" font-family="serif"><circle r="22" fill="none" stroke="#8a6a4a" stroke-width="1"/><path d="M0 -20 L 5 0 L 0 20 L -5 0 Z" fill="#b8323a" opacity=".7"/><text y="-26" font-size="10" text-anchor="middle" fill="#8a6a4a">北</text></g></svg>';};
- UI.locked=function(pl){var P0=PLACES[pl];if(P0.need==='palace'&&!S.flags.palace&&!pc().office)return '需官職或召見';if(P0.night&&S.per<4)return '入夜後開放';return '';};
+ UI.locked=function(pl){var P0=PLACES[pl];if(P0.need==='palace'&&!S.flags.palace&&!pc().office)return '需官職或召見';if(P0.need==='prison'&&!(pc().medoff||pc().office||S.fam.fame>=10))return '需醫官、官職或名聲 10';if(P0.night&&S.per<4)return '入夜後開放';return '';};
  UI.showMap=function(){if(!S)return;UI.stop();UI.screen('map');$('choices').innerHTML='';$('mDate').textContent=Eng.dateStr(true);$('mPer').textContent=PER_S[S.per];$('mTitle').textContent=REGIONS[S.region].title;
   if(UI.mapR!==S.region){$('mapsvg').innerHTML=UI.mapSvg(S.region);UI.mapR=S.region;}if(PLACES[mapSel]&&PLACES[mapSel].r!==S.region)mapSel='';
   var h='';REGION_PLACES[S.region].forEach(function(pl){var P0=PLACES[pl];var lk=UI.locked(pl);var who=People.present(pl).filter(function(id){return P(id).met;});

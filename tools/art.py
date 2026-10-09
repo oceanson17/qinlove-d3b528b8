@@ -13,7 +13,7 @@ os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
 # 全身圖只保留上半身（佔人物高度比例）
 HALF={}  # Q 版保留全身
 ONLY=sys.argv[1:]
-FACE={'yingzheng':(.50,.31),'mengtian':(.50,.31),'lisi':(.50,.31),'fusu':(.50,.31),'hanfei':(.50,.31),'jingke':(.50,.31),'xuanye':(.50,.31),'heroine':(.50,.31),'heroine_m':(.50,.31)}
+FACE={'yingzheng':(.50,.31),'mengtian':(.50,.31),'lisi':(.50,.31),'fusu':(.50,.31),'hanfei':(.50,.31),'jingke':(.50,.31),'xuanye':(.50,.31),'heroine':(.50,.31),'heroine_m':(.50,.31),'mengyi':(.50,.31),'baqing':(.50,.31),'nanheng':(.50,.31),'yanshu':(.50,.31),'zhengguo':(.50,.31),'aying':(.50,.31)}
 sess=new_session('isnet-anime')
 for f in sorted(glob.glob('assets/raw/char_*.jpg')):
     cid=os.path.basename(f)[5:-4]

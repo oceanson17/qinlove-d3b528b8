@@ -494,7 +494,7 @@ body.kbopen #app{pointer-events:none;}
 <!-- 全屏輸入面板（沿用《秦風》M19 修正：觸控裝置點輸入框 → 覆蓋層 textarea 16px） -->
 <div id="kbp" aria-hidden="true"><div id="kbbox"><div id="kbhd"><span id="kbmode">💬說</span><span id="kbctx"></span></div><textarea id="kbta" maxlength="120" rows="4" placeholder="想說什麼、做什麼…（/設定 宣告劇情）" enterkeyhint="send"></textarea><div id="kbft"><span id="kbcnt">0/120</span><button id="kbcancel">收起</button><button id="kbsend">送出</button></div></div></div>
 <script>
-var ASSET_FILES=["bg_camp.webp","bg_clinic.webp","bg_market.webp","bg_night.webp","bg_palace.webp","bg_plum.webp","bg_study.webp","bg_tavern.webp","bg_title.webp","char_fusu.webp","char_hanfei.webp","char_heroine.webp","char_heroine_m.webp","char_jingke.webp","char_lisi.webp","char_mengtian.webp","char_xuanye.webp","char_yingzheng.webp","face_fusu.webp","face_hanfei.webp","face_heroine.webp","face_heroine_m.webp","face_jingke.webp","face_lisi.webp","face_mengtian.webp","face_xuanye.webp","face_yingzheng.webp"];
+var ASSET_FILES=["bg_camp.webp","bg_clinic.webp","bg_dock.webp","bg_embassy.webp","bg_garden.webp","bg_herbshop.webp","bg_market.webp","bg_night.webp","bg_palace.webp","bg_plum.webp","bg_prison.webp","bg_shrine.webp","bg_study.webp","bg_tavern.webp","bg_title.webp","char_aying.webp","char_baqing.webp","char_fusu.webp","char_hanfei.webp","char_heroine.webp","char_heroine_m.webp","char_jingke.webp","char_lisi.webp","char_mengtian.webp","char_mengyi.webp","char_nanheng.webp","char_xuanye.webp","char_yanshu.webp","char_yingzheng.webp","char_zhengguo.webp","face_aying.webp","face_baqing.webp","face_fusu.webp","face_hanfei.webp","face_heroine.webp","face_heroine_m.webp","face_jingke.webp","face_lisi.webp","face_mengtian.webp","face_mengyi.webp","face_nanheng.webp","face_xuanye.webp","face_yanshu.webp","face_yingzheng.webp","face_zhengguo.webp"];
 /* ---- 01_data.js ---- */
 /* ===== 青囊·秦心 v2 · 資料：時間、地點、物品、病例、人物、職業、遺傳 ===== */
 var GAME_TITLE='青囊·秦心';
@@ -529,12 +529,12 @@ var PLACES={
  school:{r:'xianyang',s:'學',n:'學室',d:'官府學室，教子弟識字、律令與算術。',bg:'study',x:40,y:54},
  farm:{r:'xianyang',s:'田',n:'城郊田舍',d:'渭水邊的田地，置產後可耕作。',bg:'field',x:84,y:52},
  courtyard:{r:'xianyang',s:'庭',n:'夜色庭院',d:'月下庭院，只在入夜後前往。',bg:'night',x:62,y:30,night:1},
- herbshop:{r:'xianyang',s:'藥',n:'藥市',d:'城南藥材行聚集處。草藥、柳皮、蜜蠟、蠶絲皆可購。',bg:'market',x:30,y:70},
- dock:{r:'xianyang',s:'碼頭',n:'渭水碼頭',d:'舟車輻輳，商旅與使節由此出入咸陽。',bg:'plum',x:90,y:56},
- shrine:{r:'xianyang',s:'廟',n:'宗廟社壇',d:'國家宗廟與社稷壇。可祭拜、靜思，偶遇朝臣。',bg:'palace',x:46,y:10},
- garden:{r:'xianyang',s:'苑',n:'上林苑外',d:'禁苑外圍的林地與陂池，可散步、採藥，入夜尤靜。',bg:'plum',x:8,y:24,wild:1},
- prison:{r:'xianyang',s:'獄',n:'獄舍',d:'內史獄舍。醫官可入內診治囚徒。',bg:'camp',x:72,y:16,need:'prison'},
- embassy:{r:'xianyang',s:'館',n:'諸侯賓館',d:'供六國使節與遠客暫住的館舍，打聽外事之地。',bg:'tavern',x:36,y:26},
+ herbshop:{r:'xianyang',s:'藥',n:'藥市',d:'城南藥材行聚集處。草藥、柳皮、蜜蠟、蠶絲皆可購。',bg:'herbshop',x:30,y:70},
+ dock:{r:'xianyang',s:'碼頭',n:'渭水碼頭',d:'舟車輻輳，商旅與使節由此出入咸陽。',bg:'dock',x:90,y:56},
+ shrine:{r:'xianyang',s:'廟',n:'宗廟社壇',d:'國家宗廟與社稷壇。可祭拜、靜思，偶遇朝臣。',bg:'shrine',x:46,y:10},
+ garden:{r:'xianyang',s:'苑',n:'上林苑外',d:'禁苑外圍的林地與陂池，可散步、採藥，入夜尤靜。',bg:'garden',x:8,y:24,wild:1},
+ prison:{r:'xianyang',s:'獄',n:'獄舍',d:'內史獄舍。醫官可入內診治囚徒。',bg:'prison',x:72,y:16,need:'prison'},
+ embassy:{r:'xianyang',s:'館',n:'諸侯賓館',d:'供六國使節與遠客暫住的館舍，打聽外事之地。',bg:'embassy',x:36,y:26},
  home:{r:'frontier',s:'家',n:'家',d:'你在邊地的安身之所。',bg:'hut',x:30,y:66,home:1},
  field:{r:'frontier',s:'田',n:'荒地',d:'官府分下的荒地，開墾後可種。',bg:'field',x:58,y:74},
  forest:{r:'frontier',s:'林',n:'後山林',d:'野菜、野果、柴薪、藥草；也有毒物與野獸。',bg:'forest',x:22,y:32,wild:1},
@@ -695,8 +695,8 @@ var NAMED_ORDER=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'
 /* 開局時間：y10＝秦王政十年（前 237，預設）；y1＝秦王政元年（前 246） */
 var ERAS={y10:{bc:237,n:'秦王政十年（前237）',d:'秦王二十二歲，剛平定嫪毐之亂、罷免呂不韋，開始親政；李斯為客卿，長公子扶蘇已長成。'},y1:{bc:246,n:'秦王政元年（前246）',d:'十三歲的嬴政剛剛登基，未親政；相國呂不韋總攬朝政，趙姬為太后；李斯是呂不韋門下舍人。史上長公子扶蘇此時尚未出生——本局把扶蘇改為與秦王同族的「宗室公子」（18 歲）照常可結緣；嬴政、蒙恬年紀尚小，滿 16 歲前只會以朋友相待。'}};
 var ERA1={yingzheng:{age:13,sub:'玄袍少年秦王',bio:'十三歲即位，國事由相國呂不韋與太后主持；早慧、多疑、夜不能寐。',title:'秦王'},mengtian:{age:15,title:'蒙氏少年',job:'將門子弟',sub:'將門出身的少年'},lisi:{age:25,title:'呂府舍人',job:'門客',bio:'上蔡布衣，入秦投相國呂不韋門下為舍人。',at:['yamen','yamen','study','plum','study','study']},fusu:{age:18,title:'宗室公子',job:'宗室公子',bio:'秦國宗室子弟，與秦王同族，愛書愛民，體弱畏寒。（架空處理：史上長公子扶蘇此時尚未出生）'},hanfei:{age:19},jingke:{age:17},xuanye:{age:17,bio:'相國府中的影子，無名無姓。'},xiawuju:{age:31},xufu:{age:26},zhaogao:{age:21,title:'宮中小吏',job:'宦者'},gaojianli:{age:18},lvbuwei:{age:45},zhaoji:{age:34},mengyi:{age:13,title:'蒙氏少年',job:'將門子弟'},baqing:{age:16},nanheng:{age:15},yanshu:{age:12,title:'齊國宗女'},zhengguo:{age:29},aying:{age:10,title:'小宮女'}};
-var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye'];
-var PORTRAIT_ALIAS={mengyi:'mengtian',zhengguo:'hanfei'};
+var PORTRAITS=['yingzheng','mengtian','lisi','fusu','hanfei','jingke','xuanye','mengyi','baqing','nanheng','yanshu','zhengguo','aying'];
+var PORTRAIT_ALIAS={};
 var RELNET=[['yingzheng','lisi','君臣·倚重'],['yingzheng','fusu','父子·理念相左'],['yingzheng','hanfei','求賢·猜忌'],['lisi','hanfei','同門·嫉才'],['mengtian','fusu','摯友'],['mengtian','yingzheng','君臣·忠誠'],['jingke','yingzheng','宿命·刺秦'],['jingke','gaojianli','知己'],['xiawuju','yingzheng','侍醫'],['zhaogao','yingzheng','近侍'],['xufu','yingzheng','求仙'],['mengyi','mengtian','兄弟'],['mengyi','yingzheng','君臣·執法'],['nanheng','xiawuju','醫者相輕'],['yanshu','lvbuwei','齊秦之間'],['zhengguo','lisi','客卿相知'],['aying','zhaoji','宮人'],['baqing','lisi','商緣']];
 var DEF_NAMES=['白芷','蘇問荊','沈若蘅','葉青黛','顧當歸'];var DEF_NAMES_M=['白朮','蘇子衿','沈澤蘭','葉長卿','顧決明'];
 /* 家世（全隨機） */
